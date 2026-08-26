@@ -1075,7 +1075,16 @@
 <main id="main-content">
 
   <!-- ============ 1. HERO ============ -->
-  <section id="hero">
+  <section id="hero" style="position:relative;">
+    <!-- Masks a small stray artifact in the background WebGL grid, visible
+         only near the very top of the page. Purely cosmetic; scrolls away
+         naturally with the rest of the hero section. -->
+    <div aria-hidden="true" style="
+      position:absolute; top:150px; left:100px; width:200px; height:200px;
+      pointer-events:none; z-index:10; background:#0d0021;
+      -webkit-mask-image: radial-gradient(circle, #000 62%, transparent 100%);
+      mask-image: radial-gradient(circle, #000 62%, transparent 100%);
+    "></div>
     <div class="wrap">
       <div class="eyebrow" data-reveal>Team SATARK · PSB Cybersecurity, Fraud &amp; AI Hackathon 2026</div>
       <h1 class="hero-title" id="hero-kinetic-title">SACHET</h1>
@@ -1795,6 +1804,14 @@
         stagger: 0.05, ease: 'power3.out', delay: 0.15,
         startAt: { opacity: 0, y: '0.55em', rotateX: -55 }
       });
+      /* Safety net: if this tween ever stalls (tab backgrounded during
+         entrance, a rAF hiccup, etc.), a letter can get stuck mid-flight —
+         rotated ~-55deg and nearly transparent, which reads as a small
+         blank/torn white shape rather than the letterform. Force the
+         resting state after the animation should certainly be done. */
+      setTimeout(function () {
+        gsap.set('#hero-kinetic-title .kchar', { opacity: 1, y: 0, rotateX: 0 });
+      }, 2200);
 
       gsap.utils.toArray('[data-reveal]').forEach(function (el) {
         gsap.to(el, {
