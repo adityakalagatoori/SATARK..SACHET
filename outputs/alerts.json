@@ -1,0 +1,812 @@
+[
+  {
+    "timestamp": "2026-08-20T10:57:40.379826",
+    "account_id": 9001,
+    "mule_score": 99.961659681644,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380029",
+    "account_id": 9002,
+    "mule_score": 99.98904084661704,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380188",
+    "account_id": 9003,
+    "mule_score": 99.99089333379015,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380307",
+    "account_id": 9004,
+    "mule_score": 99.96562354849074,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380411",
+    "account_id": 9005,
+    "mule_score": 99.9721970296004,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380513",
+    "account_id": 9006,
+    "mule_score": 99.98840711531848,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380614",
+    "account_id": 9007,
+    "mule_score": 99.93686222036466,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380713",
+    "account_id": 9008,
+    "mule_score": 99.98840796677808,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380818",
+    "account_id": 9009,
+    "mule_score": 99.97910040049312,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.380936",
+    "account_id": 9010,
+    "mule_score": 99.9509023906502,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381062",
+    "account_id": 9011,
+    "mule_score": 99.97634670732472,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381179",
+    "account_id": 9012,
+    "mule_score": 99.9631240426931,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381298",
+    "account_id": 9013,
+    "mule_score": 99.96484673695475,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381458",
+    "account_id": 9014,
+    "mule_score": 99.97644469400196,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381581",
+    "account_id": 9015,
+    "mule_score": 99.97616698639531,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381731",
+    "account_id": 9016,
+    "mule_score": 99.98626749300551,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381867",
+    "account_id": 9017,
+    "mule_score": 99.98093614026592,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.381972",
+    "account_id": 9018,
+    "mule_score": 99.9776865893862,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382072",
+    "account_id": 9019,
+    "mule_score": 99.97565869364831,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382177",
+    "account_id": 9020,
+    "mule_score": 99.9856023135991,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382279",
+    "account_id": 9021,
+    "mule_score": 99.90119898663232,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382380",
+    "account_id": 9022,
+    "mule_score": 99.98136387810383,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382486",
+    "account_id": 9023,
+    "mule_score": 99.98974755448586,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382593",
+    "account_id": 9024,
+    "mule_score": 99.97907889946087,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382699",
+    "account_id": 9025,
+    "mule_score": 99.9907159169594,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382808",
+    "account_id": 9026,
+    "mule_score": 99.953650991082,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.382913",
+    "account_id": 9027,
+    "mule_score": 99.91096989768948,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383016",
+    "account_id": 9028,
+    "mule_score": 99.9925904138228,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383118",
+    "account_id": 9029,
+    "mule_score": 99.96296063299776,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383223",
+    "account_id": 9030,
+    "mule_score": 99.91907272069082,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383329",
+    "account_id": 9031,
+    "mule_score": 99.9644037180697,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383496",
+    "account_id": 9032,
+    "mule_score": 99.9638598445866,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383609",
+    "account_id": 9033,
+    "mule_score": 99.99277726937682,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383720",
+    "account_id": 9034,
+    "mule_score": 99.98938197745116,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383825",
+    "account_id": 9035,
+    "mule_score": 99.9671243155861,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.383932",
+    "account_id": 9036,
+    "mule_score": 99.98512680739655,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384063",
+    "account_id": 9037,
+    "mule_score": 99.97713206833932,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384173",
+    "account_id": 9038,
+    "mule_score": 99.9905941634085,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384279",
+    "account_id": 9039,
+    "mule_score": 99.94489486665778,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384385",
+    "account_id": 9040,
+    "mule_score": 99.95670737879485,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384491",
+    "account_id": 9041,
+    "mule_score": 99.99066574568042,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384600",
+    "account_id": 9042,
+    "mule_score": 99.9884828258143,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384707",
+    "account_id": 9043,
+    "mule_score": 99.94837195209986,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384817",
+    "account_id": 9044,
+    "mule_score": 99.9867922731061,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.384927",
+    "account_id": 9045,
+    "mule_score": 99.97190934900917,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385040",
+    "account_id": 9046,
+    "mule_score": 99.98514427786846,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385157",
+    "account_id": 9047,
+    "mule_score": 99.92310871217003,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385263",
+    "account_id": 9048,
+    "mule_score": 99.96324816768586,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385367",
+    "account_id": 9049,
+    "mule_score": 99.99420219430452,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385531",
+    "account_id": 9050,
+    "mule_score": 99.9622492394774,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385646",
+    "account_id": 9051,
+    "mule_score": 99.9541059008173,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385756",
+    "account_id": 9052,
+    "mule_score": 99.97290772469476,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.385895",
+    "account_id": 9053,
+    "mule_score": 99.96445373121148,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386021",
+    "account_id": 9054,
+    "mule_score": 99.98695448360408,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386140",
+    "account_id": 9055,
+    "mule_score": 99.9764608023366,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386253",
+    "account_id": 9056,
+    "mule_score": 99.98615773069297,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386375",
+    "account_id": 9057,
+    "mule_score": 99.9295070964546,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386498",
+    "account_id": 9058,
+    "mule_score": 99.98751697043666,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386620",
+    "account_id": 9059,
+    "mule_score": 99.91162063709471,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386733",
+    "account_id": 9060,
+    "mule_score": 99.9638870804016,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386846",
+    "account_id": 9061,
+    "mule_score": 99.99192611753908,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.386962",
+    "account_id": 9062,
+    "mule_score": 99.99094386318936,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.387075",
+    "account_id": 9063,
+    "mule_score": 99.94776779678163,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.387185",
+    "account_id": 9064,
+    "mule_score": 99.99100785450462,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.387297",
+    "account_id": 9065,
+    "mule_score": 99.96881854981896,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.388012",
+    "account_id": 9066,
+    "mule_score": 99.94980527599768,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.388375",
+    "account_id": 9067,
+    "mule_score": 99.87322677905354,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.388573",
+    "account_id": 9068,
+    "mule_score": 99.96774575486894,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.388738",
+    "account_id": 9069,
+    "mule_score": 99.96689849610684,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.388881",
+    "account_id": 9070,
+    "mule_score": 99.97032127185884,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389011",
+    "account_id": 9071,
+    "mule_score": 99.98089018574504,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389196",
+    "account_id": 9072,
+    "mule_score": 99.95369427496178,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389335",
+    "account_id": 9073,
+    "mule_score": 99.99148462000689,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389459",
+    "account_id": 9074,
+    "mule_score": 99.98979095270798,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389587",
+    "account_id": 9075,
+    "mule_score": 99.98700751578583,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389702",
+    "account_id": 9076,
+    "mule_score": 99.9469310903699,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389817",
+    "account_id": 9077,
+    "mule_score": 99.8893250418742,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.389949",
+    "account_id": 9078,
+    "mule_score": 99.88411182591317,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.390061",
+    "account_id": 9079,
+    "mule_score": 99.99178157349088,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.390167",
+    "account_id": 9080,
+    "mule_score": 99.94356406617288,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  },
+  {
+    "timestamp": "2026-08-20T10:57:40.390272",
+    "account_id": 9081,
+    "mule_score": 99.95109141637886,
+    "severity": "CRITICAL",
+    "recommended_action": "AUTO-HOLD: temporary step-up verification on large outgoing transfers (reversible, not a freeze) \u2014 pending same-day review",
+    "status": "OPEN",
+    "investigator_id": null,
+    "notes": ""
+  }
+]

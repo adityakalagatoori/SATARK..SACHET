@@ -1,0 +1,10 @@
+# Production-track dependencies, separate from the prototype's requirements.txt.
+# Base ML dependencies (lightgbm, catboost, shap, scikit-learn, pandas, numpy,
+# joblib, flask) are inherited from the repo root requirements.txt — install
+# both when running production code: pip install -r requirements.txt -r production/requirements.txt
+
+cryptography>=42.0.0    # field-level encryption (governance/encryption.py)
+kafka-python>=2.0.2     # KafkaEventBus (serving/event_bus.py) — needs a live broker to run
+redis>=5.0.0            # RedisFeatureStore (feature_pipeline/feature_store.py) — needs a live Redis to run
+pytest>=8.0.0           # test suite (tests/)
+scipy>=1.11.0           # drift_monitor.py's underlying stats (via numpy, already a transitive dep)

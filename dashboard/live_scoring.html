@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACHET — Live Scoring</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0021'/%3E%3Cpath d='M20 42c4 4 20 5 22-3 2-9-18-7-17-15 1-6 13-8 19-3' stroke='%23A855F7' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('sachet-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<style>
+  :root{
+    --bg-0:#f3edff; --bg-1:#ffffff; --panel:rgba(255,255,255,.62);
+    --panel-solid:#ffffff;
+    --accent:#7c3aed; --accent-lo:#4C0099; --accent-hi:#A855F7;
+    --lilac:#8b2fe0; --paper:#2d1155; --ink:#241238; --muted:#6b5b8a;
+    --ok:#15803d; --danger:#DC2626; --warn:#b45309;
+    --crit:#dc2626; --high:#c2620a; --med:#946800; --low:#1d4ed8;
+    --line:rgba(124,58,237,.25);
+    --glass-blur:18px;
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 32px rgba(124,58,237,.16);
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg-0:#0d0021; --bg-1:#160230; --panel:rgba(255,255,255,.08); --panel-solid:#160230;
+    --lilac:#c9a6fb; --paper:#EDE9FE; --ink:#e0e0e0; --muted:#9b93ad;
+    --ok:#4ade80; --danger:#f87171; --warn:#fbbf24;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --low:#60a5fa;
+    --line:rgba(168,85,247,.35);
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 32px rgba(0,0,0,.45);
+  }
+  :root[data-theme="dark"] header{background:rgba(22,2,48,.78)}
+  :root[data-theme="dark"] .banner{color:#fbbf24}
+  :root[data-theme="dark"] .banner.bad{color:#f87171}
+  :root[data-theme="dark"] .banner.good{color:#4ade80}
+  :root[data-theme="dark"] input,:root[data-theme="dark"] select{background:rgba(255,255,255,.06);color:var(--paper);border-color:var(--line)}
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:7px;background:transparent;cursor:pointer;
+    font-size:15px;line-height:1;color:var(--muted);
+  }
+  .theme-toggle:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(124,58,237,.16), transparent 60%),
+      linear-gradient(180deg,var(--bg-0),var(--bg-1) 55%);
+    background-attachment:fixed;
+    color:var(--ink);font-size:14px;line-height:1.55;min-height:100vh;
+  }
+  a{color:var(--lilac)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
+  header{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:16px 20px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.68);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    box-shadow:0 4px 24px rgba(124,58,237,.08);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{font-size:19px;font-weight:800;color:var(--accent-hi);letter-spacing:.04em;text-decoration:none}
+  .brand small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .hdr-nav{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hdr-nav a{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
+    color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:7px;
+  }
+  .hdr-nav a:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  .hdr-nav a.active{color:var(--accent);border-color:var(--accent);background:rgba(124,58,237,.1)}
+  h1{font-size:22px;color:var(--paper);margin:28px 0 6px;font-weight:800}
+  h2{font-size:15px;color:var(--paper);margin:26px 0 8px;font-weight:700}
+  p.lede{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:8px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin-top:16px;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  input[type=file]{
+    flex:1;min-width:220px;background:#fff;border:1px dashed var(--line);border-radius:8px;padding:10px;font-size:12.5px;
+  }
+  input[type=text]{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;min-width:220px}
+  label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:5px}
+  button.primary{
+    background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 20px;font-size:13px;font-weight:700;
+    cursor:pointer;letter-spacing:.02em;
+  }
+  button.primary:hover{background:var(--accent-lo)}
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  .banner{
+    margin:14px 0;padding:13px 16px;border-radius:9px;font-size:13px;
+    border-left:4px solid var(--warn);background:rgba(245,158,11,.1);color:#7a4a06;
+  }
+  .banner.bad{border-left-color:var(--danger);background:rgba(220,38,38,.09);color:#9c1c1c}
+  .banner.good{border-left-color:var(--ok);background:rgba(21,128,61,.09);color:#136330}
+  .banner b{color:var(--paper)}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+  .stat{background:rgba(124,58,237,.06);border:1px solid var(--line);border-radius:9px;padding:12px}
+  .stat b{display:block;font-family:var(--mono);font-size:20px;color:var(--paper)}
+  .stat span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .stat.crit b{color:var(--crit)} .stat.high b{color:var(--high)} .stat.med b{color:var(--med)} .stat.low b{color:var(--low)}
+  progress{width:100%;height:8px;border-radius:6px;overflow:hidden;accent-color:var(--accent);margin-top:6px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .actions a.button{
+    display:inline-block;background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:8px;
+    padding:9px 16px;font-size:12.5px;font-weight:700;text-decoration:none;
+  }
+  .actions a.button:hover{color:#fff;background:var(--accent)}
+  ul.notes{margin:8px 0 0 18px;font-size:12px;color:var(--muted);line-height:1.7}
+  code{font-family:var(--mono);font-size:11.5px;background:rgba(124,58,237,.08);padding:1px 5px;border-radius:4px}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.7}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="landing.html">SACHET <small>Live Scoring</small></a>
+  <div class="hdr-nav">
+    <a href="landing.html">Overview</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="account_universe.html">Account Universe</a>
+    <a href="investigator.html">Investigator Console</a>
+    <a href="live_scoring.html" class="active">Live Scoring</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light/dark theme">🌙</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>Score a new dataset</h1>
+  <p class="lede">
+    Upload a CSV with the same raw column schema as the competition dataset (the 3,924 F-columns;
+    <code>F3924</code> ground-truth is optional — include it to see accuracy metrics, omit it to score
+    an unlabeled file). This runs the <b>full bundled ensemble</b> — all 5 supervised models, the
+    meta-learner, the Stage-2 cascade, the whole-population triage clusters, and per-account SHAP —
+    via <code>production/serving/score_new_dataset.py</code>, not the single-model shortcut.
+  </p>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:14px">
+      <div>
+        <label for="api-base">API server</label>
+        <input type="text" id="api-base" value="http://localhost:8080" placeholder="http://localhost:8080">
+      </div>
+      <div style="flex:2">
+        <label for="file-input">CSV file</label>
+        <input type="file" id="file-input" accept=".csv">
+      </div>
+    </div>
+    <div class="row">
+      <label style="display:flex;align-items:center;gap:6px;margin:0">
+        <input type="checkbox" id="shap-check" checked style="width:auto"> Compute SHAP explanations (slower, needed for the 3D view)
+      </label>
+    </div>
+    <div class="actions">
+      <button class="primary" id="score-btn" type="button">Score Dataset</button>
+    </div>
+    <div id="progress" style="display:none;margin-top:14px">
+      <div class="banner">Scoring in progress — this runs all 5 models + meta-learner + cascade + clustering
+        (and SHAP, if checked) over every row. Larger files take longer; do not close this tab.</div>
+      <progress></progress>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <h2>What happens to your upload</h2>
+  <ul class="notes">
+    <li>Every upload gets its own id (e.g. <code>upload_20260823_1430</code>) and its own stored result — a new
+      upload never overwrites a previous one.</li>
+    <li>Once scored, the dataset becomes selectable in the <a href="investigator.html">Investigator Console</a>'s
+      dataset dropdown, and each account's row links to a real 3D risk-fingerprint view.</li>
+    <li>If the uploaded file's columns don't match the trained schema, scoring is refused with the exact column
+      diff rather than silently producing a misleading result.</li>
+    <li>If the file has no <code>F3924</code> label column, accuracy metrics (AUC-PR etc.) are not shown — they
+      cannot be honestly computed without ground truth, and are never fabricated.</li>
+  </ul>
+
+  <footer>
+    <b>SACHET — Team SATARK.</b> This page calls <code>POST /api/score-dataset</code> on the production API
+    server (<code>production/serving/api.py</code>) — start it separately, e.g.
+    <code>python production/serving/api.py</code> (defaults to port 8080; if that collides with the static file
+    server serving this dashboard, run the API on another port and update the "API server" field above).
+  </footer>
+</div>
+
+<script>
+(function(){
+  var icon = () => document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+  var btn = document.getElementById('theme-toggle');
+  btn.textContent = icon();
+  btn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('sachet-theme', next); }catch(e){}
+    btn.textContent = icon();
+  });
+})();
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.getElementById('score-btn').addEventListener('click', () => {
+  const fileInput = document.getElementById('file-input');
+  const apiBase = document.getElementById('api-base').value.replace(/\/$/, '');
+  const wantShap = document.getElementById('shap-check').checked;
+  const resultEl = document.getElementById('result');
+  const progressEl = document.getElementById('progress');
+  const btn = document.getElementById('score-btn');
+
+  resultEl.innerHTML = '';
+  if (!fileInput.files.length){
+    resultEl.innerHTML = '<div class="banner bad"><b>No file selected.</b> Choose a CSV file first.</div>';
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('file', fileInput.files[0]);
+
+  btn.disabled = true;
+  progressEl.style.display = '';
+
+  fetch(apiBase + '/api/score-dataset?shap=' + (wantShap ? 'true' : 'false'), {
+    method: 'POST', body: fd
+  })
+    .then(r => r.json().then(body => ({ ok: r.ok, status: r.status, body })))
+    .then(({ ok, status, body }) => {
+      progressEl.style.display = 'none';
+      btn.disabled = false;
+      if (!ok){
+        resultEl.innerHTML = `<div class="banner bad"><b>Scoring failed (HTTP ${status}).</b><br>` +
+          `${esc(body.error || 'unknown error')}: ${esc(body.detail || '')}</div>`;
+        return;
+      }
+      const s = body.summary;
+      const tc = s.tier_counts || {};
+      const metricsHtml = s.metrics
+        ? `<div class="banner good"><b>Ensemble AUC-PR:</b> ${s.metrics.main_ensemble_auc_pr.toFixed(4)} · ` +
+          `<b>ROC-AUC:</b> ${s.metrics.main_ensemble_roc_auc.toFixed(4)} · <b>Mules in file:</b> ${s.metrics.n_mules}` +
+          `<br><span style="font-size:11px">Computed against this file's own F3924 column — in-sample against the ` +
+          `already-deployed models, not a fresh out-of-fold run.</span></div>`
+        : `<div class="banner"><b>No ground-truth column found</b> — accuracy metrics are not computable and are ` +
+          `not shown. Scores below are still real model output.</div>`;
+      resultEl.innerHTML = `
+        <div class="banner good"><b>Scored ${s.n_accounts.toLocaleString()} accounts</b> as
+          <code>${esc(s.upload_id)}</code>.</div>
+        ${metricsHtml}
+        <div class="stat-grid">
+          <div class="stat crit"><b>${tc.CRITICAL || 0}</b><span>Critical</span></div>
+          <div class="stat high"><b>${tc.HIGH || 0}</b><span>High</span></div>
+          <div class="stat med"><b>${tc.MEDIUM || 0}</b><span>Medium</span></div>
+          <div class="stat low"><b>${tc.LOW || 0}</b><span>Low</span></div>
+          <div class="stat"><b>${tc.NONE || 0}</b><span>No alert</span></div>
+        </div>
+        <div class="actions">
+          <a class="button" href="investigator.html">View in Investigator Console →</a>
+        </div>`;
+    })
+    .catch(err => {
+      progressEl.style.display = 'none';
+      btn.disabled = false;
+      resultEl.innerHTML = `<div class="banner bad"><b>Could not reach the API server</b> — ${esc(err.message)}.<br>` +
+        `Make sure <code>python production/serving/api.py</code> is running and reachable at the "API server" ` +
+        `address above (CORS is already enabled on the server for this).</div>`;
+    });
+});
+</script>
+</body>
+</html>

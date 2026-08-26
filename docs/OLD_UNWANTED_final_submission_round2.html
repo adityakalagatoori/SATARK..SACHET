@@ -1,0 +1,1131 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SACHET by Team SATARK — PSB Cybersecurity, Fraud &amp; AI Hackathon 2026 | Problem Statement 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Space Grotesk',Arial,sans-serif; font-size:8.5pt; line-height:1.35; color:#1A0035; background:#fff; }
+
+/* â”€â”€ VIOLET â†’ BLACK COLOR SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   #0D0021 near-black Â· #1A0035 deep violet-black Â· #2E0052 dark violet
+   #4C0099 mid violet Â· #6B21A8 brand violet Â· #7C3AED bright violet
+   #A855F7 light violet Â· #C084FC pale violet Â· #EDE9FE tint
+   #F59E0B amber/gold accent
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.page { position:relative; width:210mm; padding:9mm 10mm 7mm; page-break-after:always; page-break-inside:avoid;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='97' fill='none' stroke='%23C084FC' stroke-width='2' opacity='0.22'/%3E%3Ccircle cx='100' cy='100' r='77' fill='none' stroke='%237C3AED' stroke-width='2' opacity='0.19'/%3E%3Ccircle cx='100' cy='100' r='57' fill='none' stroke='%234C0099' stroke-width='2' opacity='0.16'/%3E%3Ccircle cx='100' cy='100' r='42' fill='%232E0052' opacity='0.06'/%3E%3Ccircle cx='100' cy='100' r='15' fill='%23F59E0B' opacity='0.26'/%3E%3Cline x1='4' y1='100' x2='196' y2='100' stroke='%23A855F7' stroke-width='1' opacity='0.14'/%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-size:88%; background-position:center center; }
+.page:last-child { page-break-after:auto; }
+
+h2 { font-size:10pt; color:#2E0052; font-weight:700;
+     border-bottom:1.5px solid #7C3AED; padding-bottom:2px; margin:5px 0 3px; }
+h3 { font-size:8.5pt; color:#2E0052; font-weight:700; margin:2px 0 2px; }
+
+table { width:100%; border-collapse:collapse; font-size:7.5pt; margin:3px 0; }
+/* â”€â”€ GLASS UTILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   Dark glass: semi-transparent violet-black with blur + edge highlight
+   Light glass: frosted pale violet with translucency
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+th { background:linear-gradient(90deg,rgba(46,0,82,0.88),rgba(13,0,33,0.88));
+     color:#fff; padding:3px 5px; text-align:left; font-size:7pt; font-weight:700;
+     backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+     box-shadow:inset 0 1px 0 rgba(255,255,255,0.09); }
+td { padding:2px 5px; border-bottom:1px solid rgba(228,217,245,0.55); vertical-align:top; color:#1A0035; }
+tr:nth-child(even) td { background:rgba(248,244,255,0.42); }
+tr.hl td { background:rgba(237,233,254,0.6); font-weight:700; color:#2E0052; }
+
+.crisis { background:linear-gradient(135deg,rgba(26,0,53,0.80),rgba(13,0,33,0.80)); color:#fff;
+          border-radius:6px; padding:5px 6px;
+          display:flex; justify-content:space-around; align-items:center; margin:4px 0;
+          backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+          border:1px solid rgba(192,132,252,0.22);
+          box-shadow:0 6px 24px rgba(0,0,33,0.28), inset 0 1px 0 rgba(255,255,255,0.08); }
+.cs { text-align:center; }
+.cs .n { display:block; font-size:13pt; font-weight:900; color:#F59E0B; }
+.cs .l { display:block; font-size:6pt; color:#D8B4FE; }
+
+.two   { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.three { display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; }
+.four  { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin:4px 0; }
+
+.rc { background:linear-gradient(145deg,rgba(46,0,82,0.78),rgba(13,0,33,0.78)); color:#fff;
+      border-radius:6px; padding:5px 6px; text-align:center;
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(192,132,252,0.2);
+      box-shadow:0 4px 16px rgba(0,0,33,0.22), inset 0 1px 0 rgba(255,255,255,0.07); }
+.rc .v { display:block; font-size:14pt; font-weight:900; color:#F59E0B; }
+.rc .l { display:block; font-size:6.5pt; color:#D8B4FE; }
+.rc .s { display:block; font-size:6pt; color:#C084FC; }
+
+.box-r { background:rgba(255,240,240,0.55); border:1.5px solid rgba(192,0,0,0.4);
+         border-radius:4px; padding:4px 6px;
+         backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+         box-shadow:0 2px 8px rgba(192,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5); }
+.box-g { background:rgba(240,255,244,0.55); border:1.5px solid rgba(27,94,32,0.4);
+         border-radius:4px; padding:4px 6px;
+         backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+         box-shadow:0 2px 8px rgba(27,94,32,0.08), inset 0 1px 0 rgba(255,255,255,0.5); }
+.box-b { background:rgba(245,240,255,0.5); border:1.5px solid rgba(107,33,168,0.35);
+         border-radius:4px; padding:4px 6px;
+         backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+         box-shadow:0 2px 10px rgba(76,0,153,0.1), inset 0 1px 0 rgba(255,255,255,0.55); }
+.box-y { background:rgba(255,253,231,0.55); border:1.5px solid rgba(184,134,11,0.4);
+         border-radius:4px; padding:4px 6px;
+         backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+         box-shadow:0 2px 8px rgba(184,134,11,0.08), inset 0 1px 0 rgba(255,255,255,0.5); }
+
+.model-a { background:rgba(245,240,255,0.48); border:1.5px solid rgba(46,0,82,0.28);
+           border-radius:4px; padding:4px 6px;
+           backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+           box-shadow:0 3px 12px rgba(46,0,82,0.1), inset 0 1px 0 rgba(255,255,255,0.6); }
+.model-b { background:rgba(237,233,254,0.48); border:1.5px solid rgba(76,0,153,0.28);
+           border-radius:4px; padding:4px 6px;
+           backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+           box-shadow:0 3px 12px rgba(76,0,153,0.1), inset 0 1px 0 rgba(255,255,255,0.55); }
+.model-c { background:rgba(233,213,255,0.48); border:1.5px solid rgba(124,58,237,0.28);
+           border-radius:4px; padding:4px 6px;
+           backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+           box-shadow:0 3px 12px rgba(124,58,237,0.1), inset 0 1px 0 rgba(255,255,255,0.5); }
+
+.sbar { background:linear-gradient(135deg,rgba(26,0,53,0.82),rgba(76,0,153,0.82)); color:#fff;
+        padding:4px 8px; border-radius:4px; font-size:10.5pt; font-weight:700;
+        display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;
+        letter-spacing:0.3px;
+        backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+        border:1px solid rgba(168,85,247,0.3);
+        box-shadow:0 4px 16px rgba(0,0,33,0.22), inset 0 1px 0 rgba(255,255,255,0.1); }
+.sbar .pn { font-size:7pt; opacity:.75; font-weight:400; }
+
+.inno { display:flex; gap:6px; margin:2px 0; padding:3px 6px;
+        background:rgba(248,244,255,0.48); border-left:3px solid rgba(107,33,168,0.7);
+        font-size:7.5pt;
+        backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+        box-shadow:0 2px 8px rgba(76,0,153,0.07), inset 0 1px 0 rgba(255,255,255,0.55);
+        border-radius:0 3px 3px 0; }
+.inn  { font-weight:900; color:#7C3AED; font-size:10pt; min-width:14px; line-height:1; }
+
+.flow { display:flex; align-items:stretch; gap:2px; margin:3px 0; }
+.fs { background:linear-gradient(135deg,rgba(46,0,82,0.80),rgba(13,0,33,0.80)); color:#fff;
+      border-radius:3px; padding:3px 5px; font-size:6.5pt; font-weight:600;
+      flex:1; text-align:center; line-height:1.3;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      border:1px solid rgba(168,85,247,0.2);
+      box-shadow:0 2px 8px rgba(0,0,33,0.18), inset 0 1px 0 rgba(255,255,255,0.07); }
+.fa { color:#7C3AED; font-size:12pt; font-weight:900; display:flex; align-items:center; }
+
+.check { color:#4C0099; font-weight:900; }
+.cross { color:#b71c1c; font-weight:900; }
+.badge { display:inline-block; background:rgba(245,158,11,0.92); color:#1A0035; font-size:5.5pt;
+         font-weight:900; padding:1px 4px; border-radius:2px; margin-left:3px;
+         text-transform:uppercase; vertical-align:middle; letter-spacing:0.3px;
+         box-shadow:0 1px 4px rgba(245,158,11,0.3); }
+
+.tiny  { font-size:6.5pt; color:#4B3566; }
+.sm    { font-size:7.5pt; }
+.bold  { font-weight:700; }
+.footer { font-size:6pt; color:#7C3AED; border-top:1px solid #C4B5FD;
+          padding-top:3px; margin-top:5px; }
+
+@media print {
+  *, *::before, *::after { box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .page { background-image:none !important; }
+  @page { size:A4; margin:0; }
+  body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .page { page-break-after:always; }
+  /* backdrop-filter unsupported in PDF — override with fully opaque dark backgrounds for white-text elements */
+  .crisis { background:rgb(15,2,38) !important;
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .rc     { background:rgb(20,2,43) !important;
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .sbar   { background:rgb(28,1,55) !important;
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .fs     { background:rgb(20,2,42) !important;
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  th      { background:rgb(20,2,42) !important;
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .model-a,.model-b,.model-c,.box-b,.box-r,.box-g,.box-y,.inno {
+            backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+  .model-a { background:rgba(245,240,255,0.72) !important; }
+  .model-b { background:rgba(237,233,254,0.72) !important; }
+  .model-c { background:rgba(233,213,255,0.72) !important; }
+  [style*="linear-gradient(90deg,rgba(245,158,11,0.13),rgba(245,158,11,0.07))"] { background-image:none !important; background-color:rgba(245,158,11,0.1) !important; }
+  [style*="linear-gradient(90deg,rgba(107,33,168,0.08),rgba(124,58,237,0.04))"] { background-image:none !important; background-color:rgba(116,46,202,0.06) !important; }
+  [style*="linear-gradient(135deg,rgba(107,33,168,0.10),rgba(76,0,153,0.06))"] { background-image:none !important; background-color:rgba(92,16,160,0.08) !important; }
+  [style*="linear-gradient(90deg,rgba(76,0,153,0.08),rgba(107,33,168,0.04))"] { background-image:none !important; background-color:rgba(92,16,160,0.06) !important; }
+  [style*="linear-gradient(135deg,rgba(46,0,82,0.07),rgba(124,58,237,0.06))"] { background-image:none !important; background-color:rgba(85,29,160,0.065) !important; }
+  [style*="linear-gradient(90deg,rgba(220,38,38,0.07),rgba(22,163,74,0.06))"] { background-image:none !important; background-color:rgba(121,100,56,0.065) !important; }
+  [style*="linear-gradient(90deg,rgba(46,0,82,0.07),rgba(124,58,237,0.05))"] { background-image:none !important; background-color:rgba(85,29,160,0.06) !important; }
+  [style*="linear-gradient(135deg,rgba(76,0,153,0.10),rgba(46,0,82,0.06))"] { background-image:none !important; background-color:rgba(61,0,118,0.08) !important; }
+  [style*="linear-gradient(135deg,rgba(26,0,53,0.92),rgba(76,0,153,0.92))"] { background-image:none !important; background-color:rgba(51,0,103,0.92) !important; }
+  [style*="linear-gradient(135deg,rgba(76,0,153,0.12),rgba(46,0,82,0.08))"] { background-image:none !important; background-color:rgba(61,0,118,0.1) !important; }
+  [style*="linear-gradient(135deg,rgba(26,0,53,0.88),rgba(76,0,153,0.88))"] { background-image:none !important; background-color:rgba(51,0,103,0.88) !important; }
+  [style*="linear-gradient(135deg,rgba(26,0,53,0.82),rgba(76,0,153,0.82))"] { background-image:none !important; background-color:rgba(51,0,103,0.82) !important; }
+  [style*="linear-gradient(90deg,rgba(46,0,82,0.08),rgba(76,0,153,0.04))"] { background-image:none !important; background-color:rgba(61,0,118,0.06) !important; }
+  [style*="linear-gradient(135deg,rgba(46,0,82,0.80),rgba(13,0,33,0.80))"] { background-image:none !important; background-color:rgba(30,0,58,0.8) !important; }
+  [style*="linear-gradient(135deg,rgba(26,0,53,0.80),rgba(13,0,33,0.80))"] { background-image:none !important; background-color:rgba(20,0,43,0.8) !important; }
+  [style*="linear-gradient(145deg,rgba(46,0,82,0.78),rgba(13,0,33,0.78))"] { background-image:none !important; background-color:rgba(30,0,58,0.78) !important; }
+  [style*="linear-gradient(135deg,rgba(46,0,82,0.10),rgba(13,0,33,0.06))"] { background-image:none !important; background-color:rgba(30,0,58,0.08) !important; }
+  [style*="linear-gradient(90deg,rgba(46,0,82,0.88),rgba(13,0,33,0.88))"] { background-image:none !important; background-color:rgba(30,0,58,0.88) !important; }
+  [style*="linear-gradient(135deg,#7C3AED,#4C0099)"] { background-image:none !important; background-color:rgb(100,29,195) !important; }
+  [style*="linear-gradient(135deg,#8B4FF0,#5C0CB8)"] { background-image:none !important; background-color:rgb(116,46,212) !important; }
+  [style*="linear-gradient(135deg,#2E0052,#0D0021)"] { background-image:none !important; background-color:rgb(30,0,58) !important; }
+  [style*="linear-gradient(180deg,#7C3AED,#C084FC)"] { background-image:none !important; background-color:rgb(158,95,244) !important; }
+  [style*="linear-gradient(180deg,#2E0052,#6B21A8)"] { background-image:none !important; background-color:rgb(76,16,125) !important; }
+  [style*="linear-gradient(135deg,#2E0052,#4C0099)"] { background-image:none !important; background-color:rgb(61,0,118) !important; }
+  [style*="linear-gradient(90deg,#F59E0B,#D97706)"] { background-image:none !important; background-color:rgb(231,138,8) !important; }
+  [style*="linear-gradient(90deg,#A855F7,#C084FC)"] { background-image:none !important; background-color:rgb(180,108,250) !important; }
+  [style*="linear-gradient(90deg,#7C3AED,#A855F7)"] { background-image:none !important; background-color:rgb(146,72,242) !important; }
+  [style*="linear-gradient(90deg,#2E0052,#4C0099)"] { background-image:none !important; background-color:rgb(61,0,118) !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE 1: THE PRODUCT ===== -->
+<div class="page" id="page1">
+  <!-- Prototype disclaimer banner -->
+  <div style="background:linear-gradient(90deg,rgba(245,158,11,0.13),rgba(245,158,11,0.07));border:1px solid rgba(245,158,11,0.45);border-radius:5px;padding:5px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;">
+    <span style="flex-shrink:0;background:#F59E0B;color:#1A0035;font-size:6pt;font-weight:900;letter-spacing:0.7px;padding:2px 7px;border-radius:10px;text-transform:uppercase;">Research Prototype</span>
+    <span style="font-size:7pt;color:#92400E;line-height:1.5;">All metrics and results presented in this document are <strong>initial findings generated during prototype development</strong> using the methods described herein. They represent a proof-of-concept methodology demonstration on the provided competition dataset — not a validated, production-deployed product.</span>
+  </div>
+
+  <!-- Logo + Header -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+
+    <!-- Iconic mark + wordmark -->
+    <div style="display:flex;align-items:center;gap:14px;">
+
+      <!-- SACHET Icon: Eye of Detection — outer lens, iris, pupil (gold = the insight) -->
+      <div style="position:relative;width:52px;height:52px;flex-shrink:0;">
+        <!-- Outer ring: palest violet -->
+        <div style="position:absolute;inset:0;border-radius:50%;border:2.5px solid #C084FC;"></div>
+        <!-- Mid ring -->
+        <div style="position:absolute;inset:9px;border-radius:50%;border:2.5px solid #7C3AED;"></div>
+        <!-- Inner ring -->
+        <div style="position:absolute;inset:18px;border-radius:50%;border:2.5px solid #4C0099;"></div>
+        <!-- Filled core: deep violet -->
+        <div style="position:absolute;inset:24px;border-radius:50%;background:linear-gradient(135deg,#2E0052,#0D0021);"></div>
+        <!-- Gold pupil — what SACHET sees -->
+        <div style="position:absolute;inset:28px;border-radius:50%;background:#F59E0B;box-shadow:0 0 4px #F59E0B;"></div>
+        <!-- Horizontal scan line through the circle -->
+        <div style="position:absolute;top:50%;left:4px;right:4px;height:1px;background:linear-gradient(90deg,transparent,#A855F7,transparent);transform:translateY(-50%);"></div>
+      </div>
+
+      <!-- Wordmark -->
+      <div>
+        <div style="font-family:'Space Grotesk',Arial,sans-serif;font-size:29pt;font-weight:800;
+                    color:#1A0035;letter-spacing:7px;line-height:1;margin-bottom:2px;">SACHET</div>
+        <div style="font-size:6.5pt;font-weight:700;color:#7C3AED;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:3px;">by Team SATARK</div>
+        <div style="font-size:8.5pt;font-weight:600;color:#2E0052;letter-spacing:0.2px;line-height:1.3;">
+          We find the mules your AI missed.&nbsp;<span style="color:#F59E0B;font-weight:800;">79% recall in the top 100 accounts.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competition info -->
+    <div style="text-align:right;font-size:6.5pt;color:#6B21A8;line-height:1.8;white-space:nowrap;">
+      <span style="font-weight:700;color:#2E0052;">Bank of India &times; IIT Hyderabad</span>&ensp;|&ensp;PSB Hackathon 2026<br>
+      <span style="color:#4C0099;font-weight:700;">PS-2:</span>&ensp;AI/ML mule detection &middot; TMS alerts &middot; fraud tickets<br>
+      cross-channel bank data &middot; real-time regulatory feeds<br>
+      <a href="https://github.com/adityakalagatoori/SATARK" style="color:#7C3AED;font-weight:700;text-decoration:none;">github.com/adityakalagatoori/SATARK</a>
+      &ensp;|&ensp;
+      <a href="https://github.com/adityakalagatoori/SATARK/blob/main/docs/submission.html" style="color:#7C3AED;font-weight:700;text-decoration:none;">Full Technical Report &#8594;</a>
+    </div>
+
+  </div>
+  <div style="text-align:right;font-size:6.3pt;color:#4C0099;line-height:1.6;margin-top:-3px;margin-bottom:2px;">
+    Kritika Pandey (AI/ML, United College of Engineering and Research, Prayagraj) &middot;
+    Vaishnav Aditya (Cyber Security, Amrita Vishwa Vidyapeetham, Chennai)
+  </div>
+  <!-- Gradient separator -->
+  <div style="height:1.5px;background:linear-gradient(90deg,#4C0099,#A855F7,#C084FC,transparent);margin-bottom:5px;border-radius:1px;"></div>
+
+  <!-- The Gap | SATARK's Fix | Key Result — 3-panel strip -->
+  <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:0;border-radius:7px;overflow:hidden;margin-bottom:5px;border:1.5px solid rgba(192,132,252,0.28);box-shadow:0 4px 18px rgba(0,0,33,0.18);">
+    <div style="background:rgba(255,238,238,0.88);padding:7px 11px;border-right:1px solid rgba(220,38,38,0.15);">
+      <div style="font-size:6pt;font-weight:900;color:#DC2626;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:3px;">The Gap — Every Existing System</div>
+      <div style="font-size:7.5pt;color:#7F1D1D;line-height:1.6;">Treats 9,001 uninvestigated accounts as <strong>confirmed clean</strong>. Model trains on corrupted negatives â†’ permanently scores hidden mules as legitimate. MuleHunter.AI, rule-based TMS, standard classifiers — all share this assumption.</div>
+    </div>
+    <div style="background:rgba(238,255,243,0.88);padding:7px 11px;border-right:1px solid rgba(22,163,74,0.18);">
+      <div style="font-size:6pt;font-weight:900;color:#16A34A;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:3px;">SACHET — Positive-Unlabeled Learning</div>
+      <div style="font-size:7.5pt;color:#14532D;line-height:1.6;">Treats 9,001 accounts as <strong>unlabeled</strong>, not confirmed clean (Kiryo et al., NeurIPS 2017). Produces mathematically unbiased P(mule) even when the "negative" set is contaminated.</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(26,0,53,0.92),rgba(76,0,153,0.92));padding:7px 16px;display:flex;flex-direction:column;justify-content:center;text-align:center;min-width:110px;">
+      <div style="font-size:11pt;font-weight:900;color:#F59E0B;line-height:1.1;">P@100 = 0.64</div>
+      <div style="font-size:6pt;color:#D8B4FE;margin-top:2px;line-height:1.4;">64 of 81 mules<br>in top 100 alerts</div>
+      <div style="font-size:7.5pt;font-weight:800;color:#C084FC;margin-top:3px;">91&times; vs random baseline</div>
+    </div>
+  </div>
+
+  <!-- Crisis bar — 3 stats only -->
+  <div class="crisis" style="margin-bottom:6px;">
+    <div class="cs">
+      <span class="n">&#8377;22,495 Cr</span>
+      <span class="l">lost to cyber fraud in India in 2025<br>I4C Â· MHA Annual Report 2026</span>
+    </div>
+    <div class="cs">
+      <span class="n">8.5 Lakh</span>
+      <span class="l">mule accounts across 700+ branches<br>CBI Operation Chakra-V, Jun 2025</span>
+    </div>
+    <div class="cs">
+      <span class="n">&#8377;25,667 Cr</span>
+      <span class="l">fraud losses at Public Sector Banks (FY25)<br>PSBs bore <span style="color:#F59E0B;font-weight:700;">71%</span> of India's total bank fraud Â· RBI</span>
+    </div>
+  </div>
+
+  <!-- Results FIRST — 4 big cards -->
+  <h2>Ensemble Results &nbsp;<span style="font-size:7.5pt;font-weight:400;color:#555;">5-Fold Stratified OOF on competition DataSet.csv Â· True Nested CV, feature selection re-fit per fold Â· F2230/F3912/Unnamed:0 excluded</span></h2>
+  <div class="four" style="margin-bottom:6px;">
+    <div class="rc">
+      <span class="v">0.813</span>
+      <span class="l">AUC-PR (primary metric)</span>
+      <span class="s">Random baseline = 0.0089 &rarr; 91&times; lift</span>
+    </div>
+    <div class="rc">
+      <span class="v">64%</span>
+      <span class="l">Precision@100</span>
+      <span class="s">64 of 100 flagged accounts are mules</span>
+    </div>
+    <div class="rc">
+      <span class="v">79%</span>
+      <span class="l">Recall@100</span>
+      <span class="s">64 of 81 confirmed mules caught</span>
+    </div>
+    <div class="rc">
+      <span class="v">0.800</span>
+      <span class="l">LightGBM OOF AUC-PR</span>
+      <span class="s">strongest single model in the ensemble</span>
+    </div>
+  </div>
+
+  <!-- Compact stats row: cluster triage + model count -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 9px;background:linear-gradient(135deg,rgba(46,0,82,0.80),rgba(13,0,33,0.80));border-radius:5px;border:1px solid rgba(245,158,11,0.25);">
+      <span style="font-size:11pt;font-weight:900;color:#F59E0B;flex-shrink:0;">87.7%</span>
+      <span style="font-size:6.5pt;color:#D8B4FE;line-height:1.4;"><strong style="color:#C084FC;">Mule Concentration</strong> — 71 of 81 confirmed mules fall in one K-Means cluster (2,342 of 9,082 accounts) &rarr; 3.4&times; investigator efficiency</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:4px 9px;background:rgba(245,240,255,0.45);border:1px solid rgba(46,0,82,0.25);border-radius:5px;">
+      <span style="font-size:11pt;font-weight:900;color:#2E0052;flex-shrink:0;">5</span>
+      <span style="font-size:6.5pt;color:#4C0099;line-height:1.4;"><strong>Models Stacked</strong> — LightGBM, NNPU, CatBoost, ECOD, Deep Isolation Forest &middot; combined via a learned logistic-regression meta-learner</span>
+    </div>
+  </div>
+
+  <!-- Five Technical Design Decisions — compact row strip -->
+  <h2 style="margin-bottom:4px;">Technical Design Decisions <span style="font-size:6.5pt;font-weight:400;color:#6B21A8;">— full detail on Pages 2 &amp; 5</span></h2>
+  <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:5px;">
+    <div style="display:flex;align-items:baseline;gap:8px;padding:4px 9px;background:rgba(245,240,255,0.45);border-left:3px solid #2E0052;border-radius:0 4px 4px 0;">
+      <span style="flex-shrink:0;font-size:7.5pt;font-weight:800;color:#2E0052;min-width:22px;">&#9312;</span>
+      <span style="font-size:7.5pt;font-weight:700;color:#2E0052;min-width:130px;">NNPU PU Learning</span>
+      <span style="font-size:7pt;color:#1A0035;line-height:1.5;">Kiryo et al., NeurIPS 2017 — corrects label contamination at training objective &middot; No SMOTE &middot; custom LightGBM gradient/Hessian objective with a non-negative risk floor &middot; OOF AUC-PR 0.75</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;padding:4px 9px;background:rgba(237,233,254,0.45);border-left:3px solid #4C0099;border-radius:0 4px 4px 0;">
+      <span style="flex-shrink:0;font-size:7.5pt;font-weight:800;color:#4C0099;min-width:22px;">&#9313;</span>
+      <span style="font-size:7.5pt;font-weight:700;color:#4C0099;min-width:130px;">CatBoost + LightGBM</span>
+      <span style="font-size:7pt;color:#1A0035;line-height:1.5;">Two independent gradient-boosted learners &middot; CatBoost's ordered boosting reduces target-leakage risk on the 81-row positive set &middot; both re-fit feature selection per CV fold</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;padding:4px 9px;background:rgba(240,232,255,0.45);border-left:3px solid #6B21A8;border-radius:0 4px 4px 0;">
+      <span style="flex-shrink:0;font-size:7.5pt;font-weight:800;color:#6B21A8;min-width:22px;">&#9314;</span>
+      <span style="font-size:7.5pt;font-weight:700;color:#6B21A8;min-width:130px;">Unsupervised Anomaly</span>
+      <span style="font-size:7pt;color:#1A0035;line-height:1.5;">ECOD + Deep Isolation Forest (PyOD) — fully unsupervised, zero labels &middot; scores all 9,082 accounts &middot; zero-day typology coverage beyond the 81 labeled examples</span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;padding:4px 9px;background:rgba(248,244,255,0.45);border-left:3px solid #7C3AED;border-radius:0 4px 4px 0;">
+      <span style="flex-shrink:0;font-size:7.5pt;font-weight:800;color:#7C3AED;min-width:22px;">&#9315;</span>
+      <span style="font-size:7.5pt;font-weight:700;color:#7C3AED;min-width:130px;">Behavioral Cluster Triage</span>
+      <span style="font-size:7pt;color:#1A0035;line-height:1.5;">K-Means k=5, quantile-transformed features, seed=42 — no labels used in fitting &middot; densest cluster: 71/81 mules (87.7%), 2,342 of 9,082 accounts &middot; <strong>3.4&times; investigator efficiency</strong></span>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;padding:4px 9px;background:rgba(245,240,255,0.35);border-left:3px solid #A855F7;border-radius:0 4px 4px 0;">
+      <span style="flex-shrink:0;font-size:7.5pt;font-weight:800;color:#A855F7;min-width:22px;">&#9316;</span>
+      <span style="font-size:7.5pt;font-weight:700;color:#A855F7;min-width:130px;">Leakage-Free Nested CV</span>
+      <span style="font-size:7pt;color:#1A0035;line-height:1.5;">Mutual-info feature selection re-fit inside each fold's training partition only &middot; test fold never consulted &middot; F2230 (batch-month artifact) + F3912 (post-investigation status flag) excluded from training</span>
+    </div>
+  </div>
+
+  <!-- XEPA — compact 1-line reference on Page 1 -->
+  <div style="display:flex;align-items:center;gap:8px;padding:4px 10px;background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:5px;margin-bottom:4px;">
+    <span style="flex-shrink:0;background:linear-gradient(135deg,#2E0052,#4C0099);color:#fff;font-size:6pt;font-weight:800;letter-spacing:0.7px;padding:2px 7px;border-radius:3px;text-transform:uppercase;">Phase 2 Proposal</span>
+    <span style="font-size:8pt;font-weight:800;color:#2E0052;letter-spacing:1px;">XEPA</span>
+    <span style="font-size:7pt;color:#6B21A8;font-style:italic;">Extended Platform for Evidence &amp; Prosecution Assistance</span>
+    <span style="font-size:7pt;color:#4C0099;margin-left:2px;">— investigator workflow layer consuming SACHET scores &middot; 6 proposed features</span>
+    <span style="margin-left:auto;font-size:6pt;color:#7C3AED;white-space:nowrap;font-weight:600;">Full details &rarr; Page 5</span>
+  </div>
+
+  <!-- Dataset context — one line -->
+  <div class="box-b" style="padding:4px 8px;">
+    <span class="tiny">
+      <strong>Dataset:</strong> 9,082 accounts &middot; 81 confirmed mules (0.89%) &middot; 3,924 features &middot;
+      5-fold stratified OOF &middot; Feature selection nested per-fold (test fold never touched during selection) &middot;
+      F2230 and F3912 excluded (leakage artifacts) &middot;
+      Reproducible: <code>python src/satark.py --mode full-ensemble</code> &middot;
+      <a href="https://github.com/adityakalagatoori/SATARK" style="color:#4C0099;">github.com/adityakalagatoori/SATARK</a>
+    </span>
+  </div>
+
+  <div class="footer">
+    SACHET by Team SATARK (&#2360;&#2340;&#2352;&#2381;&#2325; = "Vigilant") &nbsp;|&nbsp; GitHub: adityakalagatoori/SATARK &nbsp;|&nbsp;
+    All metrics from actual pipeline runs, reproducible via <code>src/satark.py</code> &nbsp;|&nbsp; Page 1 of 6
+  </div>
+</div>
+
+<!-- ===== PAGE 2: ARCHITECTURE ===== -->
+<div class="page" id="page2">
+
+  <div class="sbar">
+    <span>Architecture — Five Models, Stacked Ensemble</span>
+    <span class="pn">Page 2 of 6</span>
+  </div>
+
+  <!-- Why this architecture exists — gap context -->
+  <div style="background:linear-gradient(90deg,rgba(220,38,38,0.07),rgba(22,163,74,0.06));border:1px solid rgba(76,0,153,0.18);border-radius:5px;padding:5px 11px;margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+    <span style="flex-shrink:0;font-size:6pt;font-weight:900;color:#DC2626;text-transform:uppercase;letter-spacing:0.5px;background:rgba(220,38,38,0.1);padding:2px 7px;border-radius:8px;border:1px solid rgba(220,38,38,0.2);">Current System Gap</span>
+    <span style="font-size:7.5pt;color:#1A0035;line-height:1.5;">Standard classifiers — including rule-based TMS and cost-sensitive LightGBM — assume the 9,001 unlabeled accounts are <strong>confirmed clean</strong>. They train on corrupted negatives, making it structurally impossible to surface mules hidden in the unlabeled pool. <strong style="color:#16A34A;">SACHET corrects this via PU Learning before the first gradient step.</strong></span>
+    <span style="flex-shrink:0;font-size:6.5pt;font-weight:700;color:#6B21A8;border-left:1px solid rgba(76,0,153,0.2);padding-left:10px;white-space:nowrap;">All 9 PS-2<br>requirements met<br>&rarr; Page 6</span>
+  </div>
+
+  <!-- Pipeline flow -->
+  <div class="flow" style="margin-bottom:14px; margin-top:4px;">
+    <div class="fs" style="padding:8px 6px;">&#9312; INGEST<br><span style="font-weight:400;">3,924 features/account<br>CBS transaction data</span></div>
+    <div class="fa" style="font-size:14pt;">&#8594;</div>
+    <div class="fs" style="padding:8px 6px;">&#9313; PREPARE<br><span style="font-weight:400;">Median impute<br>+ correlation pruning<br>150 features via<br>nested-CV selection</span></div>
+    <div class="fa" style="font-size:14pt;">&#8594;</div>
+    <div class="fs" style="flex:1.7; padding:8px 10px;">&#9314; FIVE PARALLEL MODELS<br><span style="font-weight:400;font-size:7.5pt;">A: NNPU &nbsp;&middot;&nbsp; B: LightGBM &nbsp;&middot;&nbsp; C: ECOD+Deep-IF &nbsp;&middot;&nbsp; E: CatBoost<br>Each produces an OOF score per account<br>Test fold never touched during feature selection</span></div>
+    <div class="fa" style="font-size:14pt;">&#8594;</div>
+    <div class="fs" style="padding:8px 6px;">&#9315; ENSEMBLE<br><span style="font-weight:400;">LR meta-learner<br>Learned weights<br>Calibrated P(mule)</span></div>
+    <div class="fa" style="font-size:14pt;">&#8594;</div>
+    <div class="fs" style="padding:8px 6px;">&#9316; ALERT<br><span style="font-weight:400;">4-tier action<br>SHAP top-5<br>per account</span></div>
+  </div>
+
+  <!-- Models — compressed cards -->
+  <h2 style="margin-bottom:5px;">Detection Models</h2>
+  <div class="three" style="margin-bottom:8px;gap:7px;">
+
+    <!-- Model A -->
+    <div class="model-a" style="padding:8px 10px;">
+      <h3 style="color:#2E0052;font-size:8.5pt;margin-bottom:4px;">Model A — NNPU PU Learner <span class="badge">Core Innovation</span></h3>
+      <div style="font-size:7.5pt;color:#1A0035;line-height:1.6;margin-bottom:4px;">
+        Non-Negative PU loss (Kiryo et al., NeurIPS 2017) via a custom LightGBM gradient/Hessian objective — corrects 99:1 imbalance at the <strong>training objective level</strong>. No SMOTE.
+      </div>
+      <div style="font-size:7pt;color:#4C0099;background:rgba(46,0,82,0.06);border-radius:3px;padding:3px 6px;line-height:1.5;">
+        <strong>Design:</strong> per-sample (not batch-averaged) gradients, with a non-negative floor on the estimated risk correction (Kiryo Thm. 1) &nbsp;&middot;&nbsp; &pi;=0.01
+      </div>
+      <div style="font-size:7pt;font-weight:700;color:#2E0052;margin-top:4px;border-top:1px solid rgba(46,0,82,0.12);padding-top:3px;">
+        OOF AUC-PR: 0.75 &nbsp;&middot;&nbsp; Learned meta-weight: <span style="color:#F59E0B;">largest of all 5 models</span>
+      </div>
+    </div>
+
+    <!-- Model B -->
+    <div class="model-b" style="padding:8px 10px;">
+      <h3 style="color:#4C0099;font-size:8.5pt;margin-bottom:4px;">Model B — Cost-Sensitive LightGBM <span class="badge">Supervised Anchor</span></h3>
+      <div style="font-size:7.5pt;color:#1A0035;line-height:1.6;margin-bottom:4px;">
+        scale_pos_weight = 9001/81 &asymp; 111. <strong>No SMOTE</strong> — synthetic patterns damage explainability (ArXiv 2025). Primary metric: AUC-PR, not AUC-ROC.
+      </div>
+      <div style="font-size:7pt;color:#4C0099;background:rgba(76,0,153,0.06);border-radius:3px;padding:3px 6px;line-height:1.5;">
+        <strong>Nested CV:</strong> mutual-info selects top-150 features per fold on <em>training partition only.</em> Test fold never consulted during selection.
+      </div>
+      <div style="font-size:7pt;font-weight:700;color:#4C0099;margin-top:4px;border-top:1px solid rgba(76,0,153,0.12);padding-top:3px;">
+        OOF AUC-PR: <span style="color:#F59E0B;">0.800</span> &nbsp;&middot;&nbsp; strongest single model &nbsp;&middot;&nbsp; 150 features selected per fold
+      </div>
+    </div>
+
+    <!-- Model E -->
+    <div class="model-b" style="padding:8px 10px;">
+      <h3 style="color:#4C0099;font-size:8.5pt;margin-bottom:4px;">Model E — CatBoost <span class="badge">Ordered Boosting</span></h3>
+      <div style="font-size:7.5pt;color:#1A0035;line-height:1.6;margin-bottom:4px;">
+        Second independent gradient-boosted learner. Ordered boosting computes each tree's gradients from a permutation of prior rows only, reducing target-leakage risk on a small (81-row) positive set.
+      </div>
+      <div style="font-size:7pt;color:#4C0099;background:rgba(76,0,153,0.06);border-radius:3px;padding:3px 6px;line-height:1.5;">
+        <strong>Nested CV:</strong> same leak-free per-fold feature selection as Model B, independently re-fit.
+      </div>
+      <div style="font-size:7pt;font-weight:700;color:#4C0099;margin-top:4px;border-top:1px solid rgba(76,0,153,0.12);padding-top:3px;">
+        OOF AUC-PR: 0.75 &nbsp;&middot;&nbsp; positive learned meta-weight alongside LightGBM
+      </div>
+    </div>
+
+    <!-- Model C -->
+    <div class="model-c" style="padding:8px 10px;">
+      <h3 style="color:#6B21A8;font-size:8.5pt;margin-bottom:4px;">Model C — ECOD + Deep Isolation Forest <span class="badge">Zero-Day</span></h3>
+      <div style="font-size:7.5pt;color:#1A0035;line-height:1.6;margin-bottom:4px;">
+        <strong>Fully unsupervised — zero labels.</strong> Scores all 9,082 accounts against the full distribution, catching typologies absent from the 81 labeled mules.
+      </div>
+      <div style="font-size:7pt;color:#6B21A8;background:rgba(107,33,168,0.06);border-radius:3px;padding:3px 6px;line-height:1.5;">
+        <strong>ECOD</strong> (Li et al., IEEE TKDE 2022): CDF-based, hyperparameter-free. &nbsp;<strong>Deep-IF</strong> (Chen et al., IEEE TKDE 2023): neural encoder + isolation forest. Complementary failure modes.
+      </div>
+      <div style="font-size:7pt;font-weight:700;color:#6B21A8;margin-top:4px;border-top:1px solid rgba(107,33,168,0.12);padding-top:3px;">
+        Diagnostic-only labeled AUC-PR is low by design — not calibrated to the 81-mule subset; role is zero-day coverage in the ensemble
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Ensemble -->
+  <div style="margin-bottom:6px;">
+    <h2 style="margin-bottom:2px;">Stacked Meta-Learner — Component vs Ensemble Performance</h2>
+    <div style="font-size:7pt;color:#6B21A8;line-height:1.5;">
+      Logistic-regression meta-learner trained on OOF predictions of Models A, B, C, E &nbsp;&middot;&nbsp; all 9,082 accounts &nbsp;&middot;&nbsp; weights <em>learned from data</em>, not hand-tuned
+    </div>
+  </div>
+
+  <!-- 3-card row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:7px;">
+
+    <!-- Card 1: Ensemble AUC-PR -->
+    <div style="background:linear-gradient(135deg,rgba(76,0,153,0.10),rgba(46,0,82,0.06));border:1.5px solid rgba(76,0,153,0.28);border-radius:8px;padding:10px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 3px 14px rgba(76,0,153,0.10),inset 0 1px 0 rgba(255,255,255,0.55);">
+      <div style="font-size:7pt;font-weight:700;color:#6B21A8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Ensemble OOF AUC-PR</div>
+      <div style="font-size:26pt;font-weight:900;color:#4C0099;line-height:1;margin-bottom:4px;">0.813</div>
+      <div style="font-size:6.5pt;color:#6B21A8;line-height:1.5;margin-bottom:6px;">All 81 mules &middot; full OOF (no holdout bias)</div>
+      <div style="height:1px;background:rgba(76,0,153,0.15);margin-bottom:6px;"></div>
+      <div style="font-size:6.5pt;color:#4C0099;line-height:1.5;">LightGBM alone AUC-PR: <strong>0.800</strong><br><span style="color:#7C3AED;">Ensemble beats every individual model on AUC-PR.</span></div>
+    </div>
+
+    <!-- Card 2: P@100 -->
+    <div style="background:linear-gradient(135deg,rgba(46,0,82,0.10),rgba(13,0,33,0.06));border:1.5px solid rgba(46,0,82,0.25);border-radius:8px;padding:10px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 3px 14px rgba(46,0,82,0.10),inset 0 1px 0 rgba(255,255,255,0.60);">
+      <div style="font-size:7pt;font-weight:700;color:#2E0052;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Precision @ Top 100</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px;">
+        <span style="font-size:26pt;font-weight:900;color:#2E0052;line-height:1;">0.64</span>
+        <span style="font-size:9pt;color:#6B21A8;font-weight:600;">Recall@100: 0.79</span>
+      </div>
+      <div style="font-size:6.5pt;color:#4C0099;line-height:1.5;margin-bottom:6px;">64 of top 100 flagged accounts are confirmed mules</div>
+      <div style="height:1px;background:rgba(46,0,82,0.15);margin-bottom:6px;"></div>
+      <div style="background:rgba(245,158,11,0.10);border-radius:4px;padding:4px 7px;">
+        <div style="font-size:7pt;font-weight:800;color:#92400E;">64 of 81 total confirmed mules found</div>
+        <div style="font-size:6pt;color:#92400E;margin-top:1px;">Out-of-fold, leakage-free evaluation</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Meta-weights -->
+    <div style="background:linear-gradient(135deg,rgba(107,33,168,0.10),rgba(76,0,153,0.06));border:1.5px solid rgba(107,33,168,0.28);border-radius:8px;padding:10px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 3px 14px rgba(107,33,168,0.10),inset 0 1px 0 rgba(255,255,255,0.55);">
+      <div style="font-size:7pt;font-weight:700;color:#6B21A8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Learned Meta-Weights</div>
+
+      <div style="margin-bottom:5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-size:7pt;color:#4C0099;font-weight:600;">NNPU (A)</span>
+          <span style="font-size:7.5pt;font-weight:800;color:#4C0099;">+10.82</span>
+        </div>
+        <div style="height:5px;background:rgba(76,0,153,0.12);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:100%;background:linear-gradient(90deg,#7C3AED,#A855F7);border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-size:7pt;color:#2E0052;font-weight:600;">LightGBM (B)</span>
+          <span style="font-size:7.5pt;font-weight:800;color:#2E0052;">+5.54</span>
+        </div>
+        <div style="height:5px;background:rgba(46,0,82,0.12);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:51%;background:linear-gradient(90deg,#2E0052,#4C0099);border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-size:7pt;color:#4C0099;font-weight:600;">CatBoost (E)</span>
+          <span style="font-size:7.5pt;font-weight:800;color:#4C0099;">+4.26</span>
+        </div>
+        <div style="height:5px;background:rgba(76,0,153,0.12);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:39%;background:linear-gradient(90deg,#7C3AED,#A855F7);border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-size:7pt;color:#7C3AED;font-weight:600;">Deep-IF (C)</span>
+          <span style="font-size:7.5pt;font-weight:800;color:#7C3AED;">+2.10</span>
+        </div>
+        <div style="height:5px;background:rgba(124,58,237,0.12);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:19%;background:linear-gradient(90deg,#A855F7,#C084FC);border-radius:3px;"></div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+          <span style="font-size:7pt;color:#7C3AED;font-weight:600;">ECOD (C)</span>
+          <span style="font-size:7.5pt;font-weight:800;color:#7C3AED;">&minus;3.22</span>
+        </div>
+        <div style="height:5px;background:rgba(124,58,237,0.12);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:30%;background:linear-gradient(90deg,#A855F7,#C084FC);border-radius:3px;"></div>
+        </div>
+        <div style="font-size:6pt;color:#7C3AED;margin-top:3px;">In-sample suppression — LightGBM/CatBoost cover the labeled signal</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    SACHET | Model A: NNPU &middot; Model B: LightGBM &middot; Model C: ECOD+Deep-IF (unsupervised) &middot; Model E: CatBoost | Page 2 of 6
+  </div>
+</div>
+
+</div>
+
+<!-- ===== PAGE 3: EVIDENCE ===== -->
+<div class="page" id="page3">
+
+  <div class="sbar">
+    <span>Evidence — Validated Results, EDA Findings, Ablation &amp; Data Integrity</span>
+    <span class="pn">Page 3 of 6</span>
+  </div>
+  <!-- Hero metric row -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:7px;">
+    <div style="background:linear-gradient(135deg,#2E0052,#4C0099);border-radius:7px;padding:7px 8px;text-align:center;box-shadow:0 3px 12px rgba(46,0,82,0.25);">
+      <div style="font-size:15pt;font-weight:900;color:#F59E0B;line-height:1.1;">0.813</div>
+      <div style="font-size:6pt;color:#D8B4FE;margin-top:2px;line-height:1.4;">AUC-PR Ensemble OOF<br><em>Primary metric</em></div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(76,0,153,0.12),rgba(46,0,82,0.08));border:1.5px solid rgba(76,0,153,0.3);border-radius:7px;padding:7px 8px;text-align:center;">
+      <div style="font-size:15pt;font-weight:900;color:#4C0099;line-height:1.1;">91&times;</div>
+      <div style="font-size:6pt;color:#6B21A8;margin-top:2px;line-height:1.4;">Lift over random<br>baseline (0.0089)</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(76,0,153,0.12),rgba(46,0,82,0.08));border:1.5px solid rgba(76,0,153,0.3);border-radius:7px;padding:7px 8px;text-align:center;">
+      <div style="font-size:15pt;font-weight:900;color:#4C0099;line-height:1.1;">64%</div>
+      <div style="font-size:6pt;color:#6B21A8;margin-top:2px;line-height:1.4;">Precision@100<br>64/100 are mules</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(76,0,153,0.12),rgba(46,0,82,0.08));border:1.5px solid rgba(76,0,153,0.3);border-radius:7px;padding:7px 8px;text-align:center;">
+      <div style="font-size:15pt;font-weight:900;color:#4C0099;line-height:1.1;">79%</div>
+      <div style="font-size:6pt;color:#6B21A8;margin-top:2px;line-height:1.4;">Recall@100<br>64 of 81 mules found</div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(46,0,82,0.10),rgba(13,0,33,0.06));border:1.5px solid rgba(46,0,82,0.22);border-radius:7px;padding:7px 8px;text-align:center;">
+      <div style="font-size:15pt;font-weight:900;color:#2E0052;line-height:1.1;">0.800</div>
+      <div style="font-size:6pt;color:#4C0099;margin-top:2px;line-height:1.4;">LightGBM OOF AUC-PR<br>strongest single model</div>
+    </div>
+  </div>
+
+  <div class="two">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      <h2>Full Results — All 81 Mules, True Nested OOF</h2>
+      <table>
+        <thead><tr><th>Metric</th><th>SACHET</th><th>Baseline</th><th>Lift</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>AUC-PR — Ensemble OOF <em>(primary)</em></td><td class="bold">0.813</td><td>0.0089</td><td class="bold">91&times;</td></tr>
+          <tr><td>AUC-PR — LightGBM alone OOF</td><td class="bold">0.800</td><td>0.0089</td><td>90&times;</td></tr>
+          <tr><td>AUC-PR — NNPU alone OOF</td><td>0.75</td><td>0.0089</td><td>84&times;</td></tr>
+          <tr><td>AUC-PR — CatBoost alone OOF</td><td>0.75</td><td>0.0089</td><td>84&times;</td></tr>
+          <tr><td>Precision@100 &nbsp;/&nbsp; Recall@100</td><td colspan="3">64% precision &nbsp;&middot;&nbsp; 79% recall &nbsp;&middot;&nbsp; 64 of 81 mules in top 100</td></tr>
+        </tbody>
+      </table>
+      <p class="tiny" style="margin-top:2px;">AUC-PR is the correct primary metric at 99:1 imbalance — AUC-ROC inflates toward ~0.99 for a trivial all-legit classifier. Random-baseline AUC-PR = 81/9,082 = 0.0089. All values are out-of-fold: feature selection is re-fit inside each training partition and never sees the fold it is scored on.</p>
+
+      <!-- Ablation -->
+      <h2 style="margin-top:6px;">Model Ablation</h2>
+      <table>
+        <thead><tr><th>Configuration</th><th>AUC-PR</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>NNPU alone</td><td>0.75</td><td style="font-size:6.5pt;">Treats unconfirmed accounts as unlabeled, not clean</td></tr>
+          <tr><td>LightGBM alone</td><td>0.80</td><td style="font-size:6.5pt;">Strongest single model &middot; supervised anchor</td></tr>
+          <tr><td>CatBoost alone</td><td>0.75</td><td style="font-size:6.5pt;">Ordered-boosting learner, independent feature-selection fit</td></tr>
+          <tr class="hl"><td><strong>Ensemble (NNPU+LGB+CatBoost+ECOD/Deep-IF)</strong></td><td><strong>0.813</strong></td><td style="font-size:6.5pt;"><strong>Beats every individual model</strong> on OOF AUC-PR</td></tr>
+        </tbody>
+      </table>
+
+      <!-- CV folds as visual bars -->
+      <h2 style="margin-top:6px;">LightGBM AUC-PR — Per Fold (5-Fold Stratified CV)</h2>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:3px;">
+        <div style="text-align:center;">
+          <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;">
+            <div style="width:22px;background:linear-gradient(180deg,#2E0052,#6B21A8);border-radius:3px 3px 0 0;height:80%;"></div>
+          </div>
+          <div style="font-size:7pt;font-weight:700;color:#2E0052;margin-top:1px;">0.7977</div>
+          <div style="font-size:5.5pt;color:#4C0099;">Fold 1</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;">
+            <div style="width:22px;background:linear-gradient(180deg,#2E0052,#6B21A8);border-radius:3px 3px 0 0;height:89%;"></div>
+          </div>
+          <div style="font-size:7pt;font-weight:700;color:#2E0052;margin-top:1px;">0.8923</div>
+          <div style="font-size:5.5pt;color:#4C0099;">Fold 2</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;">
+            <div style="width:22px;background:linear-gradient(180deg,#7C3AED,#C084FC);border-radius:3px 3px 0 0;height:73%;opacity:0.85;"></div>
+          </div>
+          <div style="font-size:7pt;font-weight:700;color:#4C0099;margin-top:1px;">0.7338</div>
+          <div style="font-size:5.5pt;color:#7C3AED;">Fold 3</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;">
+            <div style="width:22px;background:linear-gradient(180deg,#2E0052,#6B21A8);border-radius:3px 3px 0 0;height:89%;"></div>
+          </div>
+          <div style="font-size:7pt;font-weight:700;color:#2E0052;margin-top:1px;">0.8918</div>
+          <div style="font-size:5.5pt;color:#4C0099;">Fold 4</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="height:40px;display:flex;align-items:flex-end;justify-content:center;">
+            <div style="width:22px;background:linear-gradient(180deg,#7C3AED,#C084FC);border-radius:3px 3px 0 0;height:72%;opacity:0.85;"></div>
+          </div>
+          <div style="font-size:7pt;font-weight:700;color:#4C0099;margin-top:1px;">0.7236</div>
+          <div style="font-size:5.5pt;color:#7C3AED;">Fold 5</div>
+        </div>
+      </div>
+      <p class="tiny" style="margin-top:3px;">Fold-to-fold variance is expected at N&asymp;16 mules per test fold — partition composition dominates, not model instability. Mean OOF 0.800 aggregates all folds correctly.</p>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <h2>Data Integrity — Features Excluded From Training</h2>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:3px;">
+        <div style="display:flex;gap:6px;align-items:flex-start;padding:5px 7px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.20);border-radius:5px;">
+          <span style="flex-shrink:0;background:#DC2626;color:#fff;font-size:6pt;font-weight:800;padding:1px 6px;border-radius:8px;margin-top:1px;">F2230</span>
+          <span style="font-size:7pt;color:#7F1D1D;line-height:1.5;"><strong>MNTH</strong> — separates accounts by data-collection batch month, not by account behavior, and is unavailable at inference time. Excluded from all training and reported metrics.</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:flex-start;padding:5px 7px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.20);border-radius:5px;">
+          <span style="flex-shrink:0;background:#DC2626;color:#fff;font-size:6pt;font-weight:800;padding:1px 6px;border-radius:8px;margin-top:1px;">F3912</span>
+          <span style="font-size:7pt;color:#7F1D1D;line-height:1.5;"><strong>FRAUD_SUSPECTED</strong> — documented in the official feature dictionary as a resolution-status flag, i.e. a post-investigation label. Using it as a predictor would mean training on the answer itself. Excluded.</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:flex-start;padding:5px 7px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.20);border-radius:5px;">
+          <span style="flex-shrink:0;background:#6B21A8;color:#fff;font-size:6pt;font-weight:800;padding:1px 6px;border-radius:8px;margin-top:1px;">Unnamed:0</span>
+          <span style="font-size:7pt;color:#4C0099;line-height:1.5;">Row index — direct lookup invalidates CV. Commonly missed in default DataFrame loading; explicitly excluded here.</span>
+        </div>
+      </div>
+
+      <h2 style="margin-top:6px;">Bank-Finalized Features — Tested, Not Forced</h2>
+      <div class="box-b" style="padding:5px 8px;">
+        <p style="font-size:7pt;line-height:1.6;margin:0;color:#1A0035;">
+          The official data dictionary marks 18 features as <code>Bank_Finalized_Variables</code>
+          (age, tenure, balance, occupation, etc.). We tested forcing all 18 into the selected
+          feature set: OOF AUC-PR <strong>dropped</strong> from 0.80 to 0.73. This indicates they
+          function better as investigator-facing context than as raw predictive signal for the
+          classifier, so they are surfaced in the alert payload rather than forced into the model.
+        </p>
+      </div>
+
+      <!-- Reproducibility -->
+      <div style="margin-top:6px;background:rgba(46,0,82,0.06);border:1px solid rgba(46,0,82,0.20);border-radius:6px;padding:6px 9px;">
+        <div style="font-size:7.5pt;font-weight:700;color:#2E0052;margin-bottom:4px;">Reproducibility</div>
+        <div style="font-size:6.8pt;font-family:monospace;color:#1A0035;line-height:1.8;background:rgba(13,0,33,0.05);border-radius:4px;padding:4px 7px;margin-bottom:4px;">
+          pip install -r requirements.txt<br>
+          python src/satark.py --mode full-ensemble
+        </div>
+        <div style="font-size:6.8pt;color:#4C0099;line-height:1.5;">Single source file, committed to <strong>github.com/adityakalagatoori/SATARK</strong>. Python 3.11 &middot; LightGBM &middot; CatBoost &middot; PyOD &middot; SHAP &middot; scikit-learn &middot; K-Means seed=42.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    LightGBM CV: [0.7977, 0.8923, 0.7338, 0.8918, 0.7236] &middot; Dataset: 9,082 accounts &middot; 81 mules (0.89%) &middot; 3,924 raw features | Page 3 of 6
+  </div>
+</div>
+
+<!-- ===== PAGE 4: SYSTEM DESIGN ===== -->
+<div class="page" id="page4">
+
+  <div class="sbar">
+    <span>System Design — Behavioral Triage, Alert Logic &amp; Technology Choices</span>
+    <span class="pn">Page 4 of 6</span>
+  </div>
+  <div class="two">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- K-Means triage -->
+      <h2>Behavioral Triage — K-Means (k=5, quantile-transformed features, unsupervised)</h2>
+      <table>
+        <thead><tr><th>Cluster</th><th>Accounts</th><th>Mules</th><th>Rate</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr class="hl">
+            <td><strong>Cluster 0</strong></td><td>2,342</td><td><strong>71</strong></td>
+            <td><strong>3.03%</strong>
+              <div style="margin-top:2px;height:4px;background:rgba(76,0,153,0.15);border-radius:2px;"><div style="height:100%;width:100%;background:linear-gradient(90deg,#F59E0B,#D97706);border-radius:2px;"></div></div>
+            </td>
+            <td style="font-size:6.5pt;"><strong>&#128308; Start here</strong> — 87.7% of all mules</td>
+          </tr>
+          <tr>
+            <td>Cluster 3</td><td>2,189</td><td>8</td>
+            <td>0.37%
+              <div style="margin-top:2px;height:4px;background:rgba(76,0,153,0.10);border-radius:2px;"><div style="height:100%;width:12%;background:#7C3AED;border-radius:2px;"></div></div>
+            </td>
+            <td style="font-size:6.5pt;">&#128993; Monitor — 9.9% of mules</td>
+          </tr>
+          <tr>
+            <td>Cluster 1</td><td>1,995</td><td>2</td>
+            <td>0.10%<div style="margin-top:2px;height:4px;background:rgba(76,0,153,0.08);border-radius:2px;"></div></td>
+            <td style="font-size:6.5pt;">&#128994; Deprioritize</td>
+          </tr>
+          <tr>
+            <td>Clusters 2+4</td><td>2,556</td><td>0</td><td>0.00%</td>
+            <td style="font-size:6.5pt;">Negligible</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="tiny" style="margin-top:2px;">Cluster 0 mule density = 3.03% vs 0.89% population — <strong>3.4&times; investigator efficiency</strong>. K-Means consumes no labels: co-location of 71/81 mules in one cluster suggests the engineered feature space captures mule-correlated structure. k=5, k-means++, seed=42; features rank-transformed before clustering to prevent outlier-dominated distances.</p>
+
+      <!-- 4-Tier alert — visual bands -->
+      <h2 style="margin-top:6px;">4-Tier Alert Logic</h2>
+      <div style="display:flex;flex-direction:column;gap:3px;margin-top:3px;">
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(220,38,38,0.09);border-left:3px solid #DC2626;border-radius:0 4px 4px 0;">
+          <span style="flex-shrink:0;font-size:7pt;font-weight:800;color:#DC2626;min-width:50px;">Tier 1<br><span style="font-size:6pt;font-weight:400;">&gt;0.80</span></span>
+          <div style="font-size:7pt;color:#7F1D1D;line-height:1.5;"><strong>Debit freeze &middot; SHAP alert generated</strong> &nbsp;&middot;&nbsp; PMLA 2002 &sect;12 STR filing &middot; RBI Fraud Classification Circular</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(245,158,11,0.09);border-left:3px solid #F59E0B;border-radius:0 4px 4px 0;">
+          <span style="flex-shrink:0;font-size:7pt;font-weight:800;color:#D97706;min-width:50px;">Tier 2<br><span style="font-size:6pt;font-weight:400;">0.50–0.80</span></span>
+          <div style="font-size:7pt;color:#92400E;line-height:1.5;"><strong>KYC re-verification &middot; Outward transfer restriction</strong> &nbsp;&middot;&nbsp; RBI KYC Master Direction — EDD trigger</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(76,0,153,0.06);border-left:3px solid #7C3AED;border-radius:0 4px 4px 0;">
+          <span style="flex-shrink:0;font-size:7pt;font-weight:800;color:#6B21A8;min-width:50px;">Tier 3<br><span style="font-size:6pt;font-weight:400;">0.20–0.50</span></span>
+          <div style="font-size:7pt;color:#4C0099;line-height:1.5;"><strong>Enhanced monitoring &middot; No immediate restriction</strong> &nbsp;&middot;&nbsp; RBI AML/CFT Guidelines</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(22,163,74,0.06);border-left:3px solid #16A34A;border-radius:0 4px 4px 0;">
+          <span style="flex-shrink:0;font-size:7pt;font-weight:800;color:#16A34A;min-width:50px;">Tier 4<br><span style="font-size:6pt;font-weight:400;">&lt;0.20</span></span>
+          <div style="font-size:7pt;color:#14532D;line-height:1.5;"><strong>No action</strong> &middot; Cluster ID + score stored for audit trail and future re-scoring</div>
+        </div>
+      </div>
+      <p class="tiny" style="margin-top:3px;">Every Tier 1/2 alert carries: <strong>P(mule) &middot; SHAP top-5 &middot; Cluster ID &middot; recommended tier.</strong> Thresholds fully configurable per bank FP tolerance.</p>
+
+      <!-- Sample alert -->
+      <div style="background:rgba(13,0,33,0.07);border-left:2px solid #7C3AED;border-radius:0 4px 4px 0;padding:5px 8px;margin-top:4px;font-size:6.5pt;font-family:monospace;line-height:1.7;color:#1A0035;">
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:7pt;color:#2E0052;">Sample Tier 1 Alert:</strong><br>
+        ACC-ID: XXXX &nbsp;|&nbsp; P(mule): 0.87 &nbsp;|&nbsp; Cluster: 0 &nbsp;|&nbsp; Tier 1 — Debit Freeze<br>
+        SHAP: top-5 contributing features via TreeExplainer, computed per-account at score time<br>
+        Action: freeze API &rarr; PMLA &sect;12 STR pre-filled &rarr; KYC queue assigned
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <h2>Non-Standard Technical Choices — Why Each Decision Was Made</h2>
+      <table>
+        <thead><tr><th>Problem</th><th>SACHET's Choice &amp; Rationale</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-size:7pt;color:#DC2626;font-weight:600;">No transaction graph — only account-level aggregates</td>
+            <td style="font-size:7pt;">GNN requires per-transfer edge data (sender&rarr;receiver). Dataset provides 3,924 account-level features; no individual transaction records exist. K-Means on the engineered feature space is the clustering approach consistent with the available data structure.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">99:1 class imbalance</td>
+            <td style="font-size:7pt;"><strong>NNPU loss</strong> (Kiryo et al., NeurIPS 2017) — corrects at training objective, via a custom LightGBM gradient/Hessian objective. No SMOTE; no synthetic patterns that damage explainability (ArXiv 2025).</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">Single-model risk on 81 positives</td>
+            <td style="font-size:7pt;"><strong>Two independent GBMs</strong> — LightGBM and CatBoost, separately fit and feature-selected, reduce reliance on any one model's idiosyncrasies at this sample size.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">Feature selection leakage</td>
+            <td style="font-size:7pt;"><strong>Nested per-fold selection</strong> — mutual-info top-150 features chosen inside each fold's training partition only. Test fold never consulted during selection.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">New mule typologies (zero-day)</td>
+            <td style="font-size:7pt;"><strong>ECOD + Deep-IF (dual unsupervised)</strong> — complementary anomaly failure modes. ECOD: CDF-based marginal outliers. Deep-IF: neural isolation for non-linear anomalies. Together cover patterns absent from 81 training labels.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">Ensemble weighting</td>
+            <td style="font-size:7pt;"><strong>Stacked LR meta-learner on OOF predictions</strong> — weights emerge from data, not hand-tuned; NNPU and LightGBM carry the largest positive weights.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">SHAP explainability (circular use)</td>
+            <td style="font-size:7pt;"><strong>SHAP post-training only</strong> — never used for feature selection. Avoids circular importance inflation. Bank feature dictionary maps F-codes to business names in deployment.</td>
+          </tr>
+          <tr>
+            <td style="font-size:7pt;">Real-time PS-2 feeds</td>
+            <td style="font-size:7pt;"><strong>Flask REST API</strong> — CBS hook calls the scoring endpoint inline. NCRP + RBI flags append as binary features pre-call. No model retraining required.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Deployment block -->
+      <div style="margin-top:6px;background:rgba(46,0,82,0.06);border:1px solid rgba(46,0,82,0.22);border-radius:6px;padding:6px 9px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+          <div style="font-size:7.5pt;font-weight:700;color:#2E0052;">Open-Source Deployment — Any PSB, No Proprietary Dependencies</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <span style="font-size:5.5pt;font-weight:700;color:#fff;background:#2E0052;padding:1px 6px;border-radius:8px;">Python 3.11</span>
+            <span style="font-size:5.5pt;font-weight:700;color:#fff;background:#4C0099;padding:1px 6px;border-radius:8px;">LightGBM</span>
+            <span style="font-size:5.5pt;font-weight:700;color:#fff;background:#6B21A8;padding:1px 6px;border-radius:8px;">CatBoost</span>
+            <span style="font-size:5.5pt;font-weight:700;color:#fff;background:#7C3AED;padding:1px 6px;border-radius:8px;">PyOD</span>
+            <span style="font-size:5.5pt;font-weight:700;color:#fff;background:#A855F7;padding:1px 6px;border-radius:8px;">SHAP</span>
+            <span style="font-size:5.5pt;font-weight:700;color:#1A0035;background:#F59E0B;padding:1px 6px;border-radius:8px;">scikit-learn</span>
+          </div>
+        </div>
+        <div style="font-size:6.8pt;font-family:monospace;color:#1A0035;line-height:1.8;background:rgba(13,0,33,0.05);border-radius:4px;padding:4px 8px;margin-bottom:4px;">
+          pip install -r requirements.txt<br>
+          python src/satark.py --mode full-ensemble &nbsp;<span style="color:#6B21A8;"># &rarr; models/satark_ensemble.pkl</span><br>
+          python src/satark.py --mode serve &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6B21A8;"># Flask API on :5000</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;font-size:6.5pt;color:#4C0099;line-height:1.5;"><strong>API /score</strong> &rarr; calibrated P(mule) + cluster ID + SHAP top-5, from a single bundled artifact holding all 5 trained models.</div>
+          <div style="flex:1;font-size:6.5pt;color:#4C0099;line-height:1.5;"><strong>NCRP/RBI integration:</strong> <code>ncrp_linked_flag</code> + <code>rbi_flagged</code> binary features appended before each /score call. Integration point named, typed, testable.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    SACHET | Cluster 0: 2,342 accounts &middot; 71 mules &middot; 3.03% rate vs 0.89% population &rarr; 3.4&times; investigator efficiency | Page 4 of 6
+  </div>
+</div>
+
+<!-- ===== PAGE 5: INNOVATION + ROADMAP ===== -->
+<div class="page" id="page5">
+
+  <div class="sbar">
+    <span>Technical Innovations, Roadmap &amp; References</span>
+    <span class="pn">Page 5 of 6</span>
+  </div>
+  <!-- 4 innovations — compact 2Ã—2 grid -->
+  <h2 style="margin-bottom:5px;">Four Technical Innovations</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:7px;">
+
+    <div style="border-left:3px solid #2E0052;background:rgba(245,240,255,0.5);padding:6px 9px;border-radius:0 5px 5px 0;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <span style="background:#2E0052;color:#fff;font-size:7pt;font-weight:900;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        <strong style="font-size:8pt;color:#2E0052;">NNPU Loss — Imbalance Correction at Training Objective</strong>
+      </div>
+      <div style="font-size:7pt;color:#1A0035;line-height:1.55;">Non-Negative PU loss (Kiryo et al., NeurIPS 2017), implemented as a custom LightGBM gradient/Hessian objective. Treats 9,001 unlabeled accounts correctly — no SMOTE, no synthetic patterns. Only model class that doesn't assume the unlabeled set is confirmed clean.</div>
+      <div style="font-size:6.5pt;font-weight:700;color:#2E0052;margin-top:3px;border-top:1px solid rgba(46,0,82,0.12);padding-top:2px;">OOF AUC-PR 0.75 &nbsp;&middot;&nbsp; largest learned meta-weight among all 5 models</div>
+    </div>
+
+    <div style="border-left:3px solid #4C0099;background:rgba(237,233,254,0.5);padding:6px 9px;border-radius:0 5px 5px 0;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <span style="background:#4C0099;color:#fff;font-size:7pt;font-weight:900;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+        <strong style="font-size:8pt;color:#4C0099;">Leakage-Free True Nested CV</strong>
+      </div>
+      <div style="font-size:7pt;color:#1A0035;line-height:1.55;">Feature selection (mutual-info, top-150) runs exclusively inside each fold's training partition — test fold never consulted. Prevents optimistic estimates at 81 positives. Global pre-CV selection was tested and found to inflate AUC-PR to 1.0000 after a single boosting round — itself diagnostic of leakage.</div>
+      <div style="font-size:6.5pt;font-weight:700;color:#4C0099;margin-top:3px;border-top:1px solid rgba(76,0,153,0.12);padding-top:2px;">150 features selected per fold &nbsp;&middot;&nbsp; every reported metric is out-of-fold</div>
+    </div>
+
+    <div style="border-left:3px solid #6B21A8;background:rgba(240,232,255,0.5);padding:6px 9px;border-radius:0 5px 5px 0;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <span style="background:#6B21A8;color:#fff;font-size:7pt;font-weight:900;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+        <strong style="font-size:8pt;color:#6B21A8;">Two Independent Gradient-Boosted Learners</strong>
+      </div>
+      <div style="font-size:7pt;color:#1A0035;line-height:1.55;">LightGBM and CatBoost are trained and feature-selected independently, each contributing a distinct OOF signal to the meta-learner. CatBoost's ordered boosting reduces target-leakage risk specific to a small (81-row) positive set.</div>
+      <div style="font-size:6.5pt;font-weight:700;color:#6B21A8;margin-top:3px;border-top:1px solid rgba(107,33,168,0.12);padding-top:2px;">Both carry positive learned meta-weights; ensemble beats either model alone</div>
+    </div>
+
+    <div style="border-left:3px solid #7C3AED;background:rgba(248,244,255,0.5);padding:6px 9px;border-radius:0 5px 5px 0;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <span style="background:#7C3AED;color:#fff;font-size:7pt;font-weight:900;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
+        <strong style="font-size:8pt;color:#7C3AED;">Dataset Integrity + Unsupervised Behavioral Clustering</strong>
+      </div>
+      <div style="font-size:7pt;color:#1A0035;line-height:1.55;">F2230 (batch-month artifact, unavailable at inference) and F3912 (documented post-investigation resolution flag) excluded. K-Means (k=5, unsupervised) finds 87.7% of confirmed mules co-locate in one cluster — 3.4&times; investigator efficiency.</div>
+      <div style="font-size:6.5pt;font-weight:700;color:#7C3AED;margin-top:3px;border-top:1px solid rgba(124,58,237,0.12);padding-top:2px;">Cluster 0: 2,342 accounts &middot; 71 mules &middot; 3.03% rate vs 0.89% population</div>
+    </div>
+
+  </div>
+
+  <div class="two" style="gap:8px;">
+    <div>
+      <!-- Deliverables as 2-col tick list -->
+      <h2 style="margin-bottom:4px;">What SACHET Delivers — Status</h2>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>NNPU PU Learning</strong> — implemented, OOF AUC-PR 0.75, custom LightGBM objective</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>Calibrated P(mule) ensemble</strong> — stacked LR &middot; AUC-PR 0.813 &middot; P@100 = 64% &middot; R@100 = 79%</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>Leakage-free nested CV</strong> — F2230/F3912/Unnamed:0 excluded &middot; every metric out-of-fold</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>SHAP investigator alert</strong> — TreeExplainer post-training &middot; PMLA &sect;12 STR pre-populated &middot; Tier 1&ndash;4</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>K-Means cluster triage</strong> — 87.7% mules in Cluster 0 &middot; 3.4&times; investigator efficiency</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>Five-model ensemble</strong> — NNPU, LightGBM, CatBoost, ECOD, Deep Isolation Forest</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>Regulatory feed integration</strong> — <code>ncrp_linked_flag</code> + <code>rbi_flagged</code> architecture defined</span></div>
+        <div style="display:flex;gap:6px;align-items:baseline;font-size:7pt;padding:3px 6px;background:rgba(46,0,82,0.04);border-radius:3px;"><span style="color:#16A34A;font-weight:800;flex-shrink:0;">&#10003;</span><span><strong>REST API deployment</strong> — open source &middot; single bundled model artifact &middot; any PSB</span></div>
+      </div>
+    </div>
+
+    <div>
+      <h2 style="margin-bottom:4px;">3-Phase Roadmap</h2>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px;">
+        <div style="padding:5px 8px;background:linear-gradient(90deg,rgba(46,0,82,0.08),rgba(76,0,153,0.04));border-left:3px solid #2E0052;border-radius:0 4px 4px 0;">
+          <div style="font-size:7.5pt;font-weight:700;color:#2E0052;margin-bottom:1px;">Phase 1 — Prototype <span style="font-weight:400;color:#6B21A8;">(Competition Deliverable)</span></div>
+          <div style="font-size:7pt;color:#1A0035;line-height:1.5;">REST API &middot; /score /explain /health &middot; Investigator dashboard (P(mule) + SHAP top-5 + Cluster) &middot; Configurable alert thresholds</div>
+        </div>
+        <div style="padding:5px 8px;background:linear-gradient(90deg,rgba(76,0,153,0.08),rgba(107,33,168,0.04));border-left:3px solid #4C0099;border-radius:0 4px 4px 0;">
+          <div style="font-size:7.5pt;font-weight:700;color:#4C0099;margin-bottom:1px;">Phase 2 — Pilot-Ready <span style="font-weight:400;color:#6B21A8;">(Post-Approval)</span></div>
+          <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Streaming ingestion &rarr; CBS transaction feed &rarr; per-event /score &rarr; sub-second alerts &middot; RBI/NCRP feed ingestion &middot; FP threshold calibration tooling</div>
+        </div>
+        <div style="padding:5px 8px;background:linear-gradient(90deg,rgba(107,33,168,0.08),rgba(124,58,237,0.04));border-left:3px solid #6B21A8;border-radius:0 4px 4px 0;">
+          <div style="font-size:7.5pt;font-weight:700;color:#6B21A8;margin-bottom:1px;">Phase 3 — Scale</div>
+          <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Continual retraining as new mule labels accumulate &middot; Generalized for any PSB &middot; RBI-aligned regulatory output format</div>
+        </div>
+      </div>
+
+      <h2 style="margin-bottom:3px;">References</h2>
+      <div style="font-size:6.8pt;color:#1A0035;line-height:1.7;">
+        1. Kiryo et al., "Positive-Unlabeled Learning with Non-Negative Risk Estimator," <em>NeurIPS 2017</em><br>
+        2. Li et al., "ECOD: Unsupervised Outlier Detection Using Empirical CDFs," <em>IEEE TKDE 2022</em><br>
+        3. Chen et al., "Deep Isolation Forest for Anomaly Detection," <em>IEEE TKDE 2023</em><br>
+        4. Dorogush, Ershov, Gulin, "CatBoost: gradient boosting with categorical features support," <em>NeurIPS Workshop 2018</em><br>
+        5. I4C/MHA — cyber fraud statistics &middot; RBI Annual Report — PSB fraud share (see Page 1 for figures)
+      </div>
+    </div>
+  </div>
+
+  <!-- XEPA — Full detail on Page 5 -->
+  <div style="background:linear-gradient(135deg,rgba(46,0,82,0.07),rgba(124,58,237,0.06));border:1px solid rgba(76,0,153,0.22);border-radius:6px;padding:7px 11px;margin-top:5px;margin-bottom:5px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      <span style="flex-shrink:0;background:linear-gradient(135deg,#2E0052,#4C0099);color:#fff;font-size:6pt;font-weight:800;letter-spacing:0.8px;padding:2px 9px;border-radius:3px;text-transform:uppercase;">Proposed Phase 2 Extension</span>
+      <span style="font-size:9.5pt;font-weight:800;color:#2E0052;letter-spacing:1.5px;">XEPA</span>
+      <span style="font-size:7pt;color:#6B21A8;font-weight:400;font-style:italic;">Extended Platform for Evidence &amp; Prosecution Assistance</span>
+    </div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:0 12px;align-items:start;">
+      <div style="font-size:7pt;color:#4C0099;line-height:1.6;max-width:200px;border-right:1px solid rgba(76,0,153,0.15);padding-right:12px;">
+        Should SACHET be approved for production deployment by Bank of India, XEPA is the proposed investigator-facing workflow layer — consuming SACHET risk scores and cluster IDs as its primary input to support end-to-end case management.
+      </div>
+      <div>
+        <div style="font-size:6.3pt;font-weight:700;color:#6B21A8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Proposed Features</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;">
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">Risk Queue Management</strong>Ranked alert queue driven by SACHET P(mule) scores</div>
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">AI-Assisted SAR Drafting</strong>LLM pre-populates Suspicious Activity Reports from SHAP evidence</div>
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">Dual-Role Workflow</strong>Supervisor approval gates + Analyst case assignment with audit trail</div>
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">Immutable Audit Ledger</strong>Tamper-evident log of every investigator action per case</div>
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">SHAP Explanation Viewer</strong>Real-time feature attribution display for investigator justification</div>
+          <div style="background:rgba(46,0,82,0.05);border:1px solid rgba(76,0,153,0.18);border-radius:4px;padding:3px 7px;font-size:6.3pt;color:#2E0052;line-height:1.4;"><strong style="display:block;color:#4C0099;">Ghost-Node Forecasting</strong>Velocity-burst pattern detection for emerging mule recruitment networks</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(90deg,rgba(46,0,82,0.07),rgba(124,58,237,0.05));border:1px solid rgba(46,0,82,0.18);border-radius:5px;padding:5px 10px;margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="flex-shrink:0;background:#2E0052;color:#fff;font-size:6pt;font-weight:800;padding:2px 7px;border-radius:8px;letter-spacing:0.5px;">INTEGRITY</span>
+    <span style="font-size:7pt;color:#2E0052;line-height:1.5;flex:1;">Every number in this document is produced by <code>python src/satark.py --mode full-ensemble</code> on the competition dataset. Source: <a href="https://github.com/adityakalagatoori/SATARK" style="color:#2E0052;">github.com/adityakalagatoori/SATARK</a>. F2230, F3912, Unnamed:0 excluded from training.</span>
+    <span style="flex-shrink:0;font-size:7pt;font-weight:800;color:#F59E0B;border-left:1px solid rgba(46,0,82,0.2);padding-left:10px;">Review 100 accounts &rarr; 64 mules found</span>
+  </div>
+
+  <div class="footer">
+    SACHET by Team SATARK (&#2360;&#2340;&#2352;&#2381;&#2325; = "Vigilant") &nbsp;|&nbsp; PSB Cybersecurity, Fraud &amp; AI Hackathon 2026 &nbsp;|&nbsp; Problem Statement 2 &nbsp;|&nbsp; Bank of India &times; IIT Hyderabad &nbsp;|&nbsp; Page 5 of 6
+  </div>
+</div>
+<!-- ===== PAGE 6: PS-2 COMPLIANCE MAP & ARCHITECTURE RATIONALE ===== -->
+<div class="page" id="page6">
+
+  <div class="sbar">
+    <span>PS-2 Compliance Map, Architecture Rationale &amp; Empirical Findings</span>
+    <span class="pn">Page 6 of 6</span>
+  </div>
+  <div class="two">
+
+    <!-- LEFT COLUMN -->
+    <div>
+    <!-- LEFT COLUMN -->
+    <div>
+      <h2 style="margin-bottom:5px;">PS-2 Requirement Coverage — All 9 Keywords Mapped</h2>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">AI / ML Capabilities</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">NNPU PU Learner + Cost-Sensitive LightGBM + CatBoost + ECOD/Deep-IF + Stacked LR meta-learner &middot; 5-model ensemble validated on all 81 mules</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">Mule Account Detection</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">Calibrated P(mule) per account &middot; AUC-PR 91&times; above random baseline &middot; P@100 = 64% (64 of 81 confirmed mules in top 100)</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">Financial Transaction Ingestion</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">3,924 pre-aggregated CBS transaction features per account &middot; REST /score endpoint &middot; open-source, deployable by any PSB</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">FMS Alert Ingestion</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">FMS alert count + alert flag as named input features &middot; SHAP-backed alert output per alert tier</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">TMS Alert Ingestion</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">TMS alert count + rule category flags ingested as named input features before each /score API call</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">NCRP Cyber Fraud Alerts</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);"><code>ncrp_linked_flag</code> — cybercrime.gov.in REST API account lookup &rarr; binary feature appended before /score &middot; no model retraining required</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">Prevent Fraudulent Circulation</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">Tier 1 (&gt;0.80): debit freeze API call &rarr; PMLA 2002 &sect;12 STR pre-populated &rarr; KYC investigator queue assigned</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">Real-Time Regulatory Feeds</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);"><code>rbi_flagged</code> from RBI MuleHunter.AI output &middot; daily batch pull &rarr; feature append &rarr; /score endpoint</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid rgba(76,0,153,0.18);border-radius:5px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#2E0052,#4C0099);color:#EDE9FE;font-size:6.5pt;font-weight:700;padding:4px 8px;display:flex;align-items:center;min-width:95px;line-height:1.4;">Cross-Channel Bank Data</div>
+          <div style="font-size:6.8pt;color:#1A0035;padding:4px 8px;line-height:1.5;background:rgba(245,240,255,0.5);">UPI + IMPS + NEFT + RTGS + ATM channel-mix ratio features embedded within the 3,924-feature account vector</div>
+        </div>
+
+      </div>
+
+      <h2 style="margin-top:5px;margin-bottom:3px;">Why Tabular ML — Not Graph Neural Networks</h2>
+      <div class="box-b" style="padding:5px 9px;">
+        <p style="font-size:7.3pt;line-height:1.6;margin:0;">
+          The dataset provides <strong>3,924 account-level aggregate features</strong> — no individual transaction records and no cross-account payment edges. GNNs require actual money-transfer edges between named accounts. A graph built from feature similarity (cosine, correlation) represents statistical proximity between account feature vectors — not actual transactions. These are different quantities. K-Means on the engineered feature space captures account groupings consistent with the available data structure; GNN approaches apply where transaction-level edge data exists.
+        </p>
+      </div>
+
+      <h2 style="margin-top:5px;margin-bottom:3px;">Why These 5 Models — Dataset-Driven Choices</h2>
+      <table>
+        <thead><tr><th>Dataset Constraint</th><th>SACHET Response</th></tr></thead>
+        <tbody>
+          <tr><td style="font-size:7pt;">9,001 "legit" labels are uninvestigated — may contain hidden mules</td><td style="font-size:7pt;"><strong>NNPU loss</strong> — corrects label contamination at training objective. No commercial product does this.</td></tr>
+          <tr><td style="font-size:7pt;">99:1 imbalance; AUC-ROC inflates to 0.99 for trivial classifiers</td><td style="font-size:7pt;"><strong>scale_pos_weight=111 &middot; AUC-PR as primary</strong> — correct metric, no synthetic SMOTE data</td></tr>
+          <tr><td style="font-size:7pt;">Only 81 labeled mules — single-model risk</td><td style="font-size:7pt;"><strong>Two independent GBMs</strong> — LightGBM + CatBoost, both leak-free nested CV, reduce reliance on one model's idiosyncrasies</td></tr>
+          <tr><td style="font-size:7pt;">New mule typologies not in the 81 labels</td><td style="font-size:7pt;"><strong>ECOD + Deep-IF (unsupervised)</strong> — scores all 9,082 without labels; zero-day coverage</td></tr>
+          <tr><td style="font-size:7pt;">16 mules/test fold &rarr; global feature selection leaks signal</td><td style="font-size:7pt;"><strong>Nested per-fold selection</strong> — top-150 inside training partition; test fold never consulted</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <h2 style="margin-bottom:4px;">Key Engineering Findings</h2>
+      <div class="box-g" style="padding:6px 9px;margin-bottom:6px;">
+        <div style="font-size:7pt;color:#1A0035;line-height:1.4;margin-bottom:4px;">All produced by <code>python src/satark.py --mode full-ensemble</code> on the competition dataset</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="padding:4px 7px;background:rgba(22,163,74,0.07);border-left:2px solid #16A34A;border-radius:0 3px 3px 0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#14532D;">1. F2230 — Batch-Month Artifact</div>
+            <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Documented as a data-collection month indicator, not a behavioral signal, and unavailable at inference time. Excluded — SACHET metrics are computed without it.</div>
+          </div>
+          <div style="padding:4px 7px;background:rgba(22,163,74,0.07);border-left:2px solid #16A34A;border-radius:0 3px 3px 0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#14532D;">2. F3912 — Post-Investigation Flag</div>
+            <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Documented in the official feature dictionary as <code>FRAUD_SUSPECTED</code>, a resolution-status flag. Using it as a predictor trains on the answer. Excluded.</div>
+          </div>
+          <div style="padding:4px 7px;background:rgba(22,163,74,0.07);border-left:2px solid #16A34A;border-radius:0 3px 3px 0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#14532D;">3. Naive Feature Selection Collapses to 1.0000</div>
+            <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Selecting features on the full dataset before splitting produced a spurious 1.0000 AUC-PR after one boosting round — a leakage signature, not model quality. Fixed via strict per-fold selection.</div>
+          </div>
+          <div style="padding:4px 7px;background:rgba(22,163,74,0.07);border-left:2px solid #16A34A;border-radius:0 3px 3px 0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#14532D;">4. Unsupervised Mule Concentration</div>
+            <div style="font-size:7pt;color:#1A0035;line-height:1.5;">K-Means (k=5, no labels) places 71/81 mules in one cluster (87.7%). Unsupervised — labels never seen during clustering, only used afterward to measure density.</div>
+          </div>
+          <div style="padding:4px 7px;background:rgba(22,163,74,0.07);border-left:2px solid #16A34A;border-radius:0 3px 3px 0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#14532D;">5. Bank-Finalized Features Tested, Not Forced</div>
+            <div style="font-size:7pt;color:#1A0035;line-height:1.5;">Forcing the 18 officially bank-marked features into the model dropped AUC-PR from 0.80 to 0.73 — they carry more value as investigator context than as raw model signal.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SACHET core differentiators — closing summary -->
+      <div style="background:linear-gradient(135deg,rgba(26,0,53,0.88),rgba(76,0,153,0.88));border-radius:8px;padding:8px 12px;color:#fff;box-shadow:0 4px 16px rgba(0,0,33,0.25);">
+        <div style="font-size:8pt;font-weight:700;color:#F59E0B;margin-bottom:5px;letter-spacing:0.3px;">SACHET — Core Technical Differentiators</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div style="font-size:7pt;color:#EDE9FE;line-height:1.5;display:flex;gap:6px;"><span style="color:#F59E0B;flex-shrink:0;">&rarr;</span><span><strong style="color:#fff;">Positive-Unlabeled Learning (NNPU, NeurIPS 2017)</strong> — treats 9,001 uninvestigated accounts as unlabeled, not confirmed negative. Custom LightGBM gradient/Hessian objective with a non-negative risk floor.</span></div>
+          <div style="font-size:7pt;color:#EDE9FE;line-height:1.5;display:flex;gap:6px;"><span style="color:#F59E0B;flex-shrink:0;">&rarr;</span><span><strong style="color:#fff;">Five independently-validated models</strong> — LightGBM, CatBoost, NNPU, ECOD, Deep Isolation Forest, combined via a logistic-regression meta-learner whose weights are learned, not hand-tuned.</span></div>
+          <div style="font-size:7pt;color:#EDE9FE;line-height:1.5;display:flex;gap:6px;"><span style="color:#F59E0B;flex-shrink:0;">&rarr;</span><span><strong style="color:#fff;">True nested cross-validation at 81 positives</strong> — feature selection confined strictly to each fold's training partition. Every reported metric is out-of-fold.</span></div>
+          <div style="font-size:7pt;color:#EDE9FE;line-height:1.5;display:flex;gap:6px;"><span style="color:#F59E0B;flex-shrink:0;">&rarr;</span><span><strong style="color:#fff;">Dataset integrity verified, not assumed</strong> — F2230 and F3912 identified as artifacts and excluded; the 18 bank-finalized features were tested empirically rather than assumed useful.</span></div>
+          <div style="font-size:7pt;color:#EDE9FE;line-height:1.5;display:flex;gap:6px;"><span style="color:#F59E0B;flex-shrink:0;">&rarr;</span><span><strong style="color:#fff;">Behavioral triage validated against ground truth</strong> — unsupervised K-Means, fit with zero labels, concentrates 87.7% of confirmed mules in one cluster spanning 26% of accounts.</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    SACHET by Team SATARK (&#2360;&#2340;&#2352;&#2381;&#2325; = "Vigilant") &nbsp;|&nbsp; All 9 PS-2 requirements mapped above &nbsp;|&nbsp; GNN inapplicable: zero transaction graph data &nbsp;|&nbsp; Page 6 of 6
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  var h = window.location.hash.replace('#','');
+  if(/^page[1-6]$/.test(h)){
+    var target = document.getElementById(h);
+    if(target){ target.scrollIntoView(); }
+  }
+});
+</script>
+
+</body>
+</html>

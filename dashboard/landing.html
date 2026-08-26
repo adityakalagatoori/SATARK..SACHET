@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SACHET — Leakage-Free Mule Account Detection | Team SATARK</title>
+<meta name="description" content="SACHET is a leakage-free positive-unlabeled ensemble that triages suspicious mule bank accounts. 0.813 AUC-PR on 9,082 accounts — 91× the random baseline — with a 3.4× investigator efficiency lift. Built by Team SATARK for PSB Cybersecurity, Fraud & AI Hackathon 2026, PS-2 (Bank of India × IIT Hyderabad).">
+<meta name="author" content="Team SATARK — Kritika Pandey, Vaishnav Aditya">
+<meta name="theme-color" content="#0d0021">
+<link rel="canonical" href="./landing.html">
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="SACHET — Leakage-Free Mule Account Detection">
+<meta property="og:description" content="0.813 AUC-PR on 9,082 accounts (91× random baseline). A positive-unlabeled ensemble that triages mule accounts behind your existing alert system.">
+<meta property="og:site_name" content="Team SATARK">
+<meta property="og:image" content="assets/textures/rbi-logo.svg">
+<meta property="og:image:alt" content="SACHET — AI/ML mule account detection for Indian banking">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SACHET — Leakage-Free Mule Account Detection">
+<meta name="twitter:description" content="0.813 AUC-PR on 9,082 accounts (91× random baseline). Positive-unlabeled ensemble triage for mule accounts.">
+<meta name="twitter:image" content="assets/textures/rbi-logo.svg">
+
+<!-- Brand favicon: inline SVG data URI, no extra request -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0021'/%3E%3Cpath d='M20 42c4 4 20 5 22-3 2-9-18-7-17-15 1-6 13-8 19-3' stroke='%23A855F7' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SACHET",
+  "applicationCategory": "SecurityApplication",
+  "description": "Leakage-free positive-unlabeled ensemble for suspicious mule bank account detection and investigator triage.",
+  "author": {
+    "@type": "Organization",
+    "name": "Team SATARK",
+    "member": [
+      { "@type": "Person", "name": "Kritika Pandey", "affiliation": "United College of Engineering and Research, Prayagraj" },
+      { "@type": "Person", "name": "Vaishnav Aditya", "affiliation": "Amrita Vishwa Vidyapeetham, Chennai" }
+    ]
+  }
+}
+</script>
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS — spacing rhythm, radius system, type scale
+     ============================================================ */
+  :root {
+    /* Palette (locked) */
+    --bg-0:      #0d0021;
+    --bg-1:      #1a0035;
+    --accent:    #7c3aed;
+    --accent-lo: #4C0099;
+    --accent-hi: #A855F7;
+    --lilac:     #C084FC;
+    --lilac-pale:#D8B4FE;
+    --paper:     #EDE9FE;
+    --ink:       #e0e0e0;
+    --muted:     #9b93ad;
+    --ok:        #16A34A;
+    --danger:    #DC2626;
+    --warn:      #F59E0B;
+
+    /* ---------- Shared glassmorphism system (matches investigator.html /
+       pipeline.html / account_universe.html). The hero's dark cinematic
+       3D backdrop, film grain and vignette stay as the one deliberate
+       exception — same rationale as the WebGL "space" scene in
+       account_universe.html — but every card/panel floating on top of it
+       uses this same light-glass system with dark, readable text. ---------- */
+    --glass-bg:     rgba(255,255,255,0.82);
+    --glass-bg-lo:  rgba(255,255,255,0.7);
+    --glass-border: rgba(124,58,237,0.28);
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 32px rgba(124,58,237,0.2);
+    --glass-blur:   18px;
+    --glass-ink:    #241238;
+    --glass-heading:#2d1155;
+    --glass-muted:  #6b5b8a;
+
+    /* Spacing rhythm — 8px base scale */
+    --s1: 4px;  --s2: 8px;   --s3: 12px; --s4: 16px;
+    --s5: 24px; --s6: 32px;  --s7: 48px; --s8: 64px; --s9: 96px;
+
+    /* Radius system */
+    --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-pill: 999px;
+
+    /* Type scale (major-third-ish, fluid) */
+    --t-eyebrow: clamp(10.5px, 1.1vw, 12px);
+    --t-micro:   clamp(11px, 1.15vw, 12.5px);
+    --t-small:   clamp(13px, 1.4vw, 14.5px);
+    --t-body:    clamp(15px, 1.6vw, 17.5px);
+    --t-lead:    clamp(16px, 1.9vw, 20px);
+    --t-h3:      clamp(18px, 2.2vw, 23px);
+    --t-h2:      clamp(27px, 4.2vw, 46px);
+    --t-h1:      clamp(40px, 7.5vw, 82px);
+
+    /* Easing curves */
+    --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Dark theme — the hero backdrop stays dark either way (that's the
+     deliberate cinematic exception), but the floating light-glass cards
+     flip to a dark-glass equivalent with light text. Same token names,
+     inverted lightness, toggled via [data-theme] on <html>. */
+  :root[data-theme="dark"]{
+    --glass-bg:     rgba(255,255,255,0.08);
+    --glass-bg-lo:  rgba(255,255,255,0.05);
+    --glass-border: rgba(168,85,247,0.35);
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.5);
+    --glass-ink:    #e0e0e0;
+    --glass-heading:#EDE9FE;
+    --glass-muted:  #9b93ad;
+  }
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+    border:1px solid var(--glass-border);border-radius:8px;background:transparent;cursor:pointer;
+    font-size:15px;line-height:1;color:var(--muted);
+  }
+  .theme-toggle:hover{color:var(--lilac);border-color:var(--accent-hi);background:rgba(124,58,237,.15)}
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; } /* Lenis drives smooth scroll in JS; CSS smooth would double-animate */
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-0);
+    color: var(--ink);
+    overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Styled scrollbar ---------- */
+  ::-webkit-scrollbar { width: 11px; }
+  ::-webkit-scrollbar-track { background: #0d0021; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent), var(--accent-lo));
+    border-radius: var(--r-pill);
+    border: 3px solid #0d0021;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-hi); }
+  html { scrollbar-color: var(--accent) #0d0021; scrollbar-width: thin; }
+
+  ::selection { background: rgba(124,58,237,0.45); color: #fff; }
+
+  /* ---------- Accessibility ---------- */
+  .skip-link {
+    position: absolute; top: -60px; left: var(--s3);
+    background: var(--accent); color: #fff; padding: 10px 18px;
+    border-radius: var(--r-sm); z-index: 200; text-decoration: none;
+    font-weight: 700; transition: top 0.2s var(--ease-out);
+  }
+  .skip-link:focus { top: var(--s3); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--lilac); outline-offset: 3px; border-radius: var(--r-sm);
+  }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ---------- 3D canvas: decorative, fades in (never blocks LCP) ---------- */
+  #bg-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0; display: block;
+    opacity: 0; transition: opacity 1.2s var(--ease-soft);
+  }
+  #bg-canvas.ready { opacity: 1; }
+
+  /* ---------- Cinematic film grain + vignette overlay ---------- */
+  #grain {
+    position: fixed; inset: 0; z-index: 3; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+  #vignette {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 42%, rgba(6,0,16,0.55) 100%);
+  }
+
+  /* ---------- Top nav: persistent institutional marks + progress ---------- */
+  #topnav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s4);
+    padding: var(--s3) var(--s5);
+    background: linear-gradient(180deg, rgba(13,0,33,0.92), rgba(13,0,33,0.0));
+    backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: var(--s3);
+    font-family: 'Fraunces', serif; font-weight: 700;
+    font-size: 17px; letter-spacing: 0.14em; color: var(--paper);
+    text-decoration: none;
+  }
+  .nav-brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-hi); box-shadow: 0 0 10px var(--accent-hi);
+    animation: pulseDot 2.8s var(--ease-soft) infinite;
+  }
+  @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.55;transform:scale(0.82);} }
+
+  /* Persistent institutional marks — real logos, gently shimmering */
+  .nav-marks { display: flex; align-items: center; gap: var(--s4); }
+  .nav-mark {
+    height: 26px; width: auto; max-width: 96px; object-fit: contain;
+    opacity: 0.82;
+    filter: brightness(1.18) drop-shadow(0 0 6px rgba(168,85,247,0.28));
+    transition: opacity 0.3s var(--ease-soft), transform 0.3s var(--ease-out);
+  }
+  .nav-mark.shimmer { animation: markShimmer 6s var(--ease-soft) infinite; }
+  .nav-mark:nth-child(2) { animation-delay: 3s; }
+  @keyframes markShimmer {
+    0%, 78%, 100% { filter: brightness(1.18) drop-shadow(0 0 6px rgba(168,85,247,0.28)); }
+    86%           { filter: brightness(1.6)  drop-shadow(0 0 14px rgba(192,132,252,0.7)); }
+  }
+  #topnav:hover .nav-mark { opacity: 1; }
+
+  /* Page-level nav (shared with investigator/pipeline/account_universe/
+     account_detail_3d) — adapted to landing's dark topnav palette. */
+  .hdr-nav { display: flex; gap: var(--s2); align-items: center; }
+  .hdr-nav a {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700;
+    color: var(--muted); text-decoration: none; padding: 7px 12px;
+    border: 1px solid rgba(192,132,252,0.25); border-radius: 7px;
+  }
+  .hdr-nav a:hover { color: var(--lilac); border-color: var(--accent-hi); background: rgba(124,58,237,0.15); }
+  .hdr-nav a.active { color: var(--lilac); border-color: var(--accent-hi); background: rgba(124,58,237,0.18); }
+  @media (max-width: 860px) { .hdr-nav { display: none; } }
+
+  /* Scroll progress indicator */
+  #scroll-progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--accent-lo), var(--accent-hi), var(--lilac));
+    z-index: 45; transition: width 0.12s linear;
+    box-shadow: 0 0 12px rgba(168,85,247,0.6);
+  }
+
+  /* Slim asset-load bar (non-blocking; replaces full-screen loader for LCP) */
+  #asset-bar {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--lilac));
+    z-index: 46; opacity: 1; transition: width 0.25s var(--ease-soft), opacity 0.5s ease;
+  }
+  #asset-bar.done { opacity: 0; }
+
+  /* ---------- Layout ---------- */
+  #content { position: relative; z-index: 1; }
+
+  section, footer.cta-footer {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: var(--s9) var(--s5);
+    text-align: center; position: relative;
+  }
+  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; }
+  .narrow { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+  /* Distinct per-section tint so sections never feel repetitive.
+     All tints stay within the locked palette and keep text contrast. */
+  #hero        { background: radial-gradient(ellipse 90% 70% at 50% 42%, rgba(76,0,153,0.34), transparent 72%); }
+  #problem     { background: radial-gradient(ellipse 85% 65% at 26% 45%, rgba(127,29,29,0.24), transparent 70%); }
+  #pipeline    { background: linear-gradient(180deg, rgba(26,0,53,0.5), rgba(13,0,33,0.72)); }
+  #architecture{ background: radial-gradient(ellipse 80% 60% at 76% 50%, rgba(76,0,153,0.32), transparent 70%); }
+  #demo        { background: linear-gradient(180deg, rgba(13,0,33,0.75), rgba(30,10,60,0.55)); }
+  #results     { background: radial-gradient(ellipse 90% 70% at 50% 50%, rgba(22,163,74,0.14), transparent 68%); }
+  #methodology { background: linear-gradient(180deg, rgba(20,4,44,0.7), rgba(13,0,33,0.6)); }
+  #institutions{ background: radial-gradient(ellipse 80% 62% at 50% 48%, rgba(245,158,11,0.11), transparent 68%); }
+  #team        { background: radial-gradient(ellipse 78% 60% at 30% 50%, rgba(107,33,168,0.3), transparent 70%); }
+  #cta         { background: linear-gradient(180deg, rgba(13,0,33,0.55), rgba(46,0,82,0.72)); }
+
+  /* ---------- Typography ---------- */
+  .eyebrow {
+    color: var(--lilac); letter-spacing: 0.24em; text-transform: uppercase;
+    font-size: var(--t-eyebrow); font-weight: 700; margin-bottom: var(--s4);
+  }
+  h1.hero-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: var(--t-h1); font-weight: 700; line-height: 1.02;
+    letter-spacing: -0.022em;
+    background: linear-gradient(96deg, var(--paper) 6%, var(--lilac) 42%, var(--accent-hi) 78%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    margin-bottom: var(--s5);
+    /* Legibility floor: a soft dark halo so the title reads over any 3D behind it */
+    filter: drop-shadow(0 3px 26px rgba(13,0,33,0.98));
+  }
+  h1.hero-title .kchar { display: inline-block; will-change: transform, opacity; }
+
+  h2.section-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: var(--t-h2); font-weight: 600; color: var(--paper);
+    line-height: 1.14; letter-spacing: -0.016em;
+    margin-bottom: var(--s5);
+    text-shadow: 0 2px 22px rgba(13,0,33,0.95);
+  }
+  h3.sub-title {
+    font-size: var(--t-h3); font-weight: 700; color: var(--paper);
+    letter-spacing: -0.008em; margin-bottom: var(--s3);
+  }
+  p.lead {
+    font-size: var(--t-lead); color: var(--ink); max-width: 680px;
+    line-height: 1.62; margin: 0 auto var(--s4);
+    text-shadow: 0 2px 16px rgba(13,0,33,0.92);
+  }
+  p.body { font-size: var(--t-body); color: var(--ink); max-width: 700px; margin: 0 auto var(--s4); line-height: 1.68; }
+  p.muted { color: var(--muted); font-size: var(--t-small); max-width: 640px; margin: 0 auto; line-height: 1.62; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace; }
+  .kicker {
+    font-size: var(--t-small); color: var(--accent-hi); font-weight: 600;
+    letter-spacing: 0.01em; margin-top: var(--s6); max-width: 560px;
+    margin-left: auto; margin-right: auto;
+  }
+  .danger-text { color: #ff8080; font-weight: 700; }
+  .ok-text { color: #4ade80; font-weight: 700; }
+  .warn-text { color: var(--warn); font-weight: 700; }
+  /* Same three, for use inside a light-glass card instead of directly on the dark backdrop. */
+  .panel .danger-text, .stat-plate .danger-text, .model-card .danger-text { color: #b91c1c; }
+  .panel .ok-text, .stat-plate .ok-text, .model-card .ok-text { color: #15803d; }
+  .panel .warn-text, .stat-plate .warn-text, .model-card .warn-text { color: #b45309; }
+
+  /* ---------- Badges / trust bar ---------- */
+  .badge-row { display: flex; gap: var(--s3); margin-top: var(--s6); flex-wrap: wrap; justify-content: center; }
+  .badge {
+    padding: 9px 18px; border-radius: var(--r-pill);
+    border: 1px solid var(--glass-border); background: var(--glass-bg-lo);
+    color: var(--glass-heading); font-size: var(--t-micro); font-weight: 700;
+    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow); letter-spacing: 0.01em;
+  }
+  .trust-bar {
+    display: flex; gap: var(--s7); flex-wrap: wrap; justify-content: center;
+    margin-top: var(--s7); padding-top: var(--s5);
+    border-top: 1px solid rgba(124,58,237,0.28); max-width: 720px;
+    margin-left: auto; margin-right: auto;
+  }
+  .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .trust-item .tnum { font-size: 17px; font-weight: 800; color: var(--paper); letter-spacing: -0.01em; }
+  .trust-item .tlabel { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.11em; }
+
+  /* ---------- Buttons ---------- */
+  .btn-row { display: flex; gap: var(--s4); flex-wrap: wrap; justify-content: center; margin-top: var(--s7); }
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--s2);
+    min-height: 48px; padding: 14px 30px; border-radius: var(--r-md);
+    font-weight: 700; font-size: var(--t-small); text-decoration: none;
+    letter-spacing: 0.01em; cursor: pointer; border: 1px solid transparent;
+    transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), background 0.25s var(--ease-soft);
+    position: relative; overflow: hidden;
+  }
+  .btn-primary {
+    background: linear-gradient(96deg, var(--accent), var(--accent-hi));
+    color: #fff; box-shadow: 0 6px 26px rgba(124,58,237,0.42);
+  }
+  .btn-primary::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 32%, rgba(255,255,255,0.34) 50%, transparent 68%);
+    transform: translateX(-130%); transition: transform 0.75s var(--ease-out);
+  }
+  .btn-primary:hover::after { transform: translateX(130%); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 34px rgba(124,58,237,0.62); }
+  .btn-ghost {
+    background: var(--glass-bg-lo); color: var(--glass-heading);
+    border-color: var(--glass-border); backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
+  }
+  .btn-ghost:hover { background: var(--glass-bg); color: var(--accent); transform: translateY(-2px); border-color: var(--accent-hi); }
+  .btn:active { transform: translateY(0) scale(0.98); }
+
+  /* ---------- Glass panels / cards ---------- */
+  .panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur)) saturate(135%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+    padding: var(--s6);
+    text-align: left;
+    color: var(--glass-ink);
+  }
+  .panel h1, .panel h2, .panel h3, .panel h4, .panel strong { color: var(--glass-heading); }
+  /* p.lead/.body/.muted default to the dark-backdrop palette everywhere else on this page;
+     inside a light-glass .panel they need the dark-on-light equivalents instead. */
+  .panel p.lead, .panel p.body { color: var(--glass-ink); text-shadow: none; }
+  .panel p.muted, .panel .muted { color: var(--glass-muted); }
+  .panel code { color: var(--accent-lo); background: rgba(124,58,237,0.1); }
+  .panel .mono { color: var(--glass-heading); }
+
+  .grid { display: grid; gap: var(--s5); width: 100%; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  /* Reveal-on-scroll base state */
+  [data-reveal] { opacity: 0; transform: translateY(18px); }
+  .no-anim [data-reveal] { opacity: 1 !important; transform: none !important; }
+
+  /* ---------- Stat plates ---------- */
+  .stat-plate {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-lg); padding: var(--s6) var(--s5);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    text-align: center; position: relative; overflow: hidden;
+    transition: box-shadow 0.35s var(--ease-soft), border-color 0.35s var(--ease-soft);
+    transform-style: preserve-3d;
+  }
+  .stat-plate::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-hi), transparent);
+    opacity: 0.65;
+  }
+  .stat-plate:hover { border-color: var(--accent-hi); box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 14px 46px rgba(124,58,237,0.22), 0 0 40px rgba(124,58,237,0.16); }
+  .stat-plate .num {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(30px, 4.4vw, 44px); font-weight: 700;
+    color: var(--accent); letter-spacing: -0.02em; line-height: 1; margin-bottom: var(--s3);
+  }
+  .stat-plate .label { font-size: var(--t-small); color: var(--glass-heading); font-weight: 700; line-height: 1.4; }
+  .stat-plate .sub { margin-top: var(--s2); font-size: var(--t-micro); color: var(--glass-muted); line-height: 1.45; }
+
+  /* ---------- Pipeline (3D-backed, DOM-labelled) ---------- */
+  .pipe-row { display: flex; align-items: stretch; justify-content: center; gap: var(--s3); flex-wrap: wrap; margin-top: var(--s7); }
+  .pipe-step {
+    flex: 1 1 150px; max-width: 190px; min-width: 140px;
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    border-radius: var(--r-md); padding: var(--s4) var(--s3);
+    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow); text-align: center;
+    transition: border-color 0.4s var(--ease-soft), box-shadow 0.4s var(--ease-soft), transform 0.4s var(--ease-out);
+  }
+  .pipe-step.lit {
+    border-color: var(--accent-hi);
+    box-shadow: 0 0 28px rgba(124,58,237,0.25), var(--glass-shadow);
+    transform: translateY(-5px);
+  }
+  .pipe-step .pnum {
+    font-size: 10px; letter-spacing: 0.16em; color: var(--accent);
+    font-weight: 700; margin-bottom: var(--s2);
+  }
+  .pipe-step .ptitle { font-size: 13.5px; font-weight: 700; color: var(--glass-heading); margin-bottom: var(--s2); line-height: 1.3; }
+  .pipe-step .pdesc { font-size: 11.5px; color: var(--glass-muted); line-height: 1.45; }
+
+  /* ---------- Model cards ---------- */
+  .model-card { position: relative; }
+  .model-card .mtag {
+    display: inline-block; font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: var(--s3);
+    border: 1px solid var(--glass-border); padding: 3px 9px; border-radius: var(--r-pill);
+  }
+  .model-card h3 { font-size: 16px; color: var(--glass-heading); margin-bottom: var(--s2); font-weight: 700; }
+  .model-card p { font-size: var(--t-small); color: var(--glass-muted); line-height: 1.6; }
+  .model-card .metric {
+    margin-top: var(--s4); padding-top: var(--s3); border-top: 1px solid var(--glass-border);
+    font-size: 12px; color: var(--accent-lo); font-weight: 700;
+  }
+
+  /* ---------- Interactive demo ---------- */
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); align-items: start; text-align: left; }
+  .demo-field { margin-bottom: var(--s5); }
+  .demo-field label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12.5px; color: var(--glass-heading); font-weight: 700; margin-bottom: var(--s2);
+  }
+  .demo-field .val { color: var(--accent); font-weight: 700; }
+  .demo-field .hint { display: block; font-size: 11px; color: var(--glass-muted); font-weight: 400; margin-top: 3px; line-height: 1.4; }
+  input[type=range] {
+    width: 100%; height: 30px; -webkit-appearance: none; appearance: none;
+    background: transparent; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 5px; border-radius: var(--r-pill);
+    background: linear-gradient(90deg, var(--accent-lo), var(--accent-hi));
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px; margin-top: -7.5px; border-radius: 50%;
+    background: #fff; border: 3px solid var(--accent);
+    box-shadow: 0 0 12px rgba(124,58,237,0.5);
+  }
+  input[type=range]::-moz-range-track { height: 5px; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--accent-lo), var(--accent-hi)); }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid var(--accent); }
+  select {
+    width: 100%; padding: 10px 12px; min-height: 44px;
+    background: #ffffff; color: var(--glass-heading);
+    border: 1px solid var(--glass-border); border-radius: var(--r-sm);
+    font-family: inherit; font-size: 13px;
+  }
+  .score-readout { text-align: center; }
+  .score-dial {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(46px, 8vw, 74px); font-weight: 700; line-height: 1;
+    letter-spacing: -0.03em; transition: color 0.4s var(--ease-soft);
+  }
+  .score-band {
+    display: inline-block; margin-top: var(--s3); padding: 6px 16px;
+    border-radius: var(--r-pill); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    transition: background 0.4s var(--ease-soft), color 0.4s var(--ease-soft);
+  }
+  .score-meter { height: 7px; border-radius: var(--r-pill); background: rgba(124,58,237,0.16); margin: var(--s5) 0 var(--s3); overflow: hidden; }
+  .score-meter i { display: block; height: 100%; width: 0%; border-radius: var(--r-pill); transition: width 0.5s var(--ease-out), background 0.4s var(--ease-soft); }
+  .score-note { font-size: 11.5px; color: var(--glass-muted); line-height: 1.55; margin-top: var(--s4); }
+  .factor-list { list-style: none; margin-top: var(--s5); }
+  .factor-list li {
+    display: flex; justify-content: space-between; gap: var(--s3);
+    font-size: 12px; padding: 7px 0; border-bottom: 1px solid var(--glass-border);
+    color: var(--glass-muted);
+  }
+  .factor-list li b { color: var(--glass-heading); font-weight: 700; }
+
+  /* ---------- Methodology list ---------- (sits directly on the dark cosmic
+     backdrop, not inside a .panel, so it keeps light-on-dark text) */
+  .method-list { list-style: none; text-align: left; max-width: 780px; margin: var(--s6) auto 0; }
+  .method-list li {
+    position: relative; padding: var(--s4) 0 var(--s4) var(--s7);
+    border-bottom: 1px solid rgba(124,58,237,0.18);
+    font-size: var(--t-small); color: var(--muted); line-height: 1.65;
+  }
+  .method-list li strong { display: block; color: var(--paper); font-size: 15px; margin-bottom: 4px; font-weight: 700; }
+  .method-list li::before {
+    content: '✓'; position: absolute; left: var(--s4); top: var(--s4);
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(22,163,74,0.14); border: 1px solid rgba(21,128,61,0.55);
+    color: #15803d; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---------- Institutions ---------- */
+  .inst-row { display: flex; gap: var(--s8); flex-wrap: wrap; justify-content: center; margin-top: var(--s7); }
+  .inst-card {
+    flex: 0 1 300px; padding: var(--s6) var(--s5); border-radius: var(--r-lg);
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow); text-align: center;
+    position: relative; overflow: hidden;
+  }
+  /* Light-sweep pass across the institutional mark */
+  .inst-logo-frame {
+    position: relative; height: 76px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: var(--s4); border-radius: var(--r-md); overflow: hidden;
+    background: rgba(237,233,254,0.94); padding: var(--s3) var(--s4);
+  }
+  .inst-logo-frame img { max-height: 100%; max-width: 100%; object-fit: contain; }
+  .inst-logo-frame::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 35%, rgba(168,85,247,0.55) 50%, transparent 65%);
+    transform: translateX(-130%);
+  }
+  .inst-card.swept .inst-logo-frame::after { animation: sweep 1.5s var(--ease-out) forwards; }
+  @keyframes sweep { to { transform: translateX(130%); } }
+  .inst-card h3 { font-size: 15.5px; color: var(--glass-heading); margin-bottom: var(--s2); font-weight: 700; }
+  .inst-card p { font-size: 12.5px; color: var(--glass-muted); line-height: 1.6; }
+
+  /* ---------- Team ---------- */
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s5); margin-top: var(--s7); }
+  .team-card { text-align: left; }
+  .team-card .avatar {
+    width: 52px; height: 52px; border-radius: var(--r-md);
+    background: linear-gradient(140deg, var(--accent-lo), var(--accent-hi));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: #fff;
+    margin-bottom: var(--s4); box-shadow: 0 6px 20px rgba(124,58,237,0.4);
+  }
+  .team-card h3 { font-size: 17px; color: var(--glass-heading); margin-bottom: 3px; font-weight: 700; }
+  .team-card .role { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--s3); }
+  .team-card .inst { font-size: 12.5px; color: var(--glass-muted); line-height: 1.55; }
+
+  /* ---------- Footer ---------- */
+  footer.cta-footer { min-height: auto; padding: var(--s9) var(--s5) var(--s7); }
+  .footer-watermark {
+    position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%);
+    width: min(420px, 62vw); opacity: 0.045; pointer-events: none;
+    filter: grayscale(1) brightness(2.4);
+  }
+  .footer-legal {
+    margin-top: var(--s7); padding-top: var(--s5);
+    border-top: 1px solid rgba(124,58,237,0.2);
+    font-size: 11.5px; color: var(--muted); line-height: 1.7; max-width: 720px;
+    margin-left: auto; margin-right: auto;
+  }
+  .footer-legal a { color: var(--lilac-pale); }
+
+  /* ---------- Section dots nav ---------- */
+  #nav-dots {
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+    z-index: 40; display: flex; flex-direction: column; gap: 13px;
+  }
+  #nav-dots a {
+    width: 9px; height: 9px; border-radius: 50%; display: block; position: relative;
+    background: rgba(216,180,254,0.22); border: 1px solid rgba(216,180,254,0.38);
+    transition: background 0.3s var(--ease-soft), transform 0.3s var(--ease-out);
+  }
+  #nav-dots a::after {
+    content: attr(data-label); position: absolute; right: 20px; top: 50%;
+    transform: translateY(-50%) translateX(6px);
+    white-space: nowrap; font-size: 10.5px; letter-spacing: 0.06em;
+    color: var(--lilac-pale); background: rgba(13,0,33,0.9);
+    padding: 3px 9px; border-radius: var(--r-sm);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s var(--ease-out);
+    border: 1px solid rgba(124,58,237,0.35);
+  }
+  #nav-dots a:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+  #nav-dots a.active { background: var(--lilac); transform: scale(1.4); box-shadow: 0 0 12px rgba(192,132,252,0.8); }
+
+  /* ---------- Sound toggle ---------- */
+  #sound-toggle {
+    position: fixed; left: 18px; bottom: 18px; z-index: 40;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(22,2,46,0.8); border: 1px solid rgba(124,58,237,0.45);
+    backdrop-filter: blur(8px); color: var(--lilac-pale);
+    font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.25s var(--ease-soft), transform 0.25s var(--ease-out);
+  }
+  #sound-toggle:hover { background: rgba(76,0,153,0.65); transform: scale(1.07); }
+
+  /* ---------- Custom cursor (desktop, fine pointer only) ---------- */
+  #cursor-dot, #cursor-ring { position: fixed; top: 0; left: 0; z-index: 90; pointer-events: none; border-radius: 50%; }
+  #cursor-dot { width: 6px; height: 6px; background: var(--lilac); margin: -3px 0 0 -3px; }
+  #cursor-ring {
+    width: 30px; height: 30px; margin: -15px 0 0 -15px;
+    border: 1px solid rgba(192,132,252,0.55);
+    transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), margin 0.25s var(--ease-out), background 0.25s var(--ease-soft);
+  }
+  #cursor-ring.hot { width: 46px; height: 46px; margin: -23px 0 0 -23px; background: rgba(168,85,247,0.14); }
+  body.has-custom-cursor, body.has-custom-cursor a, body.has-custom-cursor button { cursor: none; }
+  @media (hover: none), (pointer: coarse) { #cursor-dot, #cursor-ring { display: none !important; } }
+
+  /* ---------- Fallback notices ---------- */
+  .fallback-note { display: none; font-size: var(--t-micro); color: var(--muted); margin-top: var(--s4); }
+  body.no-webgl .fallback-note, body.reduced-motion .fallback-note { display: block; }
+  body.no-webgl #bg-canvas { display: none; }
+  #fallback-error {
+    display: none; font-size: 11px; color: #ff8080; margin-top: var(--s2);
+    max-width: 560px; margin-left: auto; margin-right: auto;
+    font-family: 'JetBrains Mono', monospace; word-break: break-word;
+  }
+  body.no-webgl #fallback-error { display: block; }
+
+  /* ---------- Responsive: genuinely re-composed mobile, not just scaled ---------- */
+  @media (max-width: 860px) {
+    .demo-grid { grid-template-columns: 1fr; gap: var(--s5); }
+    .inst-row { gap: var(--s5); }
+  }
+  @media (max-width: 700px) {
+    :root { --s9: 64px; --s8: 44px; --s7: 32px; }
+    section, footer.cta-footer { padding: var(--s9) var(--s4); }
+    #nav-dots { display: none; }
+    #topnav { padding: var(--s2) var(--s4); }
+    .nav-mark { height: 20px; max-width: 68px; }
+    .nav-brand { font-size: 14px; letter-spacing: 0.1em; }
+    .trust-bar { gap: var(--s5); }
+    .pipe-row { gap: var(--s2); }
+    .pipe-step { min-width: 0; flex-basis: 46%; max-width: none; }
+    .btn { width: 100%; justify-content: center; }
+    .btn-row { width: 100%; }
+    .panel { padding: var(--s5) var(--s4); }
+    #sound-toggle { width: 44px; height: 44px; bottom: 14px; left: 14px; }
+    #grain { opacity: 0.035; }
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+    }
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+    #grain { display: none; }
+  }
+
+  @media (prefers-contrast: more) {
+    .panel, .stat-plate, .badge, .pipe-step { border-width: 2px; }
+    p.muted, .stat-plate .sub, .model-card p { color: #c4bcd6; }
+  }
+
+  /* =====================================================================
+     REFERENCE-ADAPTED PATTERNS
+     Motion/layout language borrowed from a deployment-platform reference
+     site, re-tuned for a banking / fraud-detection brand: violet instead
+     of hazard-yellow, restrained timing, no playful dev-tool voice.
+     ===================================================================== */
+
+  /* ---- 1. Numbered process steps + swapping visual ---- */
+  .process-layout {
+    display: grid; grid-template-columns: 1fr 1.05fr;
+    gap: var(--s8); align-items: center; text-align: left; margin-top: var(--s7);
+  }
+  .process-steps { list-style: none; }
+  .process-step {
+    position: relative; padding: var(--s5) var(--s4) var(--s5) var(--s5);
+    border-top: 1px solid rgba(124,58,237,0.2);
+    cursor: pointer; opacity: 0.4;
+    transition: opacity 0.55s var(--ease-soft), background 0.5s var(--ease-soft);
+    border-radius: var(--r-md);
+  }
+  .process-step:last-child { border-bottom: 1px solid rgba(124,58,237,0.2); }
+  .process-step.active { opacity: 1; background: rgba(76,0,153,0.16); }
+  .process-step .pbar {
+    position: absolute; left: 0; top: var(--s4); bottom: var(--s4); width: 2px;
+    background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+    transform: scaleY(0); transform-origin: top;
+    transition: transform 0.55s var(--ease-out);
+    border-radius: var(--r-pill);
+  }
+  .process-step.active .pbar { transform: scaleY(1); }
+  .process-step .pstep-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: 0.22em; color: var(--accent-hi); font-weight: 600;
+  }
+  .process-step h3 {
+    font-family: 'Fraunces', Georgia, serif; font-weight: 600;
+    font-size: clamp(19px, 2.5vw, 29px); color: var(--paper);
+    margin: var(--s2) 0 var(--s2); letter-spacing: -0.012em; line-height: 1.15;
+  }
+  .process-step p { font-size: var(--t-small); color: var(--muted); line-height: 1.62; max-width: 46ch; }
+
+  /* Visual panel — 3D flip cross-fade between states */
+  .process-visual { position: relative; min-height: 400px; perspective: 1300px; }
+  .pv-card {
+    position: absolute; inset: 0;
+    border-radius: var(--r-lg); padding: var(--s5);
+    background: rgba(18,2,40,0.82);
+    border: 1px solid rgba(124,58,237,0.4);
+    box-shadow: 0 1px 0 rgba(168,85,247,0.12) inset, 0 18px 54px rgba(0,0,0,0.6);
+    backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+    transform-style: preserve-3d;
+    opacity: 0; pointer-events: none;
+    transform: rotateY(-22deg) translateZ(-60px) scale(0.94);
+    transition: opacity 0.62s var(--ease-soft), transform 0.62s var(--ease-out);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .pv-card.active { opacity: 1; pointer-events: auto; transform: rotateY(0deg) translateZ(0) scale(1); }
+  .pv-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); padding-bottom: var(--s3);
+    border-bottom: 1px solid rgba(124,58,237,0.24); margin-bottom: var(--s4);
+  }
+  .pv-head b { color: var(--accent-hi); font-weight: 700; }
+
+  /* Dashboard-language severity badges (mirrors dashboard/index.html) */
+  .sev {
+    display: inline-block; padding: 4px 11px; border-radius: var(--r-pill);
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .sev-critical { background: #ff4444; color: #fff; }
+  .sev-high     { background: #ff9933; color: #fff; }
+  .sev-medium   { background: #ffcc33; color: #000; }
+  .sev-low      { background: #3366ff; color: #fff; }
+
+  .pv-row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: var(--s3);
+    align-items: center; padding: 10px var(--s3); border-radius: var(--r-sm);
+    font-size: 12px; margin-bottom: 6px;
+    background: rgba(13,0,33,0.5); border: 1px solid rgba(124,58,237,0.16);
+  }
+  .pv-row .acct { font-family: 'JetBrains Mono', monospace; color: var(--lilac-pale); }
+  .pv-row .scr  { font-family: 'JetBrains Mono', monospace; color: var(--paper); font-weight: 600; }
+  .pv-row.rank1 { border-color: rgba(255,68,68,0.5); background: rgba(220,38,38,0.12); }
+
+  /* Risk gauge for step 02 */
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--s3); }
+  .gauge {
+    width: 168px; height: 168px; border-radius: 50%;
+    background: conic-gradient(#DC2626 0turn, #DC2626 var(--g, 0.78turn), rgba(124,58,237,0.14) var(--g, 0.78turn), rgba(124,58,237,0.14) 1turn);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; transition: background 0.8s var(--ease-soft);
+  }
+  .gauge::after {
+    content: ''; position: absolute; inset: 13px; border-radius: 50%;
+    background: #12022a; border: 1px solid rgba(124,58,237,0.3);
+  }
+  .gauge-val {
+    position: relative; z-index: 1; font-family: 'Fraunces', serif;
+    font-size: 38px; font-weight: 700; color: #ff6b6b; letter-spacing: -0.02em;
+  }
+  .gauge-cap { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+  .pv-resolved { text-align: center; }
+  .pv-check {
+    width: 76px; height: 76px; border-radius: 50%; margin: 0 auto var(--s4);
+    background: rgba(22,163,74,0.16); border: 2px solid #16A34A;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; color: #4ade80;
+  }
+
+  /* ---- 3. Color-wipe section transitions ---- */
+  .wipe {
+    position: relative; height: 58vh; min-height: 320px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; z-index: 4;
+  }
+  .wipe-fill {
+    position: absolute; left: -6%; right: -6%; height: 128%; top: 0;
+    background: linear-gradient(155deg, #4C0099 0%, #7c3aed 58%, #A855F7 100%);
+    border-radius: 0 0 46% 46% / 0 0 16% 16%;
+    transform: translateY(-102%);
+    will-change: transform;
+  }
+  .wipe-word {
+    position: relative; z-index: 2;
+    font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+    font-size: clamp(46px, 12vw, 150px); letter-spacing: -0.035em;
+    color: transparent; -webkit-text-stroke: 1.6px rgba(237,233,254,0.9);
+    opacity: 0; white-space: nowrap;
+  }
+  .wipe-sub {
+    position: absolute; z-index: 2; bottom: 16%;
+    font-size: var(--t-micro); letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(237,233,254,0.72); opacity: 0;
+  }
+
+  /* ---- 5. 3D device mockup showing real product UI ---- */
+  .device-stage { perspective: 1500px; width: 100%; }
+  .device {
+    transform-style: preserve-3d;
+    transform: rotateX(9deg) rotateY(-15deg) rotateZ(0.6deg);
+    transition: transform 0.8s var(--ease-out);
+    max-width: 560px; margin: 0 auto;
+  }
+  .device-stage:hover .device { transform: rotateX(5deg) rotateY(-8deg); }
+  .device-screen {
+    background: linear-gradient(150deg, #0d0021, #1a0035);
+    border: 9px solid #241338; border-bottom-width: 5px;
+    border-radius: 12px 12px 4px 4px;
+    padding: var(--s4);
+    box-shadow: 0 34px 70px rgba(0,0,0,0.66), 0 0 0 1px rgba(124,58,237,0.34),
+                0 0 60px rgba(124,58,237,0.24);
+    text-align: left;
+  }
+  .device-base {
+    height: 13px; margin: 0 auto;
+    width: 116%; max-width: none; transform: translateX(-6.9%);
+    background: linear-gradient(180deg, #2c1c42, #150b24);
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 16px 30px rgba(0,0,0,0.55);
+    position: relative;
+  }
+  .device-base::after {
+    content: ''; position: absolute; left: 50%; top: 3px; transform: translateX(-50%);
+    width: 62px; height: 4px; border-radius: var(--r-pill); background: rgba(124,58,237,0.4);
+  }
+  .ui-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 10px; margin-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .ui-title { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; }
+  .ui-stats { display: flex; gap: var(--s4); }
+  .ui-stat { text-align: center; }
+  .ui-stat .n { font-size: 15px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+  .ui-stat .l { font-size: 8px; text-transform: uppercase; color: #999; letter-spacing: 0.08em; }
+  .ui-table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .ui-table th {
+    text-align: left; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #999; padding: 5px 6px; border-bottom: 1px solid rgba(124,58,237,0.3); font-weight: 600;
+  }
+  .ui-table td { padding: 7px 6px; border-bottom: 1px solid rgba(124,58,237,0.13); color: var(--ink); }
+  .ui-table .acct { font-family: 'JetBrains Mono', monospace; color: var(--lilac-pale); }
+  .ui-table .scr { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--paper); }
+
+  /* ---- 6. Restrained RGB-split glitch on headlines only ---- */
+  .glitch { position: relative; }
+  .glitch.fire::before, .glitch.fire::after {
+    content: attr(data-text);
+    position: absolute; left: 0; top: 0; width: 100%;
+    pointer-events: none; opacity: 0.85;
+    background: none; -webkit-text-fill-color: currentColor;
+  }
+  .glitch.fire::before { color: #DC2626; animation: rgbA 0.62s steps(3, end) 1 both; }
+  .glitch.fire::after  { color: #7c3aed; animation: rgbB 0.62s steps(3, end) 1 both; }
+  @keyframes rgbA {
+    0%   { transform: translate3d(-7px, 2px, 0); clip-path: inset(4% 0 62% 0); opacity: 0.9; }
+    35%  { transform: translate3d(5px, -2px, 0); clip-path: inset(58% 0 12% 0); }
+    70%  { transform: translate3d(-3px, 1px, 0); clip-path: inset(22% 0 44% 0); }
+    100% { transform: translate3d(0,0,0); clip-path: inset(0 0 0 0); opacity: 0; }
+  }
+  @keyframes rgbB {
+    0%   { transform: translate3d(7px, -2px, 0); clip-path: inset(56% 0 8% 0); opacity: 0.9; }
+    35%  { transform: translate3d(-5px, 2px, 0); clip-path: inset(8% 0 66% 0); }
+    70%  { transform: translate3d(3px, -1px, 0); clip-path: inset(38% 0 28% 0); }
+    100% { transform: translate3d(0,0,0); clip-path: inset(0 0 0 0); opacity: 0; }
+  }
+
+  /* ---- 7. Bold full-bleed closing CTA ---- */
+  #final-cta {
+    background: linear-gradient(165deg, #2E0052 0%, #3d0070 52%, #2E0052 100%);
+    position: relative; overflow: hidden;
+    min-height: 92vh; border-top: 1px solid rgba(192,132,252,0.28);
+  }
+  .ghost-text {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+    font-size: clamp(84px, 21vw, 300px); line-height: 0.86;
+    color: rgba(237,233,254,0.05); white-space: nowrap;
+    pointer-events: none; user-select: none; letter-spacing: -0.04em;
+  }
+  #final-cta .wrap { position: relative; z-index: 2; }
+  .final-head {
+    font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+    font-size: clamp(34px, 6.4vw, 82px); line-height: 1.03;
+    letter-spacing: -0.028em; color: var(--paper);
+    max-width: 15ch; margin: 0 auto var(--s5);
+    text-shadow: 0 4px 40px rgba(13,0,33,0.55);
+  }
+
+  @media (max-width: 860px) {
+    .process-layout { grid-template-columns: 1fr; gap: var(--s6); }
+    .process-visual { min-height: 340px; order: -1; }
+  }
+  @media (max-width: 700px) {
+    .wipe { height: 44vh; min-height: 240px; }
+    .process-step { padding: var(--s4) var(--s3) var(--s4) var(--s4); }
+    .device-screen { padding: var(--s3); }
+    .ui-stats { gap: var(--s3); }
+    .gauge { width: 132px; height: 132px; }
+    .gauge-val { font-size: 30px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glitch.fire::before, .glitch.fire::after { display: none !important; }
+    .wipe-fill { transform: translateY(0) !important; opacity: 0.25; }
+    .wipe-word, .wipe-sub { opacity: 1 !important; }
+    .pv-card { transition: none !important; }
+    .device { transform: none !important; }
+  }
+
+  /* =====================================================================
+     PROTECTED-CARD CENTREPIECE
+     ===================================================================== */
+  #protection {
+    background: radial-gradient(ellipse 75% 60% at 50% 46%, rgba(76,0,153,0.42), transparent 72%);
+    overflow: hidden;
+  }
+  #protection .wrap { position: relative; z-index: 2; pointer-events: none; }
+  #protection .prot-copy { max-width: 560px; margin: 0 auto; }
+  /* The card+drum render into the shared fixed canvas, so the section itself
+     only carries copy. This spacer reserves the stage height. */
+  .card-stage-spacer { height: 46vh; min-height: 260px; pointer-events: none; }
+  .prot-hint {
+    font-size: var(--t-micro); color: var(--muted); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-top: var(--s5);
+  }
+  /* Static fallback shown only when motion is reduced / WebGL is gone */
+  .card-static { display: none; margin: var(--s6) auto 0; max-width: 420px; }
+  .card-static-face {
+    aspect-ratio: 85.6 / 54; border-radius: 14px;
+    background: linear-gradient(135deg, #2E0052 0%, #4C0099 46%, #7c3aed 100%);
+    border: 1px solid rgba(192,132,252,0.5);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    padding: var(--s5); display: flex; flex-direction: column; justify-content: space-between;
+    text-align: left; position: relative; overflow: hidden;
+  }
+  .card-static-face .cs-brand {
+    font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700;
+    color: var(--paper); letter-spacing: 0.06em;
+  }
+  .card-static-face .cs-chip {
+    width: 46px; height: 34px; border-radius: 6px;
+    background: linear-gradient(135deg, #d9b45a, #b8892f 55%, #f0d894);
+    border: 1px solid rgba(0,0,0,0.28);
+  }
+  .card-static-face .cs-logo { height: 26px; align-self: flex-end; filter: brightness(1.9); }
+  .card-static-face .cs-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    letter-spacing: 0.18em; color: rgba(237,233,254,0.9);
+  }
+  body.reduced-motion .card-static, body.no-webgl .card-static { display: block; }
+  body.reduced-motion .card-stage-spacer, body.no-webgl .card-stage-spacer { height: 0; min-height: 0; }
+
+  @media (max-width: 700px) {
+    .card-stage-spacer { height: 34vh; min-height: 180px; }
+  }
+
+  /* ---------- Print stylesheet ---------- */
+  @media print {
+    #final-cta { background: none !important; min-height: auto; }
+    .final-head { color: #2E0052 !important; }
+    .process-step { opacity: 1 !important; }
+    #bg-canvas, #grain, #vignette, #nav-dots, #sound-toggle, #topnav,
+    #scroll-progress, #asset-bar, #cursor-dot, #cursor-ring, .footer-watermark { display: none !important; }
+    body { background: #fff !important; color: #111 !important; }
+    section, footer.cta-footer { min-height: auto; page-break-inside: avoid; padding: 18pt 0; background: none !important; }
+    h1.hero-title, h2.section-title, h3.sub-title, .stat-plate .num { color: #2E0052 !important; -webkit-text-fill-color: #2E0052 !important; }
+    p.lead, p.body, p.muted, .stat-plate .label, .model-card p { color: #222 !important; }
+    .panel, .stat-plate, .pipe-step { border: 1pt solid #999 !important; background: none !important; box-shadow: none !important; }
+    a::after { content: " (" attr(href) ")"; font-size: 9pt; color: #555; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<div id="asset-bar" aria-hidden="true"></div>
+<div id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div id="vignette" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+
+<div id="cursor-ring" aria-hidden="true"></div>
+<div id="cursor-dot" aria-hidden="true"></div>
+
+<!-- Persistent nav with real institutional marks (A3: BOI/RBI appear here, in
+     the institutions section, and as a footer watermark — never just once) -->
+<header id="topnav">
+  <a class="nav-brand" href="landing.html"><span class="dot"></span>SACHET</a>
+  <div class="hdr-nav">
+    <a href="landing.html" class="active">Overview</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="account_universe.html">Account Universe</a>
+    <a href="investigator.html">Investigator Console</a>
+    <a href="live_scoring.html">Live Scoring</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light/dark theme">🌙</button>
+  </div>
+  <div class="nav-marks">
+    <img class="nav-mark shimmer" src="assets/textures/rbi-logo.svg" alt="Reserve Bank of India logo" width="96" height="26">
+  </div>
+</header>
+<script>(function(){try{if(localStorage.getItem('sachet-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<script>
+(function(){
+  function icon(){return document.documentElement.getAttribute('data-theme')==='dark' ? '☀️' : '🌙';}
+  var btn = document.getElementById('theme-toggle');
+  btn.textContent = icon();
+  btn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('sachet-theme', next); }catch(e){}
+    btn.textContent = icon();
+  });
+})();
+</script>
+
+<nav id="nav-dots" aria-label="Section navigation">
+  <a href="#hero"         data-label="Overview"      aria-label="Overview" class="active"></a>
+  <a href="#protection"   data-label="Protection"    aria-label="Protection"></a>
+  <a href="#problem"      data-label="The Problem"   aria-label="The Problem"></a>
+  <a href="#pipeline"     data-label="Pipeline"      aria-label="Pipeline"></a>
+  <a href="#process"      data-label="How It Works"  aria-label="How It Works"></a>
+  <a href="#architecture" data-label="Architecture"  aria-label="Architecture"></a>
+  <a href="#demo"         data-label="Try It"        aria-label="Interactive demo"></a>
+  <a href="#results"      data-label="Results"       aria-label="Results"></a>
+  <a href="#methodology"  data-label="Methodology"   aria-label="Methodology"></a>
+  <a href="#institutions" data-label="Context"       aria-label="Institutional context"></a>
+  <a href="#team"         data-label="Team"          aria-label="Team"></a>
+  <a href="#cta"          data-label="Resources"     aria-label="Resources"></a>
+</nav>
+
+<button id="sound-toggle" aria-pressed="false" aria-label="Enable interface sound cues (currently muted)" title="Sound: off">🔇</button>
+
+<div id="content">
+<main id="main-content">
+
+  <!-- ============ 1. HERO ============ -->
+  <section id="hero">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Team SATARK · PSB Cybersecurity, Fraud &amp; AI Hackathon 2026</div>
+      <h1 class="hero-title" id="hero-kinetic-title">SACHET</h1>
+      <p class="lead" data-reveal>
+        A leakage-free, positive-unlabeled ensemble that finds the mule accounts
+        hiding inside 9,082 customer records — and hands investigators a ranked
+        shortlist instead of an alert queue.
+      </p>
+      <div class="badge-row" data-reveal>
+        <span class="badge">Problem Statement 2 · Bank of India × IIT Hyderabad</span>
+        <span class="badge">0.813 AUC-PR · out-of-fold</span>
+      </div>
+      <div class="btn-row" data-reveal>
+        <a class="btn btn-primary" href="#problem" data-sfx="click">See how it works</a>
+        <a class="btn btn-ghost" href="#demo" data-sfx="click">Score a sample account</a>
+      </div>
+      <div class="trust-bar" data-reveal>
+        <div class="trust-item"><span class="tnum">9,082</span><span class="tlabel">accounts</span></div>
+        <div class="trust-item"><span class="tnum">3,924</span><span class="tlabel">raw features</span></div>
+        <div class="trust-item"><span class="tnum">81</span><span class="tlabel">confirmed mules</span></div>
+        <div class="trust-item"><span class="tnum">0.89%</span><span class="tlabel">prevalence</span></div>
+      </div>
+      <p class="fallback-note">3D visuals are disabled (reduced motion or WebGL unavailable). All content below is complete and unaffected.</p>
+      <p id="fallback-error"></p>
+    </div>
+  </section>
+
+  <!-- ============ PROTECTED CARD CENTREPIECE ============ -->
+  <section id="protection">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Protection</div>
+      <h2 class="section-title glitch" data-reveal>The account behind the card</h2>
+      <div class="card-stage-spacer" aria-hidden="true"></div>
+      <div class="prot-copy">
+        <p class="lead" data-reveal>
+          SACHET scores behaviour, not the card — a clean KYC file doesn't make an
+          account invisible.
+        </p>
+        <p class="prot-hint" data-reveal>Scroll to rotate · hover to slow the drum</p>
+      </div>
+
+      <!-- Static fallback: reduced-motion / no-WebGL -->
+      <div class="card-static">
+        <div class="card-static-face">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <span class="cs-brand">SACHET</span>
+            <div class="cs-chip" aria-hidden="true"></div>
+          </div>
+          <div class="cs-num">•••• •••• •••• 9082</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. THE PROBLEM ============ -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>The Problem</div>
+      <h2 class="section-title" data-reveal>A mule account looks exactly like a good customer<br>— until the money has already moved.</h2>
+      <p class="lead" data-reveal>
+        Mule accounts are the plumbing of financial fraud. They receive proceeds from
+        phishing, investment scams and card compromise, then layer and move those funds
+        across UPI, IMPS, NEFT and RTGS rails fast enough that recovery windows close
+        before a case is even opened.
+      </p>
+      <p class="body" data-reveal>
+        The accounts themselves are unremarkable on paper: legitimate KYC, ordinary
+        balances, ordinary tenure. What distinguishes them is <em>behaviour over time</em> —
+        pass-through velocity, balance that never rests, structuring just under reporting
+        thresholds, and bursts of counterparty churn. Static rule thresholds cannot encode
+        that, so they compensate by flagging broadly.
+      </p>
+
+      <div class="grid grid-3" style="margin-top: var(--s7);">
+        <div class="panel" data-reveal>
+          <h3 class="sub-title">The needle</h3>
+          <p class="muted">Just <strong class="danger-text">81 of 9,082</strong> accounts are confirmed mules — a
+          <strong>0.89%</strong> prevalence. A model that predicts "clean" for every single
+          account is still 99.11% accurate, which is why accuracy is a meaningless target here.</p>
+        </div>
+        <div class="panel" data-reveal>
+          <h3 class="sub-title">The haystack</h3>
+          <p class="muted"><strong>3,924</strong> pre-aggregated behavioural features per account —
+          cash, cheque, UPI, NEFT and RTGS ratios across multiple time windows, balance
+          deviations and tenure. No analyst reviews that by hand, at that volume.</p>
+        </div>
+        <div class="panel" data-reveal>
+          <h3 class="sub-title">The false-positive tax</h3>
+          <p class="muted">Rule engines flag cheaply and push the cost of precision onto
+          humans. A Current/MSME account legitimately runs high throughput on a low balance
+          — the exact pass-through signature — so naive rules bury real cases under
+          look-alike noise.</p>
+        </div>
+      </div>
+
+      <p class="kicker" data-reveal>Two failure modes make this easy to get wrong:</p>
+    </div>
+  </section>
+
+  <!-- ==== PATTERN 3: colour-wipe scene change ==== -->
+  <div class="wipe" data-wipe aria-hidden="true">
+    <div class="wipe-fill"></div>
+    <div class="wipe-word">DETECT.</div>
+    <div class="wipe-sub">Stage one</div>
+  </div>
+
+  <!-- ============ 3. HOW IT WORKS (3D pipeline) ============ -->
+  <section id="pipeline">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>How It Works</div>
+      <h2 class="section-title" data-reveal>A triage layer, not a replacement</h2>
+      <p class="lead" data-reveal>
+        SACHET sits <em>behind</em> your existing alert system. Alerts still fire the way
+        they do today — SACHET decides what an investigator should open first.
+      </p>
+
+      <div class="pipe-row" role="list">
+        <div class="pipe-step" role="listitem" data-pipe="0">
+          <div class="pnum">01</div>
+          <div class="ptitle">Transaction data</div>
+          <div class="pdesc">9,082 accounts × 3,924 behavioural features from the bank's own aggregation.</div>
+        </div>
+        <div class="pipe-step" role="listitem" data-pipe="1">
+          <div class="pnum">02</div>
+          <div class="ptitle">Fold-local features</div>
+          <div class="pdesc">Mutual-information selection to top 150, engineered and scaled inside each CV fold only.</div>
+        </div>
+        <div class="pipe-step" role="listitem" data-pipe="2">
+          <div class="pnum">03</div>
+          <div class="ptitle">Four base learners</div>
+          <div class="pdesc">LightGBM, NNPU, CatBoost and an ECOD / Deep Isolation Forest anomaly pair.</div>
+        </div>
+        <div class="pipe-step" role="listitem" data-pipe="3">
+          <div class="pnum">04</div>
+          <div class="ptitle">Meta-learner</div>
+          <div class="pdesc">Logistic regression stacks every out-of-fold probability into one calibrated score.</div>
+        </div>
+        <div class="pipe-step" role="listitem" data-pipe="4">
+          <div class="pnum">05</div>
+          <div class="ptitle">Ranked queue</div>
+          <div class="pdesc">Severity-tiered alerts plus SHAP reasons, ordered so the top of the list is worth opening.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ PATTERN 1 + 5: numbered process + swapping visual ============ -->
+  <section id="process">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Investigator Workflow</div>
+      <h2 class="section-title glitch" data-reveal>How SACHET works, alert to resolution</h2>
+      <p class="lead" data-reveal>
+        Four steps, from the moment your existing rule engine fires to the moment a case
+        is closed. SACHET only owns step two — everything else is your process, unchanged.
+      </p>
+
+      <div class="process-layout">
+        <ol class="process-steps" id="process-steps">
+          <li class="process-step active" data-step="0" tabindex="0">
+            <span class="pbar" aria-hidden="true"></span>
+            <div class="pstep-num">01</div>
+            <h3>Alert flagged</h3>
+            <p>Your existing rule engine fires as it does today — threshold breaches, velocity
+            rules, watchlist hits. Nothing about that layer changes, and nothing is suppressed.</p>
+          </li>
+          <li class="process-step" data-step="1" tabindex="0">
+            <span class="pbar" aria-hidden="true"></span>
+            <div class="pstep-num">02</div>
+            <h3>Scored by SACHET</h3>
+            <p>The stacked ensemble scores the account out-of-fold — LightGBM, NNPU, CatBoost
+            and the ECOD / Deep Isolation Forest pair, combined by the meta-learner into one
+            calibrated mule-risk probability.</p>
+          </li>
+          <li class="process-step" data-step="2" tabindex="0">
+            <span class="pbar" aria-hidden="true"></span>
+            <div class="pstep-num">03</div>
+            <h3>Queue sorted</h3>
+            <p>Alerts are ranked by score and tiered by severity, so the top of the queue is
+            the part actually worth opening. At Precision@100 = 64%, roughly two in three of
+            the first hundred reviews land on a confirmed mule.</p>
+          </li>
+          <li class="process-step" data-step="3" tabindex="0">
+            <span class="pbar" aria-hidden="true"></span>
+            <div class="pstep-num">04</div>
+            <h3>Resolved</h3>
+            <p>The investigator works the ranked list with SHAP reasons attached to each case,
+            and the outcome feeds back for continuous retraining.</p>
+          </li>
+        </ol>
+
+        <div class="process-visual" id="process-visual">
+
+          <!-- 01 — rule engine alert -->
+          <div class="pv-card active" data-pv="0">
+            <div class="pv-head"><span>Rule engine</span><b>Alert raised</b></div>
+            <div class="pv-row"><span class="acct">ACC-4471</span><span class="scr">—</span><span class="sev sev-high">Rule</span></div>
+            <div class="pv-row"><span class="acct">ACC-0912</span><span class="scr">—</span><span class="sev sev-medium">Rule</span></div>
+            <div class="pv-row"><span class="acct">ACC-7734</span><span class="scr">—</span><span class="sev sev-high">Rule</span></div>
+            <div class="pv-row"><span class="acct">ACC-2208</span><span class="scr">—</span><span class="sev sev-low">Rule</span></div>
+            <p class="muted" style="margin-top:var(--s4);font-size:11.5px;">
+              Unranked and unscored. Every alert looks equally urgent — which is the problem.
+            </p>
+          </div>
+
+          <!-- 02 — SACHET scoring, risk gauge -->
+          <div class="pv-card" data-pv="1">
+            <div class="pv-head"><span>SACHET ensemble</span><b>Scoring ACC-4471</b></div>
+            <div class="gauge-wrap">
+              <div class="gauge" style="--g:0.78turn;">
+                <span class="gauge-val">0.78</span>
+              </div>
+              <div class="gauge-cap">
+                Mule-risk probability · stacked out-of-fold estimate<br>
+                <span class="mono" style="color:var(--lilac-pale);">LightGBM · NNPU · CatBoost · ECOD/DeepIF</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03 — ranked queue -->
+          <div class="pv-card" data-pv="2">
+            <div class="pv-head"><span>Investigator queue</span><b>Ranked by score</b></div>
+            <div class="pv-row rank1"><span class="acct">ACC-4471</span><span class="scr">0.78</span><span class="sev sev-critical">Critical</span></div>
+            <div class="pv-row"><span class="acct">ACC-7734</span><span class="scr">0.61</span><span class="sev sev-high">High</span></div>
+            <div class="pv-row"><span class="acct">ACC-0912</span><span class="scr">0.33</span><span class="sev sev-medium">Medium</span></div>
+            <div class="pv-row"><span class="acct">ACC-2208</span><span class="scr">0.09</span><span class="sev sev-low">Low</span></div>
+            <p class="muted" style="margin-top:var(--s4);font-size:11.5px;">
+              Same four alerts — now in an order that reflects risk, not arrival time.
+            </p>
+          </div>
+
+          <!-- 04 — resolved -->
+          <div class="pv-card" data-pv="3">
+            <div class="pv-head"><span>Case ACC-4471</span><b>Closed</b></div>
+            <div class="pv-resolved">
+              <div class="pv-check" aria-hidden="true">✓</div>
+              <h3 class="sub-title" style="margin-bottom:var(--s2);">Confirmed mule</h3>
+              <p class="muted" style="font-size:12px;">
+                Escalated for account restriction and STR filing. Top SHAP drivers:
+                pass-through velocity, low resting balance, counterparty churn.
+                Outcome returns to the training loop.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PATTERN 5: 3D device mockup with the real dashboard UI language -->
+      <div class="device-stage" data-reveal style="margin-top: var(--s9);">
+        <h3 class="sub-title" style="text-align:center;margin-bottom:var(--s5);">The investigator sees this</h3>
+        <div class="device">
+          <div class="device-screen">
+            <div class="ui-topbar">
+              <span class="ui-title">SATARK — Mule Account Detection</span>
+              <div class="ui-stats">
+                <div class="ui-stat"><div class="n">9,082</div><div class="l">Accounts</div></div>
+                <div class="ui-stat"><div class="n">81</div><div class="l">Confirmed</div></div>
+                <div class="ui-stat"><div class="n">0.813</div><div class="l">AUC-PR</div></div>
+              </div>
+            </div>
+            <table class="ui-table">
+              <thead>
+                <tr><th>Account</th><th>Score</th><th>Severity</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="acct">ACC-4471</td><td class="scr">78.4</td><td><span class="sev sev-critical">Critical</span></td><td>Open</td></tr>
+                <tr><td class="acct">ACC-7734</td><td class="scr">61.2</td><td><span class="sev sev-high">High</span></td><td>Open</td></tr>
+                <tr><td class="acct">ACC-1156</td><td class="scr">47.9</td><td><span class="sev sev-high">High</span></td><td>Review</td></tr>
+                <tr><td class="acct">ACC-0912</td><td class="scr">33.1</td><td><span class="sev sev-medium">Medium</span></td><td>Review</td></tr>
+                <tr><td class="acct">ACC-2208</td><td class="scr">9.4</td><td><span class="sev sev-low">Low</span></td><td>Cleared</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="device-base" aria-hidden="true"></div>
+        </div>
+        <p class="muted" style="margin-top:var(--s5);text-align:center;">
+          Severity badges and score column mirror the live investigator dashboard shipped in this repo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== PATTERN 3: colour-wipe scene change ==== -->
+  <div class="wipe" data-wipe aria-hidden="true">
+    <div class="wipe-fill"></div>
+    <div class="wipe-word">SCORE.</div>
+    <div class="wipe-sub">Stage two</div>
+  </div>
+
+  <!-- ============ 4. ARCHITECTURE ============ -->
+  <section id="architecture">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Architecture</div>
+      <h2 class="section-title glitch" data-reveal>Four models that disagree usefully</h2>
+      <p class="lead" data-reveal>
+        Each learner is included because it fails differently from the others. The
+        meta-learner is what turns that disagreement into signal.
+      </p>
+
+      <div class="grid grid-2" style="margin-top: var(--s7);">
+        <div class="panel model-card" data-reveal>
+          <span class="mtag">Model B · Supervised</span>
+          <h3>Cost-sensitive LightGBM</h3>
+          <p>Gradient boosting with <span class="mono">scale_pos_weight ≈ 111</span> to counter the
+          99:1 imbalance directly in the loss rather than by resampling. The strongest
+          single model in the ensemble.</p>
+          <div class="metric">OOF AUC-PR · 0.800</div>
+        </div>
+
+        <div class="panel model-card" data-reveal>
+          <span class="mtag">Model A · Positive-Unlabeled</span>
+          <h3>NNPU learner</h3>
+          <p>A custom non-negative PU objective (Kiryo et al., NeurIPS 2017) that treats the
+          9,001 unconfirmed accounts as <em>unlabeled</em>, not clean. Without this, the model
+          is trained to agree that every mule the bank hasn't caught yet is legitimate.</p>
+          <div class="metric">OOF AUC-PR · 0.75</div>
+        </div>
+
+        <div class="panel model-card" data-reveal>
+          <span class="mtag">Model E · Supervised</span>
+          <h3>CatBoost</h3>
+          <p>Included for ordered boosting, which reduces target-leakage risk when the
+          positive set is this small. Earns a positive learned meta-weight alongside LightGBM.</p>
+          <div class="metric">OOF AUC-PR · 0.75</div>
+        </div>
+
+        <div class="panel model-card" data-reveal>
+          <span class="mtag">Model C · Unsupervised</span>
+          <h3>ECOD + Deep Isolation Forest</h3>
+          <p>Anomaly scores computed with no labels at all. Their job is not to beat the
+          supervised models on the 81 known mules — it is to surface typologies that are
+          absent from those 81 examples entirely.</p>
+          <div class="metric">Label-free · typology discovery</div>
+        </div>
+      </div>
+
+      <div class="panel" data-reveal style="margin-top: var(--s5); text-align: center;">
+        <span class="mtag">Stacking</span>
+        <h3 style="font-size:16px;color:var(--paper);margin-bottom:var(--s2);">Logistic-regression meta-learner</h3>
+        <p class="muted">Fits over every base model's out-of-fold probability — the combination is
+        learned from held-out predictions, never from in-sample ones.</p>
+        <div class="metric" style="border-top-color:rgba(168,85,247,0.4);">Ensemble OOF AUC-PR · <strong>0.813</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. INTERACTIVE DEMO ============ -->
+  <section id="demo">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Try It</div>
+      <h2 class="section-title" data-reveal>Score a sample account</h2>
+      <p class="lead" data-reveal>
+        Move the behavioural dials and watch the triage risk band respond, the way an
+        investigator would see it in the queue.
+      </p>
+
+      <div class="panel" data-reveal style="margin-top: var(--s6);">
+        <div class="demo-grid">
+          <div>
+            <div class="demo-field">
+              <label for="d-throughput">Pass-through velocity <span class="val" id="d-throughput-v">0.45</span></label>
+              <input type="range" id="d-throughput" min="0" max="1" step="0.01" value="0.45"
+                     aria-describedby="d-throughput-h">
+              <span class="hint" id="d-throughput-h">Share of credits withdrawn within 24h. Mule accounts move funds out almost immediately.</span>
+            </div>
+
+            <div class="demo-field">
+              <label for="d-balance">Resting balance ratio <span class="val" id="d-balance-v">0.50</span></label>
+              <input type="range" id="d-balance" min="0" max="1" step="0.01" value="0.5"
+                     aria-describedby="d-balance-h">
+              <span class="hint" id="d-balance-h">Average balance relative to throughput. Low values mean money never rests.</span>
+            </div>
+
+            <div class="demo-field">
+              <label for="d-churn">Counterparty churn <span class="val" id="d-churn-v">0.35</span></label>
+              <input type="range" id="d-churn" min="0" max="1" step="0.01" value="0.35"
+                     aria-describedby="d-churn-h">
+              <span class="hint" id="d-churn-h">Rate of new, non-repeating beneficiaries across UPI / IMPS / NEFT.</span>
+            </div>
+
+            <div class="demo-field">
+              <label for="d-tenure">Account tenure</label>
+              <select id="d-tenure" aria-describedby="d-tenure-h">
+                <option value="0.9">Under 14 days</option>
+                <option value="0.75">14–31 days</option>
+                <option value="0.55">31–90 days</option>
+                <option value="0.35" selected>90–365 days</option>
+                <option value="0.15">Over 365 days</option>
+              </select>
+              <span class="hint" id="d-tenure-h">Maps to the dataset's ordinal <span class="mono">ACCT_OPN_DAYS</span> buckets.</span>
+            </div>
+
+            <div class="demo-field">
+              <label for="d-product">Product type</label>
+              <select id="d-product" aria-describedby="d-product-h">
+                <option value="1" selected>Savings — individual</option>
+                <option value="0" >Current / MSME</option>
+              </select>
+              <span class="hint" id="d-product-h">Current/MSME accounts legitimately run high throughput — the documented false-positive trap, so the same velocity counts for less here.</span>
+            </div>
+          </div>
+
+          <div class="score-readout" aria-live="polite">
+            <div class="score-dial" id="d-score">—</div>
+            <div class="score-meter"><i id="d-meter"></i></div>
+            <div class="score-band" id="d-band">—</div>
+
+            <ul class="factor-list" id="d-factors"></ul>
+
+            <p class="score-note">
+              <strong>Illustrative simulation only</strong> — real scoring runs the full
+              stacked ensemble.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== PATTERN 3: colour-wipe scene change ==== -->
+  <div class="wipe" data-wipe aria-hidden="true">
+    <div class="wipe-fill"></div>
+    <div class="wipe-word">ALERT.</div>
+    <div class="wipe-sub">Stage three</div>
+  </div>
+
+  <!-- ============ 6. RESULTS ============ -->
+  <section id="results">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Results</div>
+      <h2 class="section-title glitch" data-reveal>Every number here is out-of-fold</h2>
+      <p class="lead" data-reveal>
+        Out-of-fold, not in-sample — see Methodology below for how that's enforced.
+      </p>
+
+      <div class="grid grid-4" style="margin-top: var(--s7);">
+        <div class="stat-plate" data-tilt data-reveal>
+          <div class="num" data-count="0.813" data-decimals="3">0.813</div>
+          <div class="label">Ensemble AUC-PR</div>
+          <div class="sub">91× the 0.0089 random baseline</div>
+        </div>
+        <div class="stat-plate" data-tilt data-reveal>
+          <div class="num" data-count="64" data-suffix="%">64%</div>
+          <div class="label">Precision@100</div>
+          <div class="sub">64 of the top 100 flagged are confirmed mules</div>
+        </div>
+        <div class="stat-plate" data-tilt data-reveal>
+          <div class="num" data-count="79" data-suffix="%">79%</div>
+          <div class="label">Recall@100</div>
+          <div class="sub">64 of 81 known mules caught in 100 reviews</div>
+        </div>
+        <div class="stat-plate" data-tilt data-reveal>
+          <div class="num" data-count="3.4" data-decimals="1" data-suffix="×">3.4×</div>
+          <div class="label">Investigator efficiency lift</div>
+          <div class="sub">K-Means triage vs. unranked review</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top: var(--s5);">
+        <div class="panel" data-reveal>
+          <h3 class="sub-title">Behavioural triage, without labels</h3>
+          <p class="muted">K-Means (<span class="mono">k=5</span>, quantile-transformed, no labels used in
+          fitting) concentrates <strong class="ok-text">71 of 81 confirmed mules — 87.7%</strong> —
+          into a single cluster spanning 2,342 of 9,082 accounts. Investigators get a
+          materially smaller pool to prioritise before any classifier score is applied.</p>
+        </div>
+        <div class="panel" data-reveal>
+          <h3 class="sub-title">Why AUC-PR, not AUC-ROC</h3>
+          <p class="muted">Under 99:1 imbalance, ROC-AUC inflates toward the trivial-classifier value and
+          flatters almost any model. AUC-PR is reported as the primary metric precisely because it
+          does not. The random-baseline AUC-PR here is <span class="mono">0.0089</span>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. METHODOLOGY / TRUST ============ -->
+  <section id="methodology">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Why You Can Trust The Numbers</div>
+      <h2 class="section-title" data-reveal>The discipline is the contribution</h2>
+      <p class="lead" data-reveal>
+        Under this much class imbalance, an undisciplined pipeline produces a spectacular
+        score and a worthless model. Here is exactly what was done to prevent that.
+      </p>
+
+      <ul class="method-list">
+        <li data-reveal>
+          <strong>Leakage-free nested cross-validation</strong>
+          Mutual-information selection (top 150 of ~1,800 post-cleaning features),
+          log / polynomial / interaction engineering and RobustScaler fitting happen
+          <em>only</em> on each fold's training partition, then apply without refitting to
+          that fold's held-out rows. A naive pipeline that selects features before splitting
+          collapsed to a perfect AUC-PR of 1.0000 after a single boosting round — itself a
+          diagnostic of leakage, not of quality.
+        </li>
+        <li data-reveal>
+          <strong>Artifact and resolution features excluded</strong>
+          <span class="mono">F2230</span> (batch-collection month) separates accounts by when
+          data was gathered, not by behaviour, and is unavailable at inference time.
+          <span class="mono">F3912</span> is a documented post-investigation resolution flag
+          that correctly marks 79 of 81 mules — training on it would mean training on the
+          answer. Both are dropped, along with the raw row index.
+        </li>
+        <li data-reveal>
+          <strong>Gender excluded as a protected attribute</strong>
+          <span class="mono">F3892</span> (GENDER) is deliberately never encoded. Scoring
+          customers for account restriction on a protected attribute is a fairness and
+          regulatory hazard that is not defensible in a bank deployment — so it is left out
+          regardless of any predictive value it might carry.
+        </li>
+        <li data-reveal>
+          <strong>The bank's finalised features were tested, not assumed</strong>
+          The 18 features explicitly finalised in the data dictionary
+          (<span class="mono">F115, F321, F527 … F3894</span>) were evaluated directly. Forcing
+          them into the selected set reduced out-of-fold AUC-PR from 0.80 to 0.73, so they are
+          surfaced in the alert payload as investigator-facing context (age, tenure, balance,
+          occupation) rather than pushed into the model as predictive signal.
+        </li>
+        <li data-reveal>
+          <strong>Explanations computed after training, never fed back</strong>
+          SHAP TreeExplainer produces per-account reasons post-training only, so explanation
+          values are never circularly reused for feature selection.
+        </li>
+        <li data-reveal>
+          <strong>No synthetic oversampling</strong>
+          No SMOTE, no synthetic minority generation. Imbalance is handled in the loss
+          function and in the PU formulation, so every reported result is reproducible
+          directly from the competition dataset.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 8. INSTITUTIONS ============ -->
+  <section id="institutions">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Context</div>
+      <h2 class="section-title" data-reveal>Built for the Indian banking ecosystem</h2>
+      <p class="lead" data-reveal>
+        Designed to slot into existing bank workflows, not replace them.
+      </p>
+
+      <div class="inst-row"></div>
+      <p class="muted" style="margin-top: var(--s7);">
+        Hackathon prototype. The Bank of India and Reserve Bank of India marks shown are the
+        institutions' own logos, reproduced unaltered for identification and context only.
+        SACHET is not an official RBI or BOI product, and no endorsement, partnership or
+        affiliation is implied.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 9. TEAM ============ -->
+  <section id="team">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Team SATARK</div>
+      <h2 class="section-title" data-reveal>Who built this</h2>
+      <p class="lead" data-reveal>
+        A two-person team spanning applied machine learning and cyber security — the two
+        halves this problem actually needs.
+      </p>
+
+      <div class="team-grid">
+        <div class="panel team-card" data-reveal>
+          <div class="avatar" aria-hidden="true">KP</div>
+          <h3>Kritika Pandey</h3>
+          <div class="role">AI / ML</div>
+          <p class="inst">Dept. of AI &amp; ML<br>United College of Engineering and Research, Prayagraj</p>
+        </div>
+        <div class="panel team-card" data-reveal>
+          <div class="avatar" aria-hidden="true">VA</div>
+          <h3>Vaishnav Aditya</h3>
+          <div class="role">Cyber Security</div>
+          <p class="inst">Dept. of Cyber Security<br>Amrita Vishwa Vidyapeetham, Chennai</p>
+        </div>
+      </div>
+
+      <div class="panel" data-reveal style="margin-top: var(--s5); text-align: center;">
+        <p class="muted">
+          Submitted to the <strong style="color:var(--glass-heading);">PSB Cybersecurity, Fraud &amp; AI Hackathon 2026</strong>,
+          Problem Statement 2 — posed by <strong style="color:var(--glass-heading);">Bank of India</strong> in partnership with
+          <strong style="color:var(--glass-heading);">IIT Hyderabad</strong>: build an AI/ML system that learns behavioural and
+          transactional patterns to distinguish suspicious mule accounts from legitimate ones,
+          using anomaly detection, predictive risk scoring and intelligent alerting.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PATTERN 7: bold full-bleed closing CTA ============ -->
+  <section id="final-cta">
+    <div class="ghost-text" aria-hidden="true">SACHET</div>
+    <div class="wrap">
+      <div class="eyebrow" data-reveal style="color:var(--lilac-pale);">Team SATARK</div>
+      <h2 class="final-head glitch" data-reveal>Ready to catch what rules miss?</h2>
+      <p class="lead" data-reveal style="color:rgba(237,233,254,0.86);max-width:600px;">
+        Every metric on this page is leakage-free and out-of-fold, and the whole pipeline
+        reproduces from one command against the competition dataset.
+      </p>
+      <div class="btn-row" data-reveal>
+        <a class="btn btn-primary" href="https://github.com" target="_blank" rel="noopener" data-sfx="click">GitHub repository ↗</a>
+        <a class="btn btn-ghost" href="../docs/Prototype_Submission/SACHET_Prototype.html" data-sfx="click">Technical report</a>
+      </div>
+      <p class="muted" data-reveal style="margin-top:var(--s6);color:rgba(237,233,254,0.6);">
+        <span class="mono">python src/satark.py --mode full-ensemble</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 10. CTA / FOOTER ============ -->
+  <footer class="cta-footer" id="cta">
+    <div class="wrap">
+      <div class="eyebrow" data-reveal>Resources</div>
+      <h2 class="section-title" data-reveal>Read it, run it, or score against it</h2>
+      <p class="lead" data-reveal>
+        The full pipeline is a single reproducible entry point —
+        <span class="mono">python src/satark.py --mode full-ensemble</span>.
+      </p>
+
+      <div class="btn-row" data-reveal>
+        <a class="btn btn-primary" href="../docs/Prototype_Submission/SACHET_Prototype.html" data-sfx="click">Technical report</a>
+        <a class="btn btn-ghost" href="index.html" data-sfx="click">Investigator dashboard</a>
+        <a class="btn btn-ghost" href="https://github.com" target="_blank" rel="noopener" data-sfx="click">GitHub repository ↗</a>
+      </div>
+
+      <div class="footer-legal">
+        <p><strong style="color:var(--lilac-pale);">Team SATARK</strong> — Kritika Pandey · Vaishnav Aditya</p>
+        <p style="margin-top:var(--s2);">
+          Prototype built for the PSB Cybersecurity, Fraud &amp; AI Hackathon 2026, Problem
+          Statement 2 (Bank of India × IIT Hyderabad). Metrics are out-of-fold on the official
+          competition dataset (see Methodology). Institutional logos are the property of their
+          respective owners and are reproduced for identification only.
+        </p>
+        <p style="margin-top:var(--s3);">© 2026 Team SATARK. Currency and coin imagery via Wikimedia Commons.</p>
+      </div>
+    </div>
+  </footer>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+<script>
+/* =====================================================================
+   DOM LAYER — runs immediately, independent of WebGL.
+   Everything here degrades safely if the 3D module never loads.
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (REDUCED) document.body.classList.add('reduced-motion', 'no-anim');
+
+  /* ---- Kinetic hero title: split into per-letter spans ---- */
+  (function splitTitle() {
+    var el = document.getElementById('hero-kinetic-title');
+    if (!el) return;
+    var text = el.textContent.trim();
+    el.textContent = '';
+    el.setAttribute('aria-label', text);
+    for (var i = 0; i < text.length; i++) {
+      var s = document.createElement('span');
+      s.className = 'kchar';
+      s.setAttribute('aria-hidden', 'true');
+      s.textContent = text[i];
+      el.appendChild(s);
+    }
+  })();
+
+  /* ---- Scroll progress bar ---- */
+  var progressEl = document.getElementById('scroll-progress');
+  function updateProgress() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? (window.scrollY / max) : 0;
+    if (progressEl) {
+      progressEl.style.width = (p * 100).toFixed(2) + '%';
+      progressEl.setAttribute('aria-valuenow', Math.round(p * 100));
+    }
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ---- Lenis inertia smooth-scroll.
+         Native scroll semantics are preserved (1:1 distance, keyboard,
+         find-in-page all still work) — this is easing, not scroll-jacking. ---- */
+  var lenis = null;
+  if (window.Lenis && !REDUCED) {
+    try {
+      lenis = new Lenis({
+        duration: 1.05,
+        smoothWheel: true,
+        easing: function (t) { return 1 - Math.pow(1 - t, 3); }
+      });
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+    } catch (e) { lenis = null; }
+  }
+  window.__lenis = lenis;
+
+  /* ---- GSAP choreography ---- */
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    if (lenis) {
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    if (!REDUCED) {
+      gsap.to('#hero-kinetic-title .kchar', {
+        opacity: 1, y: 0, rotateX: 0, duration: 1.0,
+        stagger: 0.05, ease: 'power3.out', delay: 0.15,
+        startAt: { opacity: 0, y: '0.55em', rotateX: -55 }
+      });
+
+      gsap.utils.toArray('[data-reveal]').forEach(function (el) {
+        gsap.to(el, {
+          opacity: 1, y: 0, duration: 0.85, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
+        });
+      });
+
+      /* Subtle parallax on static text blocks */
+      gsap.utils.toArray('.wrap').forEach(function (el) {
+        gsap.fromTo(el, { y: 26 }, {
+          y: -26, ease: 'none',
+          scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1.1 }
+        });
+      });
+    } else {
+      gsap.set('#hero-kinetic-title .kchar', { opacity: 1, y: 0, rotateX: 0 });
+      gsap.set('[data-reveal]', { opacity: 1, y: 0 });
+    }
+
+    /* Nav dot active state */
+    var dots = Array.prototype.slice.call(document.querySelectorAll('#nav-dots a'));
+    document.querySelectorAll('section, footer.cta-footer').forEach(function (sec) {
+      ScrollTrigger.create({
+        trigger: sec, start: 'top center', end: 'bottom center',
+        onToggle: function (self) {
+          if (!self.isActive) return;
+          var match = dots.filter(function (a) { return a.getAttribute('href') === '#' + sec.id; });
+          if (!match.length) return;   // wipes / ribbons / final CTA have no dot
+          dots.forEach(function (a) { a.classList.remove('active'); });
+          match[0].classList.add('active');
+        }
+      });
+    });
+
+    /* Institutional light-sweep when the trust section arrives */
+    document.querySelectorAll('[data-inst]').forEach(function (card, i) {
+      ScrollTrigger.create({
+        trigger: card, start: 'top 78%', once: true,
+        onEnter: function () { setTimeout(function () { card.classList.add('swept'); }, i * 320); }
+      });
+    });
+
+    /* Animated stat counters */
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      var target = parseFloat(el.getAttribute('data-count'));
+      var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      var suffix = el.getAttribute('data-suffix') || '';
+      if (REDUCED) return;
+      ScrollTrigger.create({
+        trigger: el, start: 'top 85%', once: true,
+        onEnter: function () {
+          var obj = { v: 0 };
+          gsap.to(obj, {
+            v: target, duration: 1.5, ease: 'power2.out',
+            onUpdate: function () { el.textContent = obj.v.toFixed(dec) + suffix; }
+          });
+        }
+      });
+    });
+
+    /* Pipeline stage lighting, driven by scroll through the section */
+    var pipeSteps = Array.prototype.slice.call(document.querySelectorAll('[data-pipe]'));
+    if (pipeSteps.length) {
+      ScrollTrigger.create({
+        trigger: '#pipeline', start: 'top 70%', end: 'bottom 40%', scrub: 0.7,
+        onUpdate: function (self) {
+          var active = Math.floor(self.progress * pipeSteps.length * 1.15);
+          pipeSteps.forEach(function (s, i) { s.classList.toggle('lit', i <= active); });
+          window.__pipeProgress = self.progress;
+        }
+      });
+    }
+
+    /* Cursor-follow tilt on stat plates */
+    if (!REDUCED && matchMedia('(hover: hover)').matches) {
+      document.querySelectorAll('[data-tilt]').forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width - 0.5;
+          var py = (e.clientY - r.top) / r.height - 0.5;
+          gsap.to(card, { rotateY: px * 9, rotateX: -py * 9, duration: 0.45, ease: 'power2.out', transformPerspective: 700 });
+        });
+        card.addEventListener('mouseleave', function () {
+          gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power2.out' });
+        });
+      });
+    }
+  } else {
+    document.body.classList.add('no-anim');
+  }
+
+  /* ---- Custom cursor ---- */
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !REDUCED) {
+    document.body.classList.add('has-custom-cursor');
+    var dot = document.getElementById('cursor-dot');
+    var ring = document.getElementById('cursor-ring');
+    var rx = 0, ry = 0, mx = 0, my = 0;
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      if (dot) { dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)'; }
+    });
+    (function ringLoop() {
+      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+      if (ring) ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+      requestAnimationFrame(ringLoop);
+    })();
+    document.querySelectorAll('a, button, input, select, [data-tilt]').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { if (ring) ring.classList.add('hot'); });
+      el.addEventListener('mouseleave', function () { if (ring) ring.classList.remove('hot'); });
+    });
+  }
+
+  /* ---- Sound cues: procedural WebAudio, muted by default ---- */
+  (function setupSound() {
+    var btn = document.getElementById('sound-toggle');
+    if (!btn) return;
+    var enabled = false, actx = null;
+    function chime(freq, dur, vol) {
+      if (!enabled) return;
+      try {
+        if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+        var osc = actx.createOscillator(), gain = actx.createGain();
+        osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, actx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(); osc.stop(actx.currentTime + dur);
+      } catch (e) {}
+    }
+    window.__chime = chime;
+    btn.addEventListener('click', function () {
+      enabled = !enabled;
+      btn.setAttribute('aria-pressed', String(enabled));
+      btn.textContent = enabled ? '🔊' : '🔇';
+      btn.title = enabled ? 'Sound: on' : 'Sound: off';
+      btn.setAttribute('aria-label', enabled
+        ? 'Disable interface sound cues'
+        : 'Enable interface sound cues (currently muted)');
+      if (enabled) chime(880, 0.08, 0.04);
+    });
+    document.querySelectorAll('[data-sfx="click"]').forEach(function (el) {
+      el.addEventListener('click', function () { chime(520, 0.07, 0.03); });
+    });
+  })();
+
+  /* ---- Anchor links routed through Lenis so they respect smooth scroll ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href');
+      if (!id || id === '#') return;
+      var target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.2 });
+      else target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* =====================================================================
+     PATTERN 1 — NUMBERED PROCESS STEPS WITH SWAPPING VISUAL
+     Scroll drives the active step; hover/focus can override it. The visual
+     panel cross-fades with a 3D flip rather than cutting.
+     ===================================================================== */
+  (function processSteps() {
+    var steps = Array.prototype.slice.call(document.querySelectorAll('.process-step'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.pv-card'));
+    if (!steps.length || !cards.length) return;
+
+    var current = -1;
+    function setStep(i) {
+      i = Math.max(0, Math.min(steps.length - 1, i));
+      if (i === current) return;
+      current = i;
+      steps.forEach(function (s, n) { s.classList.toggle('active', n === i); });
+      cards.forEach(function (c, n) { c.classList.toggle('active', n === i); });
+      if (window.__chime) window.__chime(560 + i * 70, 0.05, 0.018);
+    }
+    setStep(0);
+
+    // Hover / keyboard focus override
+    steps.forEach(function (st, i) {
+      st.addEventListener('mouseenter', function () { setStep(i); });
+      st.addEventListener('focus', function () { setStep(i); });
+      st.addEventListener('click', function () { setStep(i); });
+    });
+
+    // Scroll-driven progression through the section
+    if (window.gsap && window.ScrollTrigger && !REDUCED) {
+      ScrollTrigger.create({
+        trigger: '#process', start: 'top 62%', end: 'bottom 62%', scrub: 0.5,
+        onUpdate: function (self) {
+          setStep(Math.floor(self.progress * steps.length * 0.999));
+        }
+      });
+    }
+  })();
+
+  /* =====================================================================
+     PATTERN 3 — COLOUR-WIPE SCENE CHANGES
+     The violet blob sweeps down through the viewport while a stroked word
+     peaks at mid-wipe, then clears into the next section. Scrubbed, so it
+     tracks the user's scroll exactly — it never traps or hijacks it.
+     ===================================================================== */
+  if (window.gsap && window.ScrollTrigger && !REDUCED) {
+    document.querySelectorAll('[data-wipe]').forEach(function (wipe) {
+      var fill = wipe.querySelector('.wipe-fill');
+      var word = wipe.querySelector('.wipe-word');
+      var sub  = wipe.querySelector('.wipe-sub');
+
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: wipe, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+      });
+      tl.fromTo(fill, { yPercent: -102 }, { yPercent: 0, ease: 'power2.out', duration: 1 })
+        .fromTo(word, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, ease: 'power2.out', duration: 0.5 }, 0.35)
+        .fromTo(sub,  { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.5)
+        .to(word, { opacity: 0, scale: 1.05, ease: 'power2.in', duration: 0.5 }, 1.15)
+        .to(sub,  { opacity: 0, duration: 0.35 }, 1.15)
+        .to(fill, { yPercent: 102, ease: 'power2.in', duration: 1 }, 1.0);
+    });
+  }
+
+  /* =====================================================================
+     PATTERN 6 — RESTRAINED RGB-SPLIT GLITCH
+     Fires ONCE per headline as it enters view, then removes itself. Never
+     continuous, never on body copy, never on logos or photographic assets.
+     ===================================================================== */
+  if (window.gsap && window.ScrollTrigger && !REDUCED) {
+    document.querySelectorAll('.glitch').forEach(function (el) {
+      // attr(data-text) drives the two offset pseudo-element copies
+      el.setAttribute('data-text', el.textContent.trim());
+      ScrollTrigger.create({
+        trigger: el, start: 'top 82%', once: true,
+        onEnter: function () {
+          el.classList.add('fire');
+          setTimeout(function () { el.classList.remove('fire'); }, 700);
+        }
+      });
+    });
+  }
+
+  /* =====================================================================
+     INTERACTIVE TRIAGE DEMO
+     Fully disclosed linear model over the same behavioural vocabulary the
+     real system uses. This is a teaching aid, NOT the trained ensemble —
+     labelled as such in the UI. Weights are hard-coded and visible here.
+     ===================================================================== */
+  (function demo() {
+    var ids = ['d-throughput', 'd-balance', 'd-churn', 'd-tenure', 'd-product'];
+    var els = {};
+    ids.forEach(function (id) { els[id] = document.getElementById(id); });
+    if (!els['d-throughput']) return;
+
+    var scoreEl = document.getElementById('d-score');
+    var bandEl = document.getElementById('d-band');
+    var meterEl = document.getElementById('d-meter');
+    var factorsEl = document.getElementById('d-factors');
+
+    function compute() {
+      var throughput = parseFloat(els['d-throughput'].value);
+      var balance = parseFloat(els['d-balance'].value);
+      var churn = parseFloat(els['d-churn'].value);
+      var tenure = parseFloat(els['d-tenure'].value);
+      var isSavings = parseFloat(els['d-product'].value); // 1 = savings, 0 = current/MSME
+
+      // Current/MSME legitimately runs high throughput — discount velocity there.
+      var velocityWeight = isSavings ? 1.0 : 0.45;
+
+      var contributions = [
+        { name: 'Pass-through velocity', v: throughput * 0.34 * velocityWeight },
+        { name: 'Low resting balance',   v: (1 - balance) * 0.26 },
+        { name: 'Counterparty churn',    v: churn * 0.22 },
+        { name: 'Recent account age',    v: tenure * 0.18 }
+      ];
+
+      var raw = contributions.reduce(function (a, c) { return a + c.v; }, 0);
+      var score = Math.max(0, Math.min(1, raw));
+
+      scoreEl.textContent = score.toFixed(3);
+      meterEl.style.width = (score * 100).toFixed(1) + '%';
+
+      var band, color, bg;
+      if (score >= 0.62)      { band = 'High — review first'; color = '#ff6b6b'; bg = 'rgba(220,38,38,0.18)'; }
+      else if (score >= 0.38) { band = 'Elevated — queue';    color = '#F59E0B'; bg = 'rgba(245,158,11,0.16)'; }
+      else                    { band = 'Low — deprioritise';  color = '#4ade80'; bg = 'rgba(22,163,74,0.16)'; }
+
+      scoreEl.style.color = color;
+      meterEl.style.background = color;
+      bandEl.textContent = band;
+      bandEl.style.color = color;
+      bandEl.style.background = bg;
+
+      contributions.sort(function (a, b) { return b.v - a.v; });
+      factorsEl.innerHTML = '';
+      contributions.forEach(function (c) {
+        var li = document.createElement('li');
+        li.innerHTML = '<span>' + c.name + '</span><b>+' + c.v.toFixed(3) + '</b>';
+        factorsEl.appendChild(li);
+      });
+
+      var tv = document.getElementById('d-throughput-v');
+      var bv = document.getElementById('d-balance-v');
+      var cv = document.getElementById('d-churn-v');
+      if (tv) tv.textContent = throughput.toFixed(2);
+      if (bv) bv.textContent = balance.toFixed(2);
+      if (cv) cv.textContent = churn.toFixed(2);
+
+      window.__demoScore = score;
+    }
+
+    ids.forEach(function (id) {
+      els[id].addEventListener('input', function () {
+        compute();
+        if (window.__chime) window.__chime(660, 0.03, 0.012);
+      });
+    });
+    compute();
+  })();
+})();
+</script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+/* =====================================================================
+   WEBGL LAYER — purely decorative. The page is complete without it.
+   Wrapped in try/catch; any failure leaves the styled DOM page intact.
+   ===================================================================== */
+try {
+  const THREE = await import('three');
+  const { EffectComposer }   = await import('three/addons/postprocessing/EffectComposer.js');
+  const { RenderPass }       = await import('three/addons/postprocessing/RenderPass.js');
+  const { UnrealBloomPass }  = await import('three/addons/postprocessing/UnrealBloomPass.js');
+  const { OutputPass }       = await import('three/addons/postprocessing/OutputPass.js');
+  const { RoomEnvironment }  = await import('three/addons/environments/RoomEnvironment.js');
+  const { SVGLoader }        = await import('three/addons/loaders/SVGLoader.js');
+  const { GLTFLoader }       = await import('three/addons/loaders/GLTFLoader.js');
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 760;
+  const lowPower = isMobile || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+
+  const assetBar = document.getElementById('asset-bar');
+  let loadedCount = 0;
+  const ASSET_TOTAL = 1;
+  function bumpProgress() {
+    loadedCount++;
+    if (assetBar) assetBar.style.width = Math.round((loadedCount / ASSET_TOTAL) * 100) + '%';
+  }
+
+  /* -------------------------------------------------------------------
+     ASSETS — official logo artwork only.
+       rbi-logo.svg   Reserve Bank of India mark
+     Currency imagery (coins, banknotes) and the Bank of India mark were
+     removed by request. The RBI mark appears for identification/context in
+     a hackathon prototype. Not an official product; no endorsement implied.
+     ------------------------------------------------------------------- */
+  const ASSET_BASE = 'assets/textures/';
+  const texLoader = new THREE.TextureLoader();
+
+  function downscale(img, maxDim) {
+    if (!img || !img.width || (img.width <= maxDim && img.height <= maxDim)) return img;
+    const scale = maxDim / Math.max(img.width, img.height);
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.width * scale));
+    c.height = Math.max(1, Math.round(img.height * scale));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c;
+  }
+
+  function loadTex(file, maxDim) {
+    return new Promise((resolve, reject) => {
+      texLoader.load(ASSET_BASE + file, (tex) => {
+        tex.image = downscale(tex.image, maxDim);
+        tex.needsUpdate = true;
+        if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 4;
+        bumpProgress();
+        resolve(tex);
+      }, undefined, reject);
+    });
+  }
+
+  const [rbiTex] = await Promise.all([
+    loadTex('rbi-logo.svg', 512)
+  ]);
+
+  if (assetBar) assetBar.classList.add('done');
+
+  /* ---------------- Renderer ---------------- */
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowPower, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1.5 : 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  /* === A1 FIX: filmic tone mapping with headroom.
+     Previously: no tone mapping at all, so bright IBL + lights clipped
+     straight to pure white and bloom smeared it over the text/logos.
+     ACES compresses highlights instead of clipping; exposure < 1 keeps
+     real headroom so nothing reaches the bloom threshold accidentally. === */
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.82;
+
+  renderer.shadowMap.enabled = !lowPower;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+
+  /* Depth fog — matches the page background exactly. Without this, meshes
+     staged for a later section (e.g. the institutional marks parked at
+     Z.institutions) are still inside the camera's far-plane frustum and
+     visibly ghost through the text of earlier sections (Results,
+     Methodology) whenever the camera looks straight down the Z tunnel.
+     Fog fades anything more than ~2 sections ahead into the background
+     colour so only the current section's staged objects read clearly. */
+  scene.fog = new THREE.Fog(0x0d0021, 14, 40);
+  const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 400);
+
+  /* ---------------- Environment + lighting ---------------- */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = envRT.texture;
+
+  /* =====================================================================
+     ONE STUDIO RIG FOR EVERY OBJECT
+     Inconsistent lighting between assets is the fastest giveaway of a
+     pasted-together scene, so all models share a single three-point setup:
+       KEY   warm 3200K-ish, high and camera-right, casts the real shadows
+       FILL  cool violet, low and camera-left, lifts the shadow side only
+       RIM   brand violet behind, separates silhouettes from the background
+     Intensities are tuned against ACES tone mapping at 0.82 exposure so
+     metal reads bright without clipping and paper stays matte.
+     ===================================================================== */
+  scene.add(new THREE.AmbientLight(0x241640, 0.22));
+
+  const keyLight = new THREE.DirectionalLight(0xffd9a8, 2.05);
+  keyLight.position.set(7, 9, 8);
+  keyLight.castShadow = !lowPower;
+  if (keyLight.castShadow) {
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.radius = 5;
+    keyLight.shadow.bias = -0.0016;
+    const c = keyLight.shadow.camera;
+    c.left = -16; c.right = 16; c.top = 16; c.bottom = -16; c.far = 70;
+  }
+  scene.add(keyLight);
+
+  // Fill: cool violet, deliberately weaker than key (~1:4) for real modelling
+  const fillLight = new THREE.DirectionalLight(0xA855F7, 0.52);
+  fillLight.position.set(-8, -2, 5);
+  scene.add(fillLight);
+
+  // Rim/back light: brand violet, kicks metal edges and coin milling
+  const rimLight = new THREE.PointLight(0x7c3aed, 3.4, 46, 2);
+  rimLight.position.set(-7, 2, -5);
+  scene.add(rimLight);
+
+  // Low warm bounce so undersides never go fully black
+  const bounce = new THREE.HemisphereLight(0x4C0099, 0x1a0035, 0.35);
+  scene.add(bounce);
+
+  /* ---------------- Post-processing ----------------
+     A1 FIX: bloom threshold raised 0.78 → 0.96 and strength 0.40 → 0.22.
+     Only genuinely emissive accents (the sorting torus, particle glow)
+     now exceed threshold. Photographic textures and logo artwork sit
+     well below it, so they can no longer be blown out.
+     DoF removed entirely: it was an extra full-scene pass that cost
+     frame budget and softened the very logos we need legible.        */
+  let composer = null;
+  try {
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      prefersReduced ? 0.0 : 0.22,   // strength
+      0.42,                          // radius
+      0.96                           // threshold — accents only
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+  } catch (e) { composer = null; }
+
+  /* =====================================================================
+     CAMERA PATH — hero hold, then eased dolly.
+     A2 FIX: the first HOLD_END of scroll keeps the camera locked in the
+     hero framing so the composition can be read before anything moves.
+     ===================================================================== */
+  const N_SECTIONS = 12;
+  const HOLD_END = 0.11;
+  const Z_START = 16;
+  const Z_TRAVEL = 150;
+
+  function camZAt(s) {
+    if (s <= HOLD_END) return Z_START;
+    const k = (s - HOLD_END) / (1 - HOLD_END);
+    return Z_START - k * Z_TRAVEL;
+  }
+
+  /* A5 FIX — Z-depth / camera-easing desync.
+     The per-frame camera update runs camZAt(ease(scrollRaw)), i.e. camera Z
+     follows an EASED scroll fraction (power1.inOut), not the raw one. Every
+     Z.* section depth was previously computed from the RAW scroll fraction
+     of that section's DOM position, so it never matched where the eased
+     camera actually was at that same scroll position — the two curves
+     diverge most in the middle of the page (results/methodology/
+     institutions), which is exactly where objects appeared wildly
+     mis-placed (a plaque plane filling the whole viewport, RBI/BOI marks
+     failing to stamp in even when centred). zOf() must apply the SAME
+     easing camZAt is fed at render time, so ease() is declared here,
+     before camZAt/zOf/sectionZ ever run, instead of further down. */
+  const ease = (window.gsap && gsap.parseEase) ? gsap.parseEase('power1.inOut') : (x) => x;
+
+  function sectionZ(i) { return camZAt(ease((i + 0.5) / N_SECTIONS)) - 16; }
+
+  /* Depths are anchored to each section's REAL scroll position, so adding
+     ribbons, wipes or whole sections can never desync the 3D staging. */
+  function zOf(id, fallbackIdx) {
+    const el = document.getElementById(id);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if (!el || max <= 0) return sectionZ(fallbackIdx);
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const centre = top + el.offsetHeight / 2 - window.innerHeight / 2;
+    return camZAt(ease(Math.max(0, Math.min(1, centre / max)))) - 16;
+  }
+  function computeAllZ() {
+    return {
+      protection:   zOf('protection', 1),
+      problem:      zOf('problem', 1),
+      pipeline:     zOf('pipeline', 2),
+      process:      zOf('process', 3),
+      architecture: zOf('architecture', 4),
+      demo:         zOf('demo', 5),
+      results:      zOf('results', 6),
+      methodology:  zOf('methodology', 7),
+      institutions: zOf('institutions', 8),
+      team:         zOf('team', 9),
+      finalCta:     zOf('final-cta', 10)
+    };
+  }
+  const Z = computeAllZ();
+
+  /* =====================================================================
+     A4 FIX — depth desync repair.
+     zOf() reads document.documentElement.scrollHeight at the instant it is
+     called, which runs before webfonts/images finish reflowing the page.
+     Every Z.* value baked in at that moment can therefore go stale once
+     real layout settles, silently drifting every 3D object (card, marks,
+     tunnel, torus) away from the section it's meant to sit in — the visible
+     symptom being a giant mis-placed plane or logo swallowing the camera
+     in a totally different section. depthObjs lets every Z-anchored object
+     re-snap to the correct depth once layout is actually final.
+     ===================================================================== */
+  const depthObjs = [];
+  function trackDepth(obj, key, offset) {
+    depthObjs.push({ obj: obj, key: key, offset: offset || 0 });
+    obj.position.z = Z[key] + (offset || 0);
+  }
+  function refreshDepths() {
+    Object.assign(Z, computeAllZ());
+    depthObjs.forEach(function (e) { e.obj.position.z = Z[e.key] + e.offset; });
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+  }
+  window.addEventListener('load', function () { setTimeout(refreshDepths, 300); });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { setTimeout(refreshDepths, 60); });
+  }
+  window.addEventListener('resize', function () { refreshDepths(); });
+
+  /* =====================================================================
+     A2 FIX: HERO STAGING — text safe zone.
+     The 3D "SACHET" TextGeometry has been REMOVED. It was rendering at the
+     same screen position as the HTML <h1>, producing the overlap. The HTML
+     title is now the single source of the wordmark: crisp at any DPI,
+     selectable, indexable, and the LCP element.
+     Currency objects orbit on an ellipse whose inner radius is guaranteed
+     larger than the title's bounding box, and sit BEHIND the title in z,
+     so the hero stays fully 3D without ever colliding with the type.
+     ===================================================================== */
+  const SAFE_RX = isMobile ? 4.4 : 6.6;   // horizontal clearance from title centre
+  const SAFE_RY = isMobile ? 3.4 : 3.0;   // vertical clearance
+  const HERO_BACK_Z = -6;                 // objects live behind the text plane
+
+  /* ---- Shadow catcher for real contact shadows ---- */
+  if (!lowPower) {
+    const catcher = new THREE.Mesh(
+      new THREE.PlaneGeometry(60, 60),
+      new THREE.ShadowMaterial({ opacity: 0.26 })
+    );
+    catcher.position.set(0, -8, HERO_BACK_Z - 4);
+    catcher.rotation.x = -Math.PI / 2.4;
+    catcher.receiveShadow = true;
+    scene.add(catcher);
+  }
+
+  /* =====================================================================
+     PROTECTED-CARD CENTREPIECE
+     Three.js card mesh + real-time reflection, scrubbed by GSAP ScrollTrigger over
+     Lenis smooth scroll. Reflection uses the CubeCamera route the brief
+     explicitly allowed, which is far cheaper than re-rendering the scene to a
+     render target every single frame.
+     ===================================================================== */
+  const protZ = Z.protection;
+  const protGroup = new THREE.Group();
+  protGroup.position.set(0, 0, 0);
+  trackDepth(protGroup, 'protection');
+  scene.add(protGroup);
+
+  /* ---- Card face composited from the REAL BOI logo artwork ---- */
+  function makeCardFaceTexture() {
+    const c = document.createElement('canvas');
+    c.width = 1712; c.height = 1080;              // 85.6 : 54, scaled x20
+    const g = c.getContext('2d');
+
+    const base = g.createLinearGradient(0, 0, 1712, 1080);
+    base.addColorStop(0.00, '#2E0052');
+    base.addColorStop(0.42, '#4C0099');
+    base.addColorStop(0.72, '#6B21A8');
+    base.addColorStop(1.00, '#2E0052');
+    g.fillStyle = base; g.fillRect(0, 0, 1712, 1080);
+
+    // Fine security-print line work
+    g.strokeStyle = 'rgba(192,132,252,0.09)'; g.lineWidth = 2;
+    for (let i = -1080; i < 1712; i += 14) {
+      g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 1080, 1080); g.stroke();
+    }
+    g.strokeStyle = 'rgba(13,0,33,0.10)';
+    for (let i = -1080; i < 1712; i += 22) {
+      g.beginPath(); g.moveTo(i + 1080, 0); g.lineTo(i, 1080); g.stroke();
+    }
+
+    const sheen = g.createLinearGradient(200, 0, 1400, 1080);
+    sheen.addColorStop(0.00, 'rgba(255,255,255,0)');
+    sheen.addColorStop(0.47, 'rgba(255,255,255,0.13)');
+    sheen.addColorStop(0.54, 'rgba(255,255,255,0.05)');
+    sheen.addColorStop(1.00, 'rgba(255,255,255,0)');
+    g.fillStyle = sheen; g.fillRect(0, 0, 1712, 1080);
+
+    g.fillStyle = '#EDE9FE';
+    g.font = '700 108px Fraunces, Georgia, serif';
+    g.textBaseline = 'top';
+    g.fillText('SACHET', 96, 92);
+
+    g.fillStyle = 'rgba(216,180,254,0.85)';
+    g.font = '600 34px Inter, sans-serif';
+    g.fillText('MULE ACCOUNT DETECTION', 100, 226);
+
+    g.fillStyle = 'rgba(237,233,254,0.94)';
+    g.font = '600 82px "JetBrains Mono", monospace';
+    g.fillText('••••  ••••  ••••  9082', 96, 640);
+
+    g.fillStyle = 'rgba(216,180,254,0.7)';
+    g.font = '600 30px "JetBrains Mono", monospace';
+    g.fillText('VALID THRU  09/26', 100, 776);
+    g.fillText('TEAM SATARK', 100, 826);
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 8;
+    return tex;
+  }
+
+  function roundedRectShape(w, h, r) {
+    const sh = new THREE.Shape();
+    const x = -w / 2, y = -h / 2;
+    sh.moveTo(x + r, y);
+    sh.lineTo(x + w - r, y);      sh.quadraticCurveTo(x + w, y, x + w, y + r);
+    sh.lineTo(x + w, y + h - r);  sh.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    sh.lineTo(x + r, y + h);      sh.quadraticCurveTo(x, y + h, x, y + h - r);
+    sh.lineTo(x, y + r);          sh.quadraticCurveTo(x, y, x + r, y);
+    return sh;
+  }
+
+  // ISO/IEC 7810 ID-1 proportions: 85.6 x 54 x 0.76 mm
+  const CARD_W = 4.28, CARD_H = 2.70, CARD_T = 0.038;
+  const cardGeo = new THREE.ExtrudeGeometry(roundedRectShape(CARD_W, CARD_H, 0.30), {
+    depth: CARD_T, bevelEnabled: true,
+    bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 3, curveSegments: 24
+  });
+  cardGeo.center();
+  cardGeo.computeBoundingBox();
+  (function planarUV(geo) {
+    const bb = geo.boundingBox, pos = geo.attributes.position;
+    const uv = new Float32Array(pos.count * 2);
+    const w = bb.max.x - bb.min.x, h = bb.max.y - bb.min.y;
+    for (let i = 0; i < pos.count; i++) {
+      uv[i * 2]     = (pos.getX(i) - bb.min.x) / w;
+      uv[i * 2 + 1] = (pos.getY(i) - bb.min.y) / h;
+    }
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  })(cardGeo);
+
+  const cubeRT = new THREE.WebGLCubeRenderTarget(lowPower ? 128 : 256, {
+    generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter
+  });
+  const cubeCam = new THREE.CubeCamera(0.1, 220, cubeRT);
+  cubeCam.position.set(0, 0, 0);
+  trackDepth(cubeCam, 'protection');
+  scene.add(cubeCam);
+
+  const cardMat = new THREE.MeshPhysicalMaterial({
+    map: makeCardFaceTexture(), envMap: cubeRT.texture, envMapIntensity: 1.15,
+    metalness: 0.62, roughness: 0.17,
+    clearcoat: 0.85, clearcoatRoughness: 0.12, reflectivity: 0.6
+  });
+  const cardEdgeMat = new THREE.MeshPhysicalMaterial({
+    color: 0x1a0035, metalness: 0.9, roughness: 0.22,
+    envMap: cubeRT.texture, envMapIntensity: 0.9
+  });
+  const cardMesh = new THREE.Mesh(cardGeo, [cardMat, cardEdgeMat]);
+  cardMesh.castShadow = !lowPower;
+  protGroup.add(cardMesh);
+
+  /* ---- EMV chip as real embossed geometry, not a painted rectangle ---- */
+  const chipGroup = new THREE.Group();
+  const chipBodyGeo = new THREE.ExtrudeGeometry(roundedRectShape(0.62, 0.48, 0.07), {
+    depth: 0.012, bevelEnabled: true,
+    bevelThickness: 0.005, bevelSize: 0.005, bevelSegments: 2, curveSegments: 8
+  });
+  chipBodyGeo.center();
+  const chipMat = new THREE.MeshPhysicalMaterial({
+    color: 0xd8b25c, metalness: 0.96, roughness: 0.28,
+    envMap: cubeRT.texture, envMapIntensity: 1.0
+  });
+  chipGroup.add(new THREE.Mesh(chipBodyGeo, chipMat));
+
+  const grooveMat = new THREE.MeshStandardMaterial({ color: 0x6b5424, metalness: 0.8, roughness: 0.55 });
+  [-0.16, 0.0, 0.16].forEach(function (gy) {
+    const gr = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.012, 0.006), grooveMat);
+    gr.position.set(0, gy, 0.014); chipGroup.add(gr);
+  });
+  [-0.13, 0.13].forEach(function (gx) {
+    const gr = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.44, 0.006), grooveMat);
+    gr.position.set(gx, 0, 0.014); chipGroup.add(gr);
+  });
+  chipGroup.position.set(-CARD_W * 0.30, CARD_H * 0.06, CARD_T / 2 + 0.007);
+  cardMesh.add(chipGroup);
+
+  /* Scroll-scrubbed card rotation */
+  let protProgress = 0;
+  if (window.gsap && window.ScrollTrigger) {
+    ScrollTrigger.create({
+      trigger: '#protection', start: 'top bottom', end: 'bottom top', scrub: true,
+      onUpdate: function (self) { protProgress = self.progress; }
+    });
+  }
+
+  /* =====================================================================
+     EXTRUDED INSTITUTIONAL PLAQUES from real official vector artwork.
+     BOI and IIT-H SVGs are pure <path> data, so SVGLoader yields the actual
+     official outlines to extrude with genuine depth and bevel - real 3D
+     emblem geometry, not a logo painted onto a slab.
+     ===================================================================== */
+  function buildExtrudedLogo(file, targetWidth, materialOpts) {
+    const loader = new SVGLoader();
+    return new Promise(function (resolve) {
+      loader.load(ASSET_BASE + file, function (data) {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshPhysicalMaterial(Object.assign({
+          metalness: 0.88, roughness: 0.26,
+          envMap: cubeRT.texture, envMapIntensity: 0.95
+        }, materialOpts || {}));
+
+        data.paths.forEach(function (path) {
+          SVGLoader.createShapes(path).forEach(function (shape) {
+            const g = new THREE.ExtrudeGeometry(shape, {
+              depth: 7, bevelEnabled: true,
+              bevelThickness: 1.4, bevelSize: 1.0, bevelSegments: 2, curveSegments: 6
+            });
+            const m = new THREE.Mesh(g, mat);
+            m.castShadow = !lowPower;
+            group.add(m);
+          });
+        });
+
+        // SVG space is Y-down; flip, recentre, then scale to target width
+        const inner = new THREE.Group();
+        inner.add(group);
+        group.scale.y = -1;
+        const box = new THREE.Box3().setFromObject(group);
+        const size = box.getSize(new THREE.Vector3());
+        const centre = box.getCenter(new THREE.Vector3());
+        group.position.sub(centre);
+        const k = targetWidth / (size.x || 1);
+        inner.scale.setScalar(k);
+        resolve(inner);
+      }, undefined, function () { resolve(new THREE.Group()); });
+    });
+  }
+
+  /* =====================================================================
+     SECTION 2 — alert cloud (problem)
+     ===================================================================== */
+  const swarmN = isMobile ? 26 : (lowPower ? 44 : 66);
+  const alertMesh = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.12, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0xDC2626, emissive: 0x4a0e0e, emissiveIntensity: 0.45, roughness: 0.5, metalness: 0.15 }),
+    swarmN
+  );
+  const alertData = [];
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < swarmN; i++) {
+    const r = 2.4 + Math.random() * 3.6;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(Math.random() * 2 - 1);
+    const base = new THREE.Vector3(
+      r * Math.sin(ph) * Math.cos(th),
+      r * Math.sin(ph) * Math.sin(th) * 0.7,
+      r * Math.cos(ph) * 0.5
+    );
+    alertData.push({
+      base,
+      isMule: i < Math.round(swarmN * 0.18),
+      cleared: new THREE.Vector3(base.x * 2.4, base.y * 2.4 - 3, base.z - 6),
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+  alertMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  scene.add(alertMesh);
+  trackDepth(alertMesh, 'problem');
+  const tmpColor = new THREE.Color();
+
+  /* =====================================================================
+     PATTERN 4 — ORBITING CARD TUNNEL (pipeline)
+     A violet wireframe cylinder whose axis runs along Z, with the five real
+     pipeline stages arranged as cards around its inner wall. The camera
+     flies down the bore as you scroll; the tunnel counter-rotates so each
+     stage swings into view in turn.
+     Card labels are canvas-drawn text (UI typography, not a stand-in for any
+     photographic asset — coins, notes and both institutional logos remain
+     real imagery throughout).
+     ===================================================================== */
+  const pipeZ = Z.pipeline;
+  const PIPE_STAGES = 5;
+  const TUNNEL_R = isMobile ? 3.5 : 4.6;
+  const TUNNEL_LEN = isMobile ? 20 : 28;
+
+  function makeStageTexture(index, label, sub) {
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = 256;
+    const g = c.getContext('2d');
+
+    g.fillStyle = 'rgba(18,2,40,0.93)';
+    g.fillRect(0, 0, 512, 256);
+
+    g.strokeStyle = '#7c3aed'; g.lineWidth = 4;
+    g.strokeRect(3, 3, 506, 250);
+
+    g.fillStyle = '#A855F7';
+    g.font = '600 30px "JetBrains Mono", monospace';
+    g.textBaseline = 'top';
+    g.fillText(String(index + 1).padStart(2, '0'), 30, 30);
+
+    g.fillStyle = '#7c3aed';
+    g.fillRect(30, 72, 60, 3);
+
+    g.fillStyle = '#EDE9FE';
+    g.font = '700 46px Inter, sans-serif';
+    g.fillText(label, 30, 96);
+
+    g.fillStyle = '#9b93ad';
+    g.font = '400 21px Inter, sans-serif';
+    g.fillText(sub, 30, 162);
+
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    return tex;
+  }
+
+  const STAGES = [
+    ['TRANSACT',   'Account activity streams in'],
+    ['FLAG',       'Existing rule engine fires'],
+    ['SCORE',      'SACHET ensemble scores it'],
+    ['PRIORITIZE', 'Ranked, severity-tiered queue'],
+    ['RESOLVE',    'Investigator closes the case']
+  ];
+
+  const tunnel = new THREE.Group();
+  tunnel.position.set(0, 0, 0);
+  trackDepth(tunnel, 'pipeline');
+  scene.add(tunnel);
+
+  /* Wireframe bore */
+  const tunnelMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(TUNNEL_R, TUNNEL_R, TUNNEL_LEN, isMobile ? 16 : 26, isMobile ? 10 : 16, true),
+    new THREE.MeshBasicMaterial({
+      color: 0x7c3aed, wireframe: true, transparent: true,
+      opacity: 0.16, depthWrite: false
+    })
+  );
+  tunnelMesh.rotation.x = Math.PI / 2;   // axis along Z
+  tunnel.add(tunnelMesh);
+
+  /* Brighter guide rings at each stage plane */
+  const stageCards = [];
+  for (let i = 0; i < PIPE_STAGES; i++) {
+    const t = i / (PIPE_STAGES - 1);
+    const zLocal = (0.5 - t) * TUNNEL_LEN * 0.82;
+
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(TUNNEL_R, 0.022, 8, isMobile ? 26 : 44),
+      new THREE.MeshBasicMaterial({ color: 0xA855F7, transparent: true, opacity: 0.34, depthWrite: false })
+    );
+    ring.position.z = zLocal;
+    tunnel.add(ring);
+
+    /* Stage card on the inner wall, facing the bore axis */
+    const angle = (i / PIPE_STAGES) * Math.PI * 2;
+    const cardW = isMobile ? 3.0 : 3.8;
+    const card = new THREE.Mesh(
+      new THREE.PlaneGeometry(cardW, cardW * 0.5),
+      new THREE.MeshBasicMaterial({
+        map: makeStageTexture(i, STAGES[i][0], STAGES[i][1]),
+        transparent: true, toneMapped: false, side: THREE.DoubleSide,
+        opacity: 0.5, depthWrite: false
+      })
+    );
+    const inset = TUNNEL_R - 0.35;
+    card.position.set(Math.cos(angle) * inset, Math.sin(angle) * inset, zLocal);
+    card.lookAt(0, 0, zLocal);   // face the tunnel centre-line
+    card.userData = { baseAngle: angle, zLocal: zLocal, idx: i };
+    tunnel.add(card);
+    stageCards.push(card);
+  }
+
+  /* Data particles streaming down the bore */
+  const flowN = isMobile ? 46 : 130;
+  const flowGeo = new THREE.BufferGeometry();
+  const flowPos = new Float32Array(flowN * 3);
+  const flowMeta = [];
+  for (let i = 0; i < flowN; i++) {
+    flowMeta.push({
+      t: Math.random(),
+      a: Math.random() * Math.PI * 2,
+      r: TUNNEL_R * (0.18 + Math.random() * 0.62),
+      spd: 0.05 + Math.random() * 0.075
+    });
+  }
+  flowGeo.setAttribute('position', new THREE.BufferAttribute(flowPos, 3));
+  const flowPoints = new THREE.Points(flowGeo, new THREE.PointsMaterial({
+    color: 0xC084FC, size: isMobile ? 0.1 : 0.085, transparent: true, opacity: 0.9,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  }));
+  scene.add(flowPoints);
+  trackDepth(flowPoints, 'pipeline');
+
+  /* =====================================================================
+     SECTION 6 — sorting torus (results)
+     ===================================================================== */
+  const torus = new THREE.Mesh(
+    new THREE.TorusGeometry(3.1, 0.1, 14, lowPower ? 44 : 72),
+    new THREE.MeshStandardMaterial({ color: 0x7c3aed, emissive: 0x7c3aed, emissiveIntensity: 1.5, metalness: 0.4, roughness: 0.25 })
+  );
+  scene.add(torus);
+  trackDepth(torus, 'results');
+
+  /* =====================================================================
+     SECTION 8 — INSTITUTIONAL MARKS IN 3D (A3)
+     Logos use MeshBasicMaterial with toneMapped = false: unlit, so the
+     official artwork renders at exactly its own colour values, immune to
+     scene lighting, tone mapping and bloom. They sit on dark plaques for
+     guaranteed contrast, and each gets a real animated light-sweep bar
+     plus a scroll-triggered "stamp of trust" scale-in.
+     ===================================================================== */
+  const instZ = Z.institutions;
+  const marks = [];
+
+  function makeMark(tex, width, x) {
+    const grp = new THREE.Group();
+    const img = tex.image;
+    const aspect = (img && img.width && img.height) ? img.width / img.height : 3.0;
+    const h = width / aspect;
+
+    // Dark plaque behind the mark → guaranteed contrast on any background
+    const plaque = new THREE.Mesh(
+      new THREE.PlaneGeometry(width * 1.22, h * 1.85),
+      new THREE.MeshStandardMaterial({ color: 0xEDE9FE, roughness: 0.85, metalness: 0.0, envMapIntensity: 0.3 })
+    );
+    plaque.position.z = -0.04;
+    grp.add(plaque);
+
+    const frame = new THREE.Mesh(
+      new THREE.PlaneGeometry(width * 1.3, h * 1.95),
+      new THREE.MeshStandardMaterial({ color: 0x2E0052, roughness: 0.55, metalness: 0.35, envMapIntensity: 0.6 })
+    );
+    frame.position.z = -0.08;
+    grp.add(frame);
+
+    const logo = new THREE.Mesh(
+      new THREE.PlaneGeometry(width, h),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false })
+    );
+    grp.add(logo);
+
+    // Light-sweep bar that passes across the mark
+    const sweep = new THREE.Mesh(
+      new THREE.PlaneGeometry(width * 0.16, h * 2.0),
+      new THREE.MeshBasicMaterial({ color: 0xC084FC, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+    );
+    sweep.position.z = 0.05;
+    grp.add(sweep);
+
+    grp.position.set(x, 0.4, 0);
+    trackDepth(grp, 'institutions');
+    grp.scale.setScalar(0.001); // stamps in on scroll
+    grp.userData = { sweep, width, stamped: 0 };
+    scene.add(grp);
+    marks.push(grp);
+    return grp;
+  }
+
+  const rbiMark = makeMark(rbiTex, isMobile ? 3.0 : 3.6, 0);
+
+  /* Pedestals with a soft reflected sheen under each mark. These were never
+     wired into the marks[] stamp-in/scale-gate reveal below, so — unlike
+     the marks themselves — they used to render at full scale permanently,
+     regardless of scroll position. That is the other half of the
+     Results/Methodology ghosting bug: even after the marks' own reveal
+     radius was tightened, this cylinder + sheen disc were still visible at
+     full size from every camera angle. instProps gets the same near-based
+     scale gate as marks[] in the animate loop below. */
+  const instProps = [];
+  if (!isMobile) {
+    [0].forEach((x) => {
+      const ped = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.15, 1.35, 0.28, lowPower ? 18 : 32),
+        new THREE.MeshStandardMaterial({ color: 0x2E0052, metalness: 0.62, roughness: 0.34, envMapIntensity: 0.9 })
+      );
+      ped.position.set(x, -1.5, 0);
+      trackDepth(ped, 'institutions');
+      ped.castShadow = ped.receiveShadow = !lowPower;
+      ped.scale.setScalar(0.001);
+      scene.add(ped);
+      instProps.push(ped);
+
+      const sheen = new THREE.Mesh(
+        new THREE.CircleGeometry(1.5, 32),
+        new THREE.MeshBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, depthWrite: false })
+      );
+      sheen.rotation.x = -Math.PI / 2;
+      sheen.position.set(x, -1.66, 0);
+      trackDepth(sheen, 'institutions');
+      sheen.scale.setScalar(0.001);
+      scene.add(sheen);
+      instProps.push(sheen);
+    });
+  }
+
+  /* Footer glow particles */
+  const glowN = isMobile ? 45 : 130;
+  const glowGeo = new THREE.BufferGeometry();
+  const glowPos = new Float32Array(glowN * 3);
+  for (let i = 0; i < glowN; i++) {
+    glowPos[i * 3]     = (Math.random() - 0.5) * 12;
+    glowPos[i * 3 + 1] = (Math.random() - 0.5) * 7;
+    glowPos[i * 3 + 2] = (Math.random() - 0.5) * 5;
+  }
+  glowGeo.setAttribute('position', new THREE.BufferAttribute(glowPos, 3));
+  const glowPoints = new THREE.Points(glowGeo, new THREE.PointsMaterial({
+    color: 0xA855F7, size: 0.06, transparent: true, opacity: 0.62,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  }));
+  scene.add(glowPoints);
+  trackDepth(glowPoints, 'finalCta');
+
+  /* =====================================================================
+     Mount the extruded emblems in the institutions section, and lazily
+     bring in the one genuinely photoscanned PBR asset we could obtain.
+     ===================================================================== */
+  const plaqueSlots = [];
+  (async function mountEmblems() {
+    try {
+      const [boiPlaque, iithPlaque] = await Promise.all([
+        buildExtrudedLogo('boi-logo.svg', isMobile ? 2.6 : 3.2, {
+          color: 0xE05A2B, metalness: 0.9, roughness: 0.26
+        }),
+        buildExtrudedLogo('iith-logo.svg', isMobile ? 2.6 : 3.2, {
+          color: 0xC9A227, metalness: 0.92, roughness: 0.24
+        })
+      ]);
+      // Mounted together as a pair, side by side, near the hero's
+      // institutional-context copy ("Bank of India x IIT Hyderabad").
+      boiPlaque.position.set(isMobile ? 0 : -3.1, isMobile ? 0.6 : 1.45, 0);
+      iithPlaque.position.set(isMobile ? 0 : 3.1, isMobile ? -2.2 : 1.45, 0);
+      trackDepth(boiPlaque, 'institutions', 0.6);
+      trackDepth(iithPlaque, 'institutions', 0.6);
+      scene.add(boiPlaque, iithPlaque);
+      plaqueSlots.push({ obj: boiPlaque, phase: 0 });
+      plaqueSlots.push({ obj: iithPlaque, phase: Math.PI });
+    } catch (e) {
+      console.warn('SACHET: extruded emblem build skipped', e);
+    }
+  })();
+
+  /* =====================================================================
+     Scroll wiring
+     ===================================================================== */
+  let scrollRaw = 0;
+
+  if (window.gsap && window.ScrollTrigger) {
+    ScrollTrigger.create({
+      trigger: document.body, start: 'top top', end: 'bottom bottom',
+      scrub: prefersReduced ? true : 1.1,
+      onUpdate: (self) => { scrollRaw = self.progress; }
+    });
+  } else {
+    const upd = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      scrollRaw = max > 0 ? window.scrollY / max : 0;
+    };
+    window.addEventListener('scroll', upd, { passive: true });
+    upd();
+  }
+
+  /* Pointer parallax — a gentle camera offset, never enough to unframe text */
+  let pointerX = 0, pointerY = 0, camOffX = 0, camOffY = 0;
+  if (!prefersReduced && matchMedia('(hover: hover)').matches) {
+    window.addEventListener('pointermove', (e) => {
+      pointerX = (e.clientX / window.innerWidth - 0.5) * 2;
+      pointerY = (e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+  }
+
+  /* Pause rendering when the tab is hidden or the canvas is offscreen */
+  let visible = true;
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+  /* Frame budget guard: drop pixel ratio if we sustain low FPS */
+  let fpsAccum = 0, fpsFrames = 0, degraded = false;
+  let probeTick = 0;
+
+  const clock = new THREE.Clock();
+  canvas.classList.add('ready');
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!visible) return;
+
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const t = clock.getElapsedTime();
+
+    /* --- adaptive quality --- */
+    if (!degraded && dt > 0) {
+      fpsAccum += 1 / dt; fpsFrames++;
+      if (fpsFrames >= 120) {
+        const avg = fpsAccum / fpsFrames;
+        if (avg < 34) {
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+          degraded = true;
+        }
+        fpsAccum = 0; fpsFrames = 0;
+      }
+    }
+
+    /* --- camera: hero hold, then eased dolly --- */
+    const s = ease(scrollRaw);
+    const heroHold = Math.min(1, scrollRaw / HOLD_END); // 0→1 across the hold
+    camera.position.z = camZAt(s);
+
+    camOffX += (pointerX * 0.55 - camOffX) * 0.045;
+    camOffY += (-pointerY * 0.35 - camOffY) * 0.045;
+    camera.position.x = camOffX;
+    camera.position.y = camOffY + Math.sin(s * Math.PI * 1.3) * 0.35;
+    camera.lookAt(camOffX * 0.35, camOffY * 0.35, camera.position.z - 14);
+
+    if (!prefersReduced) {
+      /* --- PROTECTED CARD: scroll-scrubbed rotation + drum motion --- */
+      // Card makes roughly one full turn across the section, with a gentle
+      // idle wobble so it never looks frozen at the ends of the scrub.
+      cardMesh.rotation.y = protProgress * Math.PI * 2 + Math.sin(t * 0.28) * 0.10;
+      cardMesh.rotation.x = -0.16 + Math.sin(t * 0.34) * 0.06;
+      cardMesh.rotation.z = Math.sin(t * 0.22) * 0.04;
+      cardMesh.position.y = Math.sin(t * 0.45) * 0.14;
+
+      // Drum travels vertically with scroll
+      protGroup.position.y = (protProgress - 0.5) * -4.2;
+
+      /* --- extruded emblems: stamp in near Institutions, slow presentation
+         turn while in frame. Without this scale gate these plaques rendered
+         at full size from every camera angle and ghosted through earlier
+         sections (Results, Methodology) whenever the view looked forward
+         down the Z tunnel toward Institutions. --- */
+      plaqueSlots.forEach(function (slot) {
+        const dzP = Math.abs(camera.position.z - 16 - Z.institutions);
+        const nearP = THREE.MathUtils.clamp(1 - dzP / 10, 0, 1);
+        slot.scale = (slot.scale === undefined ? 0.001 : slot.scale) + ((0.001 + nearP * 0.999) - (slot.scale === undefined ? 0.001 : slot.scale)) * 0.07;
+        slot.obj.scale.setScalar(Math.max(0.001, slot.scale));
+        slot.obj.rotation.y = Math.sin(t * 0.26 + slot.phase) * 0.34;
+        slot.obj.position.y += Math.sin(t * 0.5 + slot.phase) * 0.0012;
+      });
+
+
+      /* --- problem cloud → sorted --- */
+      const sortP = THREE.MathUtils.clamp((s - 0.14) / 0.13, 0, 1);
+      for (let i = 0; i < swarmN; i++) {
+        const d = alertData[i];
+        const p = d.isMule
+          ? d.base
+          : d.base.clone().lerp(d.cleared, sortP);
+        const pulse = d.isMule && sortP > 0.45 ? 1 + Math.sin(t * 2.2 + d.phase) * 0.22 : 1;
+        dummy.position.copy(p);
+        dummy.scale.setScalar(pulse);
+        dummy.rotation.set(t * 0.09 + d.phase, t * 0.07, 0);
+        dummy.updateMatrix();
+        alertMesh.setMatrixAt(i, dummy.matrix);
+        tmpColor.set(sortP > 0.4 ? (d.isMule ? 0xDC2626 : 0x16A34A) : 0xDC2626);
+        alertMesh.setColorAt(i, tmpColor);
+      }
+      alertMesh.instanceMatrix.needsUpdate = true;
+      if (alertMesh.instanceColor) alertMesh.instanceColor.needsUpdate = true;
+
+      /* --- PATTERN 4: tunnel rotation + stage cards + bore particles --- */
+      const pipeP = (typeof window.__pipeProgress === 'number') ? window.__pipeProgress : 0;
+
+      // Tunnel counter-rotates so each stage card swings into view in turn.
+      tunnel.rotation.z = -pipeP * Math.PI * 1.15 + t * 0.012;
+
+      stageCards.forEach((card) => {
+        // A card is "presented" when its angle faces the camera (up-ish, +Y).
+        const worldAngle = card.userData.baseAngle + tunnel.rotation.z;
+        const facing = Math.cos(worldAngle - Math.PI / 2); // 1 == front-and-centre
+        const focus = Math.max(0, facing);
+
+        card.material.opacity = 0.22 + focus * 0.78;
+        const sc = 0.9 + focus * 0.28;
+        card.scale.set(sc, sc, sc);
+
+        // Keep the card upright and readable rather than tumbling with the bore.
+        card.rotation.z = -tunnel.rotation.z;
+      });
+
+      for (let i = 0; i < flowN; i++) {
+        const m = flowMeta[i];
+        m.t += dt * m.spd;
+        if (m.t > 1) m.t -= 1;
+        const zl = (0.5 - m.t) * TUNNEL_LEN * 0.82;
+        const ang = m.a + t * 0.16 + tunnel.rotation.z;
+        flowPos[i * 3]     = Math.cos(ang) * m.r;
+        flowPos[i * 3 + 1] = Math.sin(ang) * m.r;
+        flowPos[i * 3 + 2] = zl;
+      }
+      flowGeo.attributes.position.needsUpdate = true;
+      flowPoints.material.opacity = 0.3 + pipeP * 0.65;
+      tunnelMesh.material.opacity = 0.1 + pipeP * 0.16;
+
+      torus.rotation.z = t * 0.13;
+      torus.rotation.x = 0.32;
+
+      /* --- A3: institutional marks stamp in, then hold with a light sweep --- */
+      marks.forEach((g, i) => {
+        // Stamp-in when this section is close to frame. The falloff radius
+        // is deliberately kept under one section's Z-depth (~12-14 units)
+        // — a wider radius (this used to be /34, nearly 3 sections) meant
+        // the institutional marks were already 50-65% scaled up and
+        // visibly ghosting through the Results/Methodology sections a full
+        // section before the camera actually arrived at Institutions.
+        const dz = Math.abs(camera.position.z - 16 - Z.institutions);
+        const near = THREE.MathUtils.clamp(1 - dz / 10, 0, 1);
+        const targetScale = 0.001 + near * 0.999;
+        g.userData.stamped += (targetScale - g.userData.stamped) * 0.07;
+        g.scale.setScalar(Math.max(0.001, g.userData.stamped));
+
+        // Always-alive motion: a slow presentation turn, never idle
+        g.rotation.y = Math.sin(t * 0.24 + i * Math.PI * 0.6) * 0.3;
+        g.position.y = (isMobile ? (i === 0 ? 2.4 : -1.8) : 0.4) + Math.sin(t * 0.42 + i) * 0.12;
+
+        // Light sweep passes across the mark on a slow cycle
+        const sw = g.userData.sweep;
+        const cyc = (t * 0.24 + i * 0.5) % 1;
+        if (cyc < 0.26) {
+          const k = cyc / 0.26;
+          sw.position.x = (k - 0.5) * g.userData.width * 1.5;
+          sw.material.opacity = Math.sin(k * Math.PI) * 0.5 * near;
+        } else {
+          sw.material.opacity = 0;
+        }
+      });
+
+      /* Pedestal + sheen under the institutional marks get the identical
+         near-based scale gate as marks[] above — they used to be static,
+         always-full-scale meshes that ghosted through earlier sections. */
+      {
+        const dzI = Math.abs(camera.position.z - 16 - Z.institutions);
+        const nearI = THREE.MathUtils.clamp(1 - dzI / 10, 0, 1);
+        instProps.forEach((obj) => {
+          obj.userData._stamped = (obj.userData._stamped === undefined ? 0.001 : obj.userData._stamped)
+            + ((0.001 + nearI * 0.999) - (obj.userData._stamped === undefined ? 0.001 : obj.userData._stamped)) * 0.07;
+          obj.scale.setScalar(Math.max(0.001, obj.userData._stamped));
+        });
+      }
+
+      glowPoints.rotation.y = t * 0.02;
+      glowPoints.material.opacity = 0.35 + Math.sin(t * 0.5) * 0.14;
+    }
+
+    rimLight.intensity = 3.4 + Math.sin(t * 0.7) * 0.5;
+
+    /* Refresh the card's reflection probe on a 1-in-3 cadence. The card is
+       hidden during the capture so it cannot reflect itself. */
+    probeTick++;
+    if (!prefersReduced && probeTick % 3 === 0 && Math.abs(camera.position.z - Z.protection) < 46) {
+      cardMesh.visible = false;
+      cubeCam.update(renderer, scene);
+      cardMesh.visible = true;
+    }
+
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+} catch (err) {
+  console.error('SACHET landing — 3D layer unavailable, static page retained.', err);
+  document.body.classList.add('no-webgl');
+  const e = document.getElementById('fallback-error');
+  if (e) e.textContent = (err && err.message) ? err.message : String(err);
+  const bar = document.getElementById('asset-bar');
+  if (bar) bar.classList.add('done');
+}
+</script>
+</body>
+</html>

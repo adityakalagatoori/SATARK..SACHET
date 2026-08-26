@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACHET — Methodology</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0021'/%3E%3Cpath d='M20 42c4 4 20 5 22-3 2-9-18-7-17-15 1-6 13-8 19-3' stroke='%23A855F7' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('sachet-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<style>
+  /* ============================================================
+     SACHET shared design tokens — glassmorphism on a light violet
+     ground. Same palette/values repeated verbatim across landing,
+     pipeline, account_universe, and investigator pages.
+     ============================================================ */
+  :root{
+    --bg-0:#f3edff; --bg-1:#ffffff; --panel:rgba(255,255,255,.62);
+    --panel-solid:#ffffff;
+    --accent:#7c3aed; --accent-lo:#4C0099; --accent-hi:#A855F7;
+    --lilac:#8b2fe0; --paper:#2d1155; --ink:#241238; --muted:#6b5b8a;
+    --ok:#15803d; --danger:#DC2626; --warn:#b45309;
+    --crit:#dc2626; --high:#c2620a; --med:#946800; --low:#1d4ed8;
+    --kept:#15803d; --excl:#b91c1c;
+    --line:rgba(124,58,237,.25);
+    --glass-blur:18px;
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 32px rgba(124,58,237,.16);
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg-0:#0d0021; --bg-1:#160230; --panel:rgba(255,255,255,.08); --panel-solid:#160230;
+    --lilac:#c9a6fb; --paper:#EDE9FE; --ink:#e0e0e0; --muted:#9b93ad;
+    --ok:#4ade80; --danger:#f87171; --warn:#fbbf24;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --low:#60a5fa;
+    --kept:#4ade80; --excl:#f87171;
+    --line:rgba(168,85,247,.35);
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 32px rgba(0,0,0,.45);
+  }
+  :root[data-theme="dark"] header{background:rgba(22,2,48,.78)}
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:7px;background:transparent;cursor:pointer;
+    font-size:15px;line-height:1;color:var(--muted);
+  }
+  .theme-toggle:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  a,button,.card{transition:all .3s cubic-bezier(.4,0,.2,1)}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(124,58,237,.16), transparent 60%),
+      linear-gradient(180deg,var(--bg-0),var(--bg-1) 55%);
+    background-attachment:fixed;
+    color:var(--ink);font-size:14px;line-height:1.55;min-height:100vh;
+  }
+  a{color:var(--lilac)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 100px;position:relative}
+
+  header{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:16px 20px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.68);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    box-shadow:0 4px 24px rgba(124,58,237,.08);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{font-size:19px;font-weight:800;color:var(--accent-hi);letter-spacing:.04em;text-decoration:none}
+  .brand small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .hdr-nav{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hdr-nav a{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
+    color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:7px;
+  }
+  .hdr-nav a:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  .hdr-nav a.active{color:var(--accent);border-color:var(--accent);background:rgba(124,58,237,.1)}
+
+  h1.page-title{font-size:22px;color:var(--paper);margin:26px 0 4px;font-weight:800}
+  .page-sub{font-size:12.5px;color:var(--muted);max-width:760px;line-height:1.6;margin-bottom:20px}
+
+  /* ---------------- dot rail (table of contents) ---------------- */
+  .dotrail{
+    position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:12px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px 8px;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+  .dotrail a{
+    width:9px;height:9px;border-radius:50%;background:rgba(124,58,237,.25);border:1px solid transparent;
+    display:block;position:relative;flex:none;
+  }
+  .dotrail a:hover{background:var(--accent-hi)}
+  .dotrail a.active{background:var(--accent-hi);box-shadow:0 0 0 3px rgba(168,85,247,.25)}
+  .dotrail a .tip{
+    position:absolute;right:20px;top:50%;transform:translateY(-50%);
+    background:var(--panel-solid);border:1px solid var(--line);border-radius:6px;padding:4px 9px;
+    font-size:10.5px;color:var(--paper);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;
+    box-shadow:var(--glass-shadow);font-weight:600;
+  }
+  .dotrail a:hover .tip{opacity:1}
+  @media(max-width:1000px){.dotrail{display:none}}
+
+  /* ---------------- story sections ---------------- */
+  .story{position:relative;padding-left:34px}
+  .story::before{
+    content:'';position:absolute;left:11px;top:10px;bottom:10px;width:2px;
+    background:linear-gradient(180deg,var(--accent-lo),var(--accent-hi),var(--accent-lo));
+  }
+  .sec{position:relative;margin-bottom:16px;scroll-margin-top:90px}
+  .sec::before{
+    content:attr(data-n);position:absolute;left:-34px;top:6px;width:24px;height:24px;
+    border-radius:50%;background:var(--bg-0);border:2px solid var(--accent-hi);
+    color:var(--accent-hi);font-family:var(--mono);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;z-index:2;
+  }
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    cursor:pointer;overflow:hidden;transition:border-color .2s, box-shadow .2s;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+  .card:hover{border-color:var(--accent-hi);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.25),inset 0 1px 0 rgba(255,255,255,.6),0 14px 36px rgba(124,58,237,.22)}
+
+  .card-head{display:flex;align-items:center;gap:14px;padding:14px 18px}
+  .card-head .ttl{flex:1;min-width:0}
+  .card-head .kicker{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent-hi);font-weight:800;margin-bottom:2px}
+  .card-head h3{font-size:14.5px;color:var(--paper);font-weight:700}
+  .card-head .hook{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .chev{font-size:12px;color:var(--accent-hi);transition:transform .2s;flex:none}
+  .card.open .chev{transform:rotate(90deg)}
+
+  .card-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
+  .card.open .card-body{max-height:3000px}
+  .card-body-inner{padding:2px 18px 18px;border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--ink)}
+
+  /* fact-line list — the anti-paragraph unit used everywhere in expanded state */
+  .facts{list-style:none;display:flex;flex-direction:column;gap:7px;margin:0 0 12px}
+  .facts li{display:flex;gap:9px;align-items:baseline;line-height:1.5;padding-left:2px}
+  .facts li::before{content:'▸';color:var(--accent-hi);font-size:10px;flex:none;position:relative;top:-1px}
+  .facts li b{color:var(--paper)}
+  .facts .metric{font-family:var(--mono);color:var(--accent-lo);font-weight:700}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:10px 0}
+  .mini{background:rgba(124,58,237,.05);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .mini.excluded{border-color:rgba(220,38,38,.35);background:rgba(220,38,38,.04)}
+  .mini.roadmap{border-style:dashed;border-color:rgba(155,147,173,.5)}
+  .mini h4{font-size:12px;color:var(--paper);margin-bottom:3px}
+  .mini .auc{font-family:var(--mono);font-size:12px;color:var(--accent-hi);display:block;margin-bottom:2px}
+  .mini p{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
+
+  .badge-inc{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--kept)}
+  .badge-inc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--kept)}
+  .badge-exc{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--excl)}
+  .badge-exc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--excl)}
+
+  code{font-family:var(--mono);font-size:11.5px;color:var(--lilac);background:rgba(124,58,237,.1);padding:1px 5px;border-radius:4px}
+
+  .roadmap-tag{display:inline-block;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--muted);border:1px dashed var(--muted);border-radius:20px;padding:2px 9px;margin-left:8px;flex:none}
+
+  .hookbar{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 22px}
+  .hookstat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 16px;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);flex:1;min-width:130px}
+  .hookstat b{display:block;font-family:var(--mono);font-size:19px;color:var(--accent-hi)}
+  .hookstat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+  footer{text-align:center;color:var(--muted);font-size:11px;padding:30px 0 10px}
+
+  .expand-all{display:inline-flex;gap:8px;margin-bottom:18px}
+  .expand-all button{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 14px;
+    font-family:inherit;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  }
+  .expand-all button:hover{color:var(--lilac);border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="landing.html">SACHET<small>Methodology</small></a>
+  <div class="hdr-nav">
+    <a href="landing.html">Overview</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="account_universe.html">Account Universe</a>
+    <a href="investigator.html">Investigator Console</a>
+    <a href="methodology.html" class="active">Methodology</a>
+    <a href="live_scoring.html">Live Scoring</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light/dark theme">🌙</button>
+  </div>
+</header>
+<script>
+(function(){
+  function icon(){return document.documentElement.getAttribute('data-theme')==='dark' ? '☀️' : '🌙';}
+  var btn = document.getElementById('theme-toggle');
+  btn.textContent = icon();
+  btn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('sachet-theme', next); }catch(e){}
+    btn.textContent = icon();
+  });
+})();
+</script>
+
+<div class="wrap">
+  <h1 class="page-title">Methodology — How SACHET Was Actually Built</h1>
+  <p class="page-sub">A technical report, not a pitch: the real journey from a 9,082-row CSV to a governed production system — including the mistakes caught along the way. Twelve chapters, each a click away from full depth. Written for investigators and judges who want the real story.</p>
+
+  <div class="hookbar">
+    <div class="hookstat"><b>9,082</b><span>accounts</span></div>
+    <div class="hookstat"><b>81</b><span>confirmed mules (0.89%)</span></div>
+    <div class="hookstat"><b>3,924</b><span>raw features audited</span></div>
+    <div class="hookstat"><b>0.8229</b><span>final ensemble AUC-PR</span></div>
+    <div class="hookstat"><b>82.5%</b><span>top-80 queue precision</span></div>
+  </div>
+
+  <div class="expand-all">
+    <button id="expand-btn" type="button">Expand all</button>
+    <button id="collapse-btn" type="button">Collapse all</button>
+  </div>
+
+  <div class="story" id="story"></div>
+</div>
+
+<div class="dotrail" id="dotrail"></div>
+
+<footer>SACHET — Bank of India Hackathon Prototype. Every figure below is pulled from the actual training run and codebase, not illustrative.</footer>
+
+<script>
+const sections = [
+{
+  n:"1", kicker:"The Question", title:"What problem were we actually solving?",
+  hook:"Every one of the 9,082 accounts had already triggered an alert. The problem was never detection — it was discrimination.",
+  body:`
+    <ul class="facts">
+      <li><b>9,082</b> accounts in the competition dataset.</li>
+      <li><b>81</b> confirmed money mules — <span class="metric">0.89%</span> positive rate, a severe class imbalance.</li>
+      <li>Every single account in the dataset had <b>already triggered at least one alert</b> — this is not a "spot the needle in a haystack of normal accounts" problem.</li>
+      <li>The real question: given a pile of accounts a rule-based system already flagged, which of them are <b>actually</b> mules, and which are false alarms wasting an investigator's time?</li>
+      <li>This reframes the whole project — SACHET is a triage and re-ranking system layered on top of existing alerting, not a replacement for it.</li>
+    </ul>
+  `
+},
+{
+  n:"2", kicker:"Understanding the Data", title:"3,924 raw features, one accidental discovery",
+  hook:"F2230 perfectly separated mules from non-mules — by collection batch, not behavior. A trap, not a signal.",
+  body:`
+    <ul class="facts">
+      <li><b>3,924</b> raw columns, described by a real feature dictionary — <code>data/Description.xlsx</code> — mapping F-codes (e.g. <code>F3912</code>) to human names and descriptions.</li>
+      <li>An alert/resolution taxonomy emerged from that dictionary: <code>COUNT_ALERTS</code>, <code>FRAUD_SUSPECTED</code>, <code>OTHER_RESOLUTION</code>, <code>FALSE_POSITIVE</code>, <code>UNATTENDED</code> — all describe what happened <b>after</b> a case was opened, not before.</li>
+      <li><b>The batch-artifact discovery:</b> <code>F2230</code> (batch-collection month) perfectly separated the two classes — <b>100%</b> of non-mules came from one collection month, <b>100%</b> of mules came from three other months.</li>
+      <li>That's not a behavioral signal — it's an artifact of how the dataset was assembled. Kept in, it would have let the model "predict" mule status by reading a data-collection timestamp, not by reading behavior.</li>
+      <li><code>F2230</code> excluded before modeling — the first of several features caught this way.</li>
+    </ul>
+  `
+},
+{
+  n:"3", kicker:"The Leak Hunt", title:"Four columns that only exist after a human already decided",
+  hook:"FRAUD_SUSPECTED alone hits AUC 0.9875. That's not a good model — that's the answer key.",
+  body:`
+    <ul class="facts">
+      <li><b>The test applied:</b> does this feature exist because a human already investigated and decided — or because behavior already happened, independent of any investigation?</li>
+      <li>Four resolution-status columns failed that test and were excluded:</li>
+    </ul>
+    <div class="grid2">
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>FRAUD_SUSPECTED</h4><span class="auc">AUC alone: 0.9875</span><p>Only set once an investigator has already concluded fraud — pure hindsight.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>OTHER_RESOLUTION</h4><span class="auc">AUC alone: 0.3338</span><p>Post-hoc case-closure flag.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>FALSE_POSITIVE</h4><span class="auc">AUC alone: 0.3640</span><p>Post-hoc case-closure flag.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>UNATTENDED</h4><span class="auc">AUC alone: 0.4987</span><p>Post-hoc case-status flag.</p></div>
+    </div>
+    <ul class="facts">
+      <li>The harder part: a full <b>univariate AUC audit across all 3,924 features</b> — not just the ones with obvious "resolution" names — to confirm nothing else leaks.</li>
+      <li>Result: the next most extreme feature after those four is <b>~0.17 AUC</b> — a real behavioral transaction-amount signal, nowhere near leak territory.</li>
+      <li><b>Borderline features kept</b> after passing the test: <code>MULTI_UPI_DB_TXNS</code> (AUC 0.74 — genuine multi-UPI-account behavior), the alert count feature (AUC 0.60), a customer risk flag (AUC 0.55) — all describe behavior that happened, not a human's after-the-fact verdict.</li>
+    </ul>
+  `
+},
+{
+  n:"4", kicker:"Building Five Different Opinions", title:"Five supervised models, two unsupervised detectors",
+  hook:"Five different ways of being wrong, so the mistakes don't correlate. Two more held in reserve for threats nobody has labeled yet.",
+  body:`
+    <div class="grid2">
+      <div class="mini"><span class="badge-inc">Included</span><h4>LightGBM</h4><span class="auc">OOF AUC-PR 0.7627</span><p>Cost-sensitive — penalizes missing a real mule harder than a false alarm.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>NNPU</h4><span class="auc">OOF AUC-PR 0.7178</span><p>Positive-Unlabeled learning (Kiryo et al., NeurIPS 2017) — treats the 9,001 non-confirmed accounts as unlabeled, not confirmed-negative.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>CatBoost</h4><span class="auc">OOF AUC-PR 0.8231</span><p>Best single model — native categorical handling, ordered boosting against self-leakage.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>Focal Loss</h4><span class="auc">OOF AUC-PR 0.8177</span><p>LightGBM variant that down-weights easy negatives, focusing capacity on hard borderline cases.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>Prototype Network</h4><span class="auc">OOF AUC-PR ~0.0151</span><p>Nearest-centroid, few-shot-inspired (Snell et al., NeurIPS 2017) — near-random today. Only 81 mules split across ~3 sub-typology clusters gives ~15-27 examples per centroid, too thin to be stable. A data-volume problem, not a design flaw.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Trained, excluded from stack</span><h4>ECOD</h4><p>Unsupervised anomaly detector, needs no labels. Held for future zero-day/novel-typology detection.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Trained, excluded from stack</span><h4>Deep Isolation Forest</h4><p>Unsupervised anomaly detector. Ablation-tested: adding these two to the ensemble made results worse, not better — excluded on evidence, not assumption.</p></div>
+    </div>
+  `
+},
+{
+  n:"5", kicker:"One Verdict from Five", title:"A meta-learner that learns who to trust",
+  hook:"Logistic regression stacking on out-of-fold predictions — the weights are earned, not guessed.",
+  body:`
+    <ul class="facts">
+      <li>Trained on each base model's <b>out-of-fold</b> predictions only — never in-sample — so its learned trust reflects genuine track record.</li>
+      <li>Real learned weights:</li>
+    </ul>
+    <div class="grid2">
+      <div class="mini"><h4>CatBoost</h4><span class="auc">+6.82</span></div>
+      <div class="mini"><h4>Focal Loss</h4><span class="auc">+5.60</span></div>
+      <div class="mini"><h4>LightGBM</h4><span class="auc">+4.01</span></div>
+      <div class="mini"><h4>NNPU</h4><span class="auc">-2.31</span><p>Corrects for overlap with the other models — not a failure signal.</p></div>
+      <div class="mini"><h4>Prototype</h4><span class="auc">-0.07</span><p>Near-zero pull on the final blended score.</p></div>
+    </div>
+    <ul class="facts">
+      <li>Combined result: <b class="metric">AUC-PR 0.8229</b>.</li>
+      <li>Recall@100: <b class="metric">66 of 81 mules</b> caught inside the top-100 ranked accounts.</li>
+    </ul>
+  `
+},
+{
+  n:"6", kicker:"Sharpening the Queue", title:"A cascade re-ranker for the hardest cases only",
+  hook:"Trained on the ensemble's own worst mistakes — its highest-ranked look-alikes — to sharpen precision without losing recall.",
+  body:`
+    <ul class="facts">
+      <li>Second-stage classifier trained only on the single hardest distinction: the 81 confirmed mules versus the main ensemble's own worst false positives.</li>
+      <li>It re-ranks the ensemble's top-100 pool; keeping its top 80 gives:</li>
+      <li><b class="metric">66 of 81 mules retained (same recall)</b> at <b class="metric">82.5% precision</b> — up from 66% precision before this refinement stage.</li>
+      <li>Net effect: same mules caught, far fewer false alarms clogging the highest-priority investigator queue.</li>
+    </ul>
+  `
+},
+{
+  n:"7", kicker:"Finding Structure Without Labels", title:"K-Means triage clustering — usable even with zero supervision",
+  hook:"85.2% of mules concentrate into one cluster spanning under half the accounts — a 2.1x lift with no labels used to build it.",
+  body:`
+    <ul class="facts">
+      <li>K-Means (<code>k=5</code>) run on all <b>9,082</b> accounts with <b>zero</b> label information used to form the clusters — labels are only applied afterward, to measure density, never to build the clusters.</li>
+      <li>Result: <b class="metric">69 of 81 confirmed mules (85.2%)</b> concentrate into a single cluster spanning under half the account population (<b class="metric">3,644 of 9,082</b>).</li>
+      <li>That's a <b class="metric">2.1x</b> investigator lift — usable as a standalone prioritization queue even without the supervised stack running at all.</li>
+    </ul>
+  `
+},
+{
+  n:"8", kicker:"Why, Not Just What", title:"Exact SHAP explanations, not approximations",
+  hook:"Every score comes with a reason an investigator can read without an ML background — and the math actually adds up.",
+  body:`
+    <ul class="facts">
+      <li>SHAP <b>TreeExplainer</b> — exact computation for tree ensembles, not a sampled/approximate estimate.</li>
+      <li>Per-account Shapley contributions sum <b>precisely</b> to the model's prediction — a verifiable accounting identity, not a rough attribution.</li>
+      <li>Output is structured per feature: name, direction (pushed risk up or down), magnitude — readable by an investigator with no ML background.</li>
+      <li>Persisted in <code>outputs/explanations.json</code>, feeding the investigator console directly.</li>
+    </ul>
+  `
+},
+{
+  n:"9", kicker:"What We Won't Oversell", title:"12 mules that no single-bank signal can catch",
+  hook:"Recall plateaus at 69/81 around depth 130. The remaining 12 aren't a modeling failure — they're a cross-bank blind spot.",
+  body:`
+    <ul class="facts">
+      <li>Honest limitation: recall plateaus at <b class="metric">69 of 81 (85.2%)</b> around ranking depth 130 — pushing the queue deeper stops finding new mules.</li>
+      <li>The remaining 12 mules show <b>no distinguishing single-bank signal</b> at any depth tested.</li>
+      <li>This reads as a genuine cross-bank blind spot, not a modeling shortfall — the signal these 12 need likely lives in transactions with <i>other</i> banks, invisible to a single institution's data.</li>
+      <li>Named architectural fix, honestly labeled as roadmap: a cross-bank adapter for RBI's <b>DPIP</b> (Digital Payments Intelligence Platform) and <b>I4C</b>'s Suspect Registry.</li>
+      <li><code>production/feature_pipeline/cross_bank_adapter.py</code> defines the contract today — currently <b>mocked</b>, pending real institutional access. Not claimed to be live.</li>
+    </ul>
+  `
+},
+{
+  n:"10", kicker:"Governed by Design", title:"Human-on-the-loop, not human-in-the-loop",
+  hook:"The system can act autonomously on high-confidence cases precisely because every action fails safe — reverting itself if no human confirms in time.",
+  body:`
+    <ul class="facts">
+      <li><b>Kill switch</b> — an emergency, auditable, instantly-reversible mechanism to halt every automated model-driven action platform-wide, aligned with RBI's draft Model Risk Management guidance.</li>
+      <li><b>Human override with 48-hour auto-expiry</b> — any automated hold/action can be reversed by an investigator at any time; if nobody acts, the action <b>automatically expires and reverts after 48 hours</b>.</li>
+      <li>Why that matters: this is "human-on-the-loop," not "human-in-the-loop" — the system can act immediately and fully autonomously on a high-confidence case, without waiting for a human to click approve first, precisely because the action fails <b>safe by default</b>. Oversight isn't removed — it's just structured as a checkpoint the system reverts to automatically, not a gate it waits at.</li>
+      <li><b>Customer disclosure</b> — plain-language notice to an affected customer, category-level reasoning only, never feature-level model internals (which could help a real fraudster learn to evade detection).</li>
+      <li><b>Encrypted audit trail</b> — SHAP explanations and governance actions persisted permanently, sensitive fields encrypted at rest (Fernet symmetric encryption); records are appended to, never deleted, for full reconstructable history.</li>
+    </ul>
+  `
+},
+{
+  n:"11", kicker:"Two Historical Lessons", title:"We caught our own mistakes before anyone else had to",
+  hook:"Two real data leaks were found and fixed earlier in development — not hidden, because catching them is the point.",
+  body:`
+    <ul class="facts">
+      <li><b>Leak #1 — in-sample meta-learner scoring:</b> an earlier version of the stacking step evaluated the meta-learner on predictions it had partly seen during its own fitting, inflating its apparent accuracy. Caught during a review of the CV pipeline and rebuilt to score strictly out-of-fold.</li>
+      <li><b>Leak #2 — NNPU using globally-selected features:</b> the NNPU model was, at one point, using a feature list selected once across the whole dataset rather than refit per cross-validation fold — a subtle route for test-fold information to influence what features the model even got to see. Corrected to per-fold selection, matching every other model in the stack.</li>
+      <li>Both bugs are named here deliberately: they are evidence of process rigor, not evidence hidden from a report. Every metric elsewhere on this page reflects the corrected, leak-free pipeline.</li>
+    </ul>
+  `
+},
+{
+  n:"12", kicker:"Ready for Production", title:"Not a notebook — a governed serving system",
+  hook:"Feature store, event bus, schema mapper, model registry, drift monitoring, authenticated API, 79 tests.",
+  body:`
+    <ul class="facts">
+      <li><b>Feature Store</b> — single source of truth for rolling transaction features; identical computation whether training offline or scoring a live transaction, preventing train/serve skew. In-memory (dev) and Redis (production) backends.</li>
+      <li><b>Event Bus</b> — every transaction published as a stream event; in-memory for dev, Kafka for production, with delivery-confirmation blocking since fraud events cannot be fire-and-forget.</li>
+      <li><b>Schema Mapper</b> — translates live rolling features into the trained model's exact expected schema; honestly reports real coverage (~84.5% of columns resolved) with an explicit status per column, never silently guessing.</li>
+      <li><b>Model Registry</b> — every retrained version gets an immutable artifact copy; champion-vs-challenger promotion with an automatic <b>regression guard</b> blocking a worse model from replacing the current one.</li>
+      <li><b>Drift Monitor</b> — Population Stability Index (PSI) on features and prediction scores, catching real-world behavioral drift before accuracy visibly degrades — critical because confirmed-mule labels only arrive after a slow investigation, long after drift could start.</li>
+      <li><b>Authenticated, role-based API</b> — INVESTIGATOR / ADMIN / AUDITOR roles, API-key authentication, no open or unauthenticated routes.</li>
+      <li><b class="metric">79 tests</b> across the production codebase — this is engineered for deployment, not a one-off competition notebook.</li>
+    </ul>
+  `
+},
+];
+
+const story = document.getElementById('story');
+const dotrail = document.getElementById('dotrail');
+
+sections.forEach((s, idx) => {
+  const sec = document.createElement('div');
+  sec.className = 'sec';
+  sec.id = 'sec-' + s.n;
+  sec.setAttribute('data-n', s.n);
+  sec.innerHTML = `
+    <div class="card">
+      <div class="card-head">
+        <div class="ttl">
+          <div class="kicker">${s.kicker}</div>
+          <h3>${s.title}</h3>
+          <div class="hook">${s.hook}</div>
+        </div>
+        <div class="chev">&#9656;</div>
+      </div>
+      <div class="card-body"><div class="card-body-inner">${s.body}</div></div>
+    </div>
+  `;
+  const card = sec.querySelector('.card');
+  sec.querySelector('.card-head').addEventListener('click', () => {
+    card.classList.toggle('open');
+  });
+  story.appendChild(sec);
+
+  const dot = document.createElement('a');
+  dot.href = '#sec-' + s.n;
+  dot.innerHTML = `<span class="tip">${s.n}. ${s.title}</span>`;
+  dotrail.appendChild(dot);
+});
+
+// scroll-spy: highlight active dot
+const dots = Array.from(dotrail.querySelectorAll('a'));
+const secEls = Array.from(document.querySelectorAll('.sec'));
+function updateActiveDot(){
+  let closest = secEls[0];
+  let closestDist = Infinity;
+  secEls.forEach(el => {
+    const d = Math.abs(el.getBoundingClientRect().top - 120);
+    if (d < closestDist) { closestDist = d; closest = el; }
+  });
+  dots.forEach(d => d.classList.remove('active'));
+  const idx = secEls.indexOf(closest);
+  if (dots[idx]) dots[idx].classList.add('active');
+}
+window.addEventListener('scroll', updateActiveDot, { passive: true });
+updateActiveDot();
+
+document.getElementById('expand-btn').addEventListener('click', () => {
+  document.querySelectorAll('.card').forEach(c => c.classList.add('open'));
+});
+document.getElementById('collapse-btn').addEventListener('click', () => {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('open'));
+});
+</script>
+</body>
+</html>

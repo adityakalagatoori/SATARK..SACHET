@@ -1,0 +1,276 @@
+% SACHET Prototype Document — PSB Cybersecurity, Fraud & AI Hackathon 2026, PS-2
+% Team: SATARK
+% Based on the CyberShield/IIT Hyderabad prototype template (spconf.sty, IEEEbib.bst)
+\documentclass{article}
+\usepackage{spconf,amsmath,graphicx,hyperref}
+
+\def\x{{\mathbf x}}
+\def\L{{\cal L}}
+
+\title{SACHET: A Leakage-Free, Positive-Unlabeled Ensemble for Mule Account Detection in Banking Transaction Data}
+%
+\twoauthors
+  {Kritika Pandey}
+	{Dept. of AI \& ML\\
+	United College of Engineering and Research\\
+	Prayagraj, India}
+  {Vaishnav Aditya}
+	{Dept. of Cyber Security\\
+	Amrita Vishwa Vidyapeetham\\
+	Chennai, India}
+%
+\begin{document}
+\maketitle
+\begin{center}
+\textit{Team SATARK --- PSB Cybersecurity, Fraud \& AI Hackathon 2026, Problem Statement 2 (Bank of India $\times$ IIT Hyderabad)}
+\end{center}
+%
+\begin{abstract}
+Mule accounts are used to receive, transfer, and conceal fraudulent funds across banking
+channels, and traditional rule-based monitoring cannot keep pace with evolving patterns.
+We present SACHET, an AI/ML classification system for suspicious mule account detection
+built on the competition dataset of 9{,}082 accounts (3{,}924 raw features, 81 confirmed
+mules, 0.89\% prevalence). SACHET stacks five base learners --- a cost-sensitive LightGBM
+classifier, a Non-Negative Positive-Unlabeled (NNPU) learner that treats unconfirmed
+accounts as unlabeled rather than clean, a CatBoost classifier, a focal-loss LightGBM
+variant, and a prototype/metric-learning classifier --- through a logistic-regression
+meta-learner, followed by a stage-2 cascade classifier that re-ranks the flagged pool
+against its own hardest false positives. Two unsupervised anomaly detectors (ECOD, Deep
+Isolation Forest) are trained alongside the stack but excluded from it by ablation (they
+measurably reduced ranking precision) and instead ship separately for zero-day typology
+coverage. All feature selection is performed strictly inside each cross-validation fold
+to prevent label leakage, and every resolution-status or artifact feature identified in
+the official data dictionary is excluded from training. On leakage-free 5-fold
+out-of-fold evaluation, the ensemble achieves an AUC-PR of 0.8229 (vs. 0.0089 random
+baseline, a 92$\times$ lift), with 66 of the top 100 flagged accounts confirmed mules
+(Precision@100 = 66\%, Recall@100 = 81.5\%). Unsupervised K-Means triage on the full
+account population concentrates 85.2\% of confirmed mules into one cluster spanning 40\%
+of accounts, giving investigators a 2.1$\times$ efficiency gain over unranked review.
+\end{abstract}
+%
+\begin{keywords}
+mule account detection, positive-unlabeled learning, gradient boosting, anomaly detection,
+class imbalance, leakage-free cross-validation, anti-money laundering
+\end{keywords}
+%
+\section{Introduction}
+\label{sec:intro}
+
+Bank of India, in partnership with IIT Hyderabad, posed Problem Statement 2 of the PSB
+Cybersecurity, Fraud \& AI Hackathon 2026: build an AI/ML system that learns behavioural
+and transactional patterns from provided financial transaction data to distinguish
+suspicious mule accounts from legitimate ones, using anomaly detection, predictive risk
+scoring, and intelligent alerting. The competition dataset supplies 9{,}082 accounts with
+3{,}924 pre-aggregated behavioural features (cash/cheque/UPI/NEFT/RTGS transaction ratios
+over multiple time windows, balance deviations, tenure, and demographic fields) and a
+binary target (feature F3924), with only 81 accounts (0.89\%) confirmed as mules.
+
+This combination of extreme class imbalance and a small positive set creates two risks
+that are easy to get wrong silently: (1) treating the 9{,}001 unconfirmed accounts as
+guaranteed-clean negatives, which biases any classifier against ever finding a mule the
+bank has not yet caught; and (2) feature selection, scaling, or evaluation that
+inadvertently sees validation labels, or another model's already-processed output, before
+scoring on them, producing metrics that look excellent but do not generalize. Section~\ref{sec:format}
+describes how SACHET is designed and independently re-verified against both failure modes.
+
+\section{Dataset and Feature Integrity}
+\label{sec:format}
+
+Seven columns were excluded from training after inspection against the official feature
+dictionary: the target itself (F3924), the raw row index, F2230 (\texttt{MNTH}, a
+data-collection batch-month indicator unavailable at inference time), and four
+resolution-status flags --- F3912 (\texttt{FRAUD\_SUSPECTED}), F3913
+(\texttt{OTHER\_RESOLUTION}), F3914 (\texttt{FALSE\_POSITIVE}), and F3915
+(\texttt{UNATTENDED}) --- each of which records what a human investigator concluded
+\emph{after} working a case, and so does not exist at prediction time. We further
+evaluated the 18 features the bank explicitly finalized in the data dictionary
+(F115, F321, F527, \ldots, F3894); forcing them into the selected feature set reduced
+out-of-fold AUC-PR relative to letting selection choose freely, indicating they function
+better as investigator-facing context (age, tenure, balance, occupation) than as raw
+predictive signal, and they are surfaced in the alert payload rather than forced into
+the model.
+
+\subsection{Leakage-Free Nested Cross-Validation}
+\label{ssec:subhead}
+
+Mutual-information feature selection (top 150 of 1{,}841 post-cleaning features),
+log/polynomial/interaction engineering, and RobustScaler fitting are performed
+exclusively on each fold's training partition and then applied --- without refitting
+--- to that fold's held-out validation rows. The out-of-fold predictions this produces
+are the honest, reportable metric; a naive pipeline that selects features on the full
+dataset before splitting yields a spuriously perfect score (we observed AUC-PR
+collapsing to 1.0000 after a single boosting round under that flawed setup, which is
+itself diagnostic of leakage rather than model quality).
+
+This discipline was stress-tested twice during development. First, two genuine leaks
+were found and fixed pre-deployment: a meta-learner scored in-sample rather than
+out-of-fold, and one base learner reused a globally-selected (rather than per-fold)
+feature list; both inflated the reported recall above its honest value, and a permanent
+regression test now pins a tolerance band around the honest number so either pattern
+reappearing silently would fail the test suite rather than go unnoticed. Second, a
+separate data-integrity bug was later found and fixed: one model's training step was
+overwriting the shared, raw feature matrix with its own already-selected, already-scaled
+version, causing every model trained after it to unintentionally select features from
+that reduced space instead of the intended raw one. Fixing this file-separation bug
+raised recall from 61/81 to the current 66/81 --- we verified this was a genuine
+data-corruption fix and not a reintroduced leak via an independent, from-scratch
+re-derivation (a separate script, a fresh 70/30 split, and zero shared code with the
+main pipeline), which reproduced results in the same range.
+
+\section{Model Architecture}
+\label{sec:majhead}
+
+SACHET stacks five base learners, each producing an out-of-fold probability, combined
+by a logistic-regression meta-learner, followed by a stage-2 cascade refiner:
+
+\begin{itemize}
+\item \textbf{Cost-sensitive LightGBM}~\cite{lightgbm2017} (\texttt{scale\_pos\_weight}
+$\approx 111$), OOF AUC-PR 0.7621.
+\item \textbf{NNPU learner} (Kiryo et al.~\cite{kiryo2017}), a custom gradient/Hessian
+objective on LightGBM that treats the 9{,}001 unconfirmed accounts as unlabeled rather
+than negative, correcting the risk estimate with a non-negative floor to avoid
+overfitting to label contamination. Mean CV AUC-PR 0.7130 (low OOF accuracy against
+confirmed labels is expected for PU learning; its value is in the stacked ensemble).
+\item \textbf{CatBoost}~\cite{catboost2018}, included for its ordered-boosting property,
+which reduces target leakage risk on small positive sets. OOF AUC-PR 0.8226, the
+strongest individual gradient-boosted learner in the current stack.
+\item \textbf{Focal-loss LightGBM}, a data-derived imbalance-sensitive $\alpha$ with
+seed-averaged (3-seed) out-of-fold evaluation, concentrating training on borderline
+accounts a fixed positive-class weight would coast past. OOF AUC-PR 0.8172.
+\item \textbf{Prototype/metric-learning classifier}, inspired by Prototypical
+Networks~\cite{snell2017}: an account's score is its distance to the nearest mule
+prototype relative to the nearest legitimate-behaviour prototype. OOF AUC-PR 0.0146
+individually; retained for typology diversity in the stack rather than standalone
+accuracy.
+\end{itemize}
+
+\textbf{ECOD}~\cite{ecod2022} \textbf{and Deep Isolation Forest}~\cite{deepif2023},
+fully unsupervised anomaly scores computed without labels, are trained to surface
+typologies absent from the 81 confirmed examples. Ablation showed including them in the
+supervised stack measurably reduced Precision@100 (65\% vs. 66\% without them), so they
+are shipped separately for zero-day coverage rather than fed into the ranking ensemble.
+
+\subsection{Stage-2 Cascade Refiner}
+\label{ssec:cascade}
+
+The stacked ensemble's flagged top-100 pool separates 61 true mules from 39 legitimate
+accounts that share the dominant mule typology closely enough to fool a single-stage
+model. A second, purpose-built LightGBM classifier is trained only on this hard
+boundary --- the 81 confirmed mules versus the 400 legitimate accounts the main ensemble
+ranks most suspicious --- giving it a much better-balanced (16.8\% positive) and more
+specific learning problem. Re-ranking the top-100 pool by cascade score and keeping the
+top 80 recovers 65 of 81 mules with only 15 false positives (81.25\% precision),
+compared to 59/81 from the main ensemble ranking alone at the same depth.
+
+\subsection{Behavioural Triage}
+\label{ssec:triage}
+
+Independently of the classifiers, K-Means ($k=5$, quantile-transformed features, no
+labels used in fitting) clusters the full account population. The densest cluster
+contains 69 of 81 confirmed mules (85.2\%) within 3{,}644 of 9{,}082 accounts, a
+2.1$\times$ mule-rate lift over the population baseline, giving investigators a smaller
+pool to prioritize without requiring the supervised model at all.
+
+\section{Results}
+\label{sec:illust}
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{lc}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Ensemble OOF AUC-PR & 0.8229 \\
+Random baseline AUC-PR & 0.0089 \\
+Precision@100 & 66\% \\
+Recall@100 & 81.5\% (66/81 mules) \\
+Cascade-refined top-80 & 65/81 mules, 81.25\% precision \\
+CatBoost OOF AUC-PR (best single model) & 0.8226 \\
+Densest-cluster mule coverage & 85.2\% \\
+Investigator efficiency lift & 2.1$\times$ \\
+\hline
+\end{tabular}
+\caption{Leakage-free out-of-fold results on the competition dataset.}
+\label{tab:results}
+\end{table}
+
+All values in Table~\ref{tab:results} come from 5-fold stratified out-of-fold
+evaluation with feature selection strictly confined to training folds; none use the
+full-dataset refit that is deployed for inference. AUC-PR is used as the primary
+metric rather than AUC-ROC, which is known to inflate toward the trivial-classifier
+value under 99:1 imbalance. Recall reaches 85.2\% (69/81) by a review depth of 130
+accounts and does not improve further by depth 180, indicating the remaining 12 mules
+are not merely low-ranked but effectively indistinguishable from legitimate accounts
+using single-bank transaction data alone --- the motivating case for the cross-bank
+signal integration described in Section~\ref{sec:print}.
+
+\section{Deployment}
+\label{sec:print}
+
+The trained ensemble (five stacked models, the cascade refiner, meta-learner, scaler,
+and clustering model) is packaged as a single artifact for deployment. Predictions are
+exposed through a batch scoring pipeline and a REST API for real-time account scoring,
+with SHAP~\cite{shap2017} TreeExplainer-based per-account explanations computed
+post-training only, avoiding circular use of explanation values for feature selection.
+A production architecture (event-driven ingestion, a governance layer with a reversible
+kill switch and human-override audit trail, and role-based access control) is
+implemented and tested independently of the model itself. Because the 12
+hardest-to-detect mules described in Section~\ref{sec:illust} are, by construction,
+statistically ordinary from any single bank's own data, a cross-bank signal adapter
+(targeting RBI's DPIP and I4C's Suspect Registry once formal access exists) is built and
+tested against a mock, ready to merge as an additional feature with no model retraining
+required once real access is available.
+
+\section{Conclusion}
+\label{sec:refs}
+
+SACHET demonstrates that mule account detection under extreme class imbalance and a
+small confirmed-positive set benefits more from architectural discipline --- leakage-free
+nested cross-validation, explicit exclusion of artifact features, PU-aware modeling
+of the unconfirmed population, and a purpose-built cascade for the specific error mode
+remaining after the main ensemble --- than from any single model's raw capacity. The
+resulting 0.8229 AUC-PR (92$\times$ random baseline) and 2.1$\times$ investigator
+efficiency lift are obtained without synthetic oversampling, are reproducible directly
+from the competition dataset, and were independently re-verified via a from-scratch
+clean-room re-derivation after a data-integrity bug was found and fixed in development.
+
+\begin{thebibliography}{9}
+
+\bibitem{kiryo2017}
+R.~Kiryo, G.~Niu, M.~C. du Plessis, and M.~Sugiyama,
+``Positive-unlabeled learning with non-negative risk estimator,''
+in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
+
+\bibitem{ecod2022}
+Z.~Li, Y.~Zhao, X.~Hu, N.~Botta, C.~Ionescu, and G.~Chen,
+``ECOD: Unsupervised outlier detection using empirical cumulative distribution functions,''
+\emph{IEEE Transactions on Knowledge and Data Engineering (TKDE)}, 2022.
+
+\bibitem{deepif2023}
+H.~Xu, G.~Pang, Y.~Wang, and Y.~Wang,
+``Deep isolation forest for anomaly detection,''
+\emph{IEEE Transactions on Knowledge and Data Engineering (TKDE)}, 2023.
+
+\bibitem{catboost2018}
+A.~V. Dorogush, V.~Ershov, and A.~Gulin,
+``CatBoost: gradient boosting with categorical features support,''
+in \emph{NeurIPS Workshop on ML Systems}, 2018.
+
+\bibitem{lightgbm2017}
+G.~Ke et al.,
+``LightGBM: A highly efficient gradient boosting decision tree,''
+in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
+
+\bibitem{shap2017}
+S.~M. Lundberg and S.-I. Lee,
+``A unified approach to interpreting model predictions,''
+in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
+
+\bibitem{snell2017}
+J.~Snell, K.~Swersky, and R.~Zemel,
+``Prototypical networks for few-shot learning,''
+in \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 2017.
+
+\end{thebibliography}
+
+\end{document}

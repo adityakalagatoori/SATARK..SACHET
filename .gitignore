@@ -1,0 +1,13 @@
+.claude/
+__pycache__/
+*.pyc
+production/**/_state/
+production/**/_registry/
+.pytest_cache/
+catboost_info/
+docs/
+presentation/
+models/
+outputs/
+data/
+catboost_info/

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACHET — Full Pipeline</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0021'/%3E%3Cpath d='M20 42c4 4 20 5 22-3 2-9-18-7-17-15 1-6 13-8 19-3' stroke='%23A855F7' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('sachet-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<style>
+  /* ============================================================
+     SACHET shared design tokens — glassmorphism on a light violet
+     ground. Same palette/values repeated verbatim in investigator.html,
+     account_universe.html and landing.html so all four pages read as
+     one product.
+     ============================================================ */
+  :root{
+    --bg-0:#f3edff; --bg-1:#ffffff; --panel:rgba(255,255,255,.62);
+    --panel-solid:#ffffff;
+    --accent:#7c3aed; --accent-lo:#4C0099; --accent-hi:#A855F7;
+    --lilac:#8b2fe0; --paper:#2d1155; --ink:#241238; --muted:#6b5b8a;
+    --ok:#15803d; --danger:#DC2626; --warn:#b45309;
+    --crit:#dc2626; --high:#c2620a; --med:#946800; --low:#1d4ed8;
+    --kept:#15803d; --excl:#b91c1c;
+    --line:rgba(124,58,237,.25);
+    --glass-blur:18px;
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 32px rgba(124,58,237,.16);
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg-0:#0d0021; --bg-1:#160230; --panel:rgba(255,255,255,.08); --panel-solid:#160230;
+    --lilac:#c9a6fb; --paper:#EDE9FE; --ink:#e0e0e0; --muted:#9b93ad;
+    --ok:#4ade80; --danger:#f87171; --warn:#fbbf24;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --low:#60a5fa;
+    --kept:#4ade80; --excl:#f87171;
+    --line:rgba(168,85,247,.35);
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 32px rgba(0,0,0,.45);
+  }
+  :root[data-theme="dark"] header{background:rgba(22,2,48,.78)}
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:7px;background:transparent;cursor:pointer;
+    font-size:15px;line-height:1;color:var(--muted);
+  }
+  .theme-toggle:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  a,button,.card,.stage,.legend .lk{transition:all .3s cubic-bezier(.4,0,.2,1)}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(124,58,237,.16), transparent 60%),
+      linear-gradient(180deg,var(--bg-0),var(--bg-1) 55%);
+    background-attachment:fixed;
+    color:var(--ink);font-size:14px;line-height:1.55;min-height:100vh;
+  }
+  a{color:var(--lilac)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 100px}
+
+  header{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:16px 20px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.68);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    box-shadow:0 4px 24px rgba(124,58,237,.08);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{font-size:19px;font-weight:800;color:var(--accent-hi);letter-spacing:.04em;text-decoration:none}
+  .brand small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .hdr-nav{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hdr-nav a{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
+    color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:7px;
+  }
+  .hdr-nav a:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  .hdr-nav a.active{color:var(--accent);border-color:var(--accent);background:rgba(124,58,237,.1)}
+
+  h1.page-title{font-size:22px;color:var(--paper);margin:26px 0 4px;font-weight:800}
+  .page-sub{font-size:12.5px;color:var(--muted);max-width:760px;line-height:1.6;margin-bottom:20px}
+
+  /* legend */
+  .legend{display:flex;gap:20px;flex-wrap:wrap;align-items:center;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin-bottom:22px;font-size:11.5px;color:var(--muted);
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow)}
+  .legend .lk{display:flex;align-items:center;gap:7px}
+  .swatch{width:22px;height:12px;border-radius:3px;flex:none}
+  .swatch.live{border:1.5px solid var(--accent-hi);background:rgba(124,58,237,.12)}
+  .swatch.road{border:1.5px dashed var(--muted);background:transparent}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .dot.kept{background:var(--kept)} .dot.excl{background:var(--excl)}
+
+  /* ---------------- pipeline rail ---------------- */
+  .rail{position:relative;padding-left:34px}
+  .rail::before{
+    content:'';position:absolute;left:11px;top:10px;bottom:10px;width:2px;
+    background:linear-gradient(180deg,var(--accent-lo),var(--accent-hi),var(--accent-lo));
+    background-size:100% 240px;
+    animation:flowline 3.2s linear infinite;
+  }
+  @keyframes flowline{0%{background-position-y:0}100%{background-position-y:240px}}
+
+  .stage{position:relative;margin-bottom:16px}
+  .stage::before{
+    content:attr(data-n);position:absolute;left:-34px;top:6px;width:24px;height:24px;
+    border-radius:50%;background:var(--bg-0);border:2px solid var(--accent-hi);
+    color:var(--accent-hi);font-family:var(--mono);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;z-index:2;
+  }
+  .stage.roadmap::before{border-color:var(--muted);color:var(--muted);border-style:dashed}
+
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    cursor:pointer;overflow:hidden;transition:border-color .2s, box-shadow .2s;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+  .card:hover{border-color:var(--accent-hi);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.25),inset 0 1px 0 rgba(255,255,255,.6),0 14px 36px rgba(124,58,237,.22)}
+  .stage.roadmap .card{border-style:dashed;border-color:rgba(155,147,173,.4);opacity:.82}
+  .stage.roadmap .card:hover{border-color:var(--muted)}
+
+  .card-head{display:flex;align-items:center;gap:14px;padding:14px 18px}
+  .card-head .ttl{flex:1;min-width:0}
+  .card-head h3{font-size:14.5px;color:var(--paper);font-weight:700}
+  .card-head .one-line{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .chev{font-size:12px;color:var(--accent-hi);transition:transform .2s;flex:none}
+  .card.open .chev{transform:rotate(90deg)}
+
+  .card-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+  .card.open .card-body{max-height:2400px}
+  .card-body-inner{padding:0 18px 18px;border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--ink)}
+  .card-body-inner p{margin-bottom:10px;line-height:1.65}
+  .card-body-inner ul{margin:6px 0 12px 18px}
+  .card-body-inner li{margin-bottom:6px;line-height:1.55}
+  code{font-family:var(--mono);font-size:11.5px;color:var(--lilac);background:rgba(124,58,237,.1);padding:1px 5px;border-radius:4px}
+  .metric{font-family:var(--mono);color:var(--accent-lo);font-weight:700}
+
+  .badge-inc{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--kept)}
+  .badge-inc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--kept)}
+  .badge-exc{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--excl)}
+  .badge-exc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--excl)}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:10px 0}
+  .mini{background:rgba(124,58,237,.05);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .mini.excluded{border-color:rgba(220,38,38,.35);background:rgba(220,38,38,.04)}
+  .mini h4{font-size:12px;color:var(--paper);margin-bottom:3px}
+  .mini .auc{font-family:var(--mono);font-size:12px;color:var(--accent-hi)}
+  .mini p{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
+
+  .roadmap-tag{display:inline-block;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--muted);border:1px dashed var(--muted);border-radius:20px;padding:2px 9px;margin-left:8px;flex:none}
+
+  footer{text-align:center;color:var(--muted);font-size:11px;padding:30px 0 10px}
+
+  /* ---------------- simple/detailed view switcher ---------------- */
+  .view-switch{display:inline-flex;gap:3px;background:var(--panel);border:1px solid var(--line);
+    border-radius:30px;padding:3px;margin-bottom:18px;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow)}
+  .view-btn{border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:12px;
+    font-weight:700;padding:8px 18px;border-radius:24px;cursor:pointer;letter-spacing:.02em}
+  .view-btn.active{background:linear-gradient(90deg,var(--accent-lo),var(--accent));color:#fff}
+  .view-btn:not(.active):hover{color:var(--lilac)}
+
+  /* ---------------- simple architecture diagram ---------------- */
+  .arch-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:8px 0 26px}
+  .arch-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    width:190px;min-height:118px;cursor:pointer;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+  .arch-box:hover{border-color:var(--accent-hi);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.25),inset 0 1px 0 rgba(255,255,255,.6),0 14px 36px rgba(124,58,237,.22)}
+  .arch-box.roadmap{border-style:dashed;border-color:rgba(155,147,173,.55);opacity:.85}
+  .arch-box .arch-n{font-family:var(--mono);font-size:10px;color:var(--accent-hi);font-weight:700;margin-bottom:6px}
+  .arch-box h4{font-size:13px;color:var(--paper);font-weight:700;line-height:1.3;margin-bottom:4px}
+  .arch-box .arch-tap{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .arch-box .arch-explain{font-size:11.5px;color:var(--ink);line-height:1.5;margin-top:9px;padding-top:9px;
+    border-top:1px solid var(--line);display:none}
+  .arch-box.open .arch-explain{display:block}
+  .arch-box.open .arch-tap{display:none}
+  .arch-arrow{display:flex;align-items:center;justify-content:center;width:34px;color:var(--accent-hi);
+    font-size:20px;flex:none}
+  .arch-arrow.roadmap-arrow{color:var(--muted)}
+  @media(max-width:900px){
+    .arch-flow{flex-direction:column}
+    .arch-box{width:100%}
+    .arch-arrow{width:100%;height:26px;transform:rotate(90deg)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="landing.html">SACHET<small>Full Pipeline Walkthrough</small></a>
+  <div class="hdr-nav">
+    <a href="landing.html">Overview</a>
+    <a href="pipeline.html" class="active">Pipeline</a>
+    <a href="account_universe.html">Account Universe</a>
+    <a href="investigator.html">Investigator Console</a>
+    <a href="live_scoring.html">Live Scoring</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light/dark theme">🌙</button>
+  </div>
+</header>
+<script>
+(function(){
+  function icon(){return document.documentElement.getAttribute('data-theme')==='dark' ? '☀️' : '🌙';}
+  var btn = document.getElementById('theme-toggle');
+  btn.textContent = icon();
+  btn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('sachet-theme', next); }catch(e){}
+    btn.textContent = icon();
+  });
+})();
+</script>
+
+<div class="wrap">
+  <h1 class="page-title">End-to-End Architecture</h1>
+  <p class="page-sub">Every stage below is a real, working step of SACHET's pipeline — from raw data through production serving and governance.</p>
+
+  <div class="view-switch">
+    <button class="view-btn active" id="btn-simple" type="button">Simple view</button>
+    <button class="view-btn" id="btn-detailed" type="button">Detailed view</button>
+  </div>
+
+  <div id="simple-view">
+    <p class="page-sub">A first-glance map of the system — click any box for a plain-language explanation. No jargon.</p>
+    <div class="arch-flow" id="arch-flow"></div>
+  </div>
+
+  <div id="detailed-view" style="display:none">
+    <p class="page-sub">The same pipeline, in full technical detail — 12 real stages. Click a stage to expand it; only the dashed roadmap stage at the end is hypothetical.</p>
+    <div class="legend">
+      <div class="lk"><span class="swatch live"></span> Solid border — live today, in this codebase</div>
+      <div class="lk"><span class="swatch road"></span> Dashed border — roadmap / pending real access</div>
+      <div class="lk"><span class="dot kept"></span> Included / kept</div>
+      <div class="lk"><span class="dot excl"></span> Excluded</div>
+    </div>
+
+    <div class="rail" id="rail"></div>
+  </div>
+</div>
+
+<footer>SACHET — Bank of India Hackathon Prototype. All figures pulled from the actual training run and codebase.</footer>
+
+<script>
+const stages = [
+{
+  n:"1", title:"Raw Data Ingestion",
+  line:"Competition dataset in, or a real core-banking feed in production.",
+  body:`
+    <p>The competition dataset: <span class="metric">9,082</span> accounts, <span class="metric">3,924</span> raw features, in <code>data/DataSet (1).csv</code>, described by <code>data/Description.xlsx</code> — a feature dictionary mapping F-codes like <code>F3912</code> to human names like <code>FRAUD_SUSPECTED</code> and plain-English descriptions.</p>
+    <p>In production: a <code>CoreBankingAdapter</code> interface with a real Finacle-style batch-file implementation in <code>production/feature_pipeline/finacle_adapter.py</code>.</p>
+    <p><strong>Honest caveat:</strong> the exact Finacle export format is a documented assumption pending confirmation with BOI's actual Finacle integration team — it has not been verified against a live system.</p>
+  `
+},
+{
+  n:"2", title:"Leakage Audit & Feature Cleaning",
+  line:"Drop hindsight columns before the model ever sees the data — audited, not assumed.",
+  body:`
+    <p><code>extract_features()</code> in <code>src/satark.py</code> drops leakage/artifact columns before training:</p>
+    <div class="grid2">
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F3924 — target</h4><p>The label itself.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>Unnamed: 0</h4><p>Row index, no signal.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F2230</h4><p>Batch-collection-month — unavailable at real inference time.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F3912 FRAUD_SUSPECTED</h4><p class="auc">Single-feature AUC 0.9875</p><p>Only exists after an investigator has resolved the case — pure hindsight.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F3913 OTHER_RESOLUTION</h4><p>Resolution-status flag, post-hoc.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F3914 FALSE_POSITIVE</h4><p>Resolution-status flag, post-hoc.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded</span><h4>F3915 UNATTENDED</h4><p>Resolution-status flag, post-hoc.</p></div>
+    </div>
+    <p>A full univariate AUC audit was run across all <span class="metric">3,924</span> features — not just the obviously-labeled ones — to confirm nothing else leaks. The next most extreme feature after the four excluded resolution flags is a legitimate behavioral signal (a transaction-amount feature) at AUC <span class="metric">~0.17</span>, nowhere near leak territory.</p>
+    <p>Constant features and highly-correlated features (Pearson <span class="metric">r &gt; 0.95</span>) are also removed here, computed label-independently — never looking at the target. Domain "typology" features (money-mule behavioral indicators) are engineered and added at this stage too.</p>
+  `
+},
+{
+  n:"3", title:"Per-Fold Feature Selection & Scaling",
+  line:"Mutual-information selection and RobustScaler are refit inside every CV fold — never on the whole dataset.",
+  body:`
+    <p>This is the leak-free discipline at the heart of the reported metrics: mutual-information feature selection and <code>RobustScaler</code> scaling are <strong>never</strong> fit on the whole dataset. Both are refit inside every single cross-validation fold, on that fold's training rows only, then applied — without refitting — to that fold's held-out validation rows. This is why every reported metric downstream is genuinely out-of-fold, not in-sample.</p>
+    <p><strong>Found and fixed:</strong> two real data leaks surfaced earlier in this project's development — (1) an in-sample meta-learner scoring bug, and (2) NNPU reusing a globally-selected feature list instead of per-fold selection. Both were identified and corrected; flagging them here as evidence of rigor, not hiding them.</p>
+  `
+},
+{
+  n:"4", title:"Model Ensemble — 5 Supervised + 2 Unsupervised",
+  line:"Seven models trained; five feed the final ensemble, two are held for future zero-day detection.",
+  body:`
+    <div class="grid2">
+      <div class="mini"><span class="badge-inc">Included</span><h4>LightGBM (Model B)</h4><p class="auc">OOF AUC-PR 0.7627</p><p>Cost-sensitive — penalizes missing a real mule more heavily than a false alarm.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>NNPU (Model A)</h4><p class="auc">OOF AUC-PR 0.7178</p><p>Positive-Unlabeled learning (Kiryo et al., NeurIPS 2017) — treats the 9,001 non-confirmed accounts as UNLABELED, not confirmed-negative. Architecturally important, not the top performer.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>CatBoost (Model E)</h4><p class="auc">OOF AUC-PR 0.8231</p><p>Native categorical handling, ordered boosting to avoid self-leakage. Strongest single model.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>Focal Loss (Model F)</h4><p class="auc">OOF AUC-PR 0.8177</p><p>LightGBM variant whose loss down-weights easy negatives so capacity focuses on hard, borderline cases.</p></div>
+      <div class="mini"><span class="badge-inc">Included</span><h4>Prototype Network (Model G)</h4><p class="auc">OOF AUC-PR ~0.0151</p><p>Nearest-centroid, few-shot-inspired (Snell et al., NeurIPS 2017). Near random today — only 81 confirmed mules split across ~3 sub-typology clusters gives ~15-27 examples per centroid, too few to be stable. Kept because its pull on the blended score is near zero (learned meta-weight -0.07) and it could become genuinely useful with a larger case history — a data-volume limitation, not a design flaw.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded from final stack</span><h4>ECOD</h4><p>Unsupervised anomaly detector, needs no labels. Trained and kept for potential zero-day/novel-typology detection.</p></div>
+      <div class="mini excluded"><span class="badge-exc">Excluded from final stack</span><h4>Deep Isolation Forest</h4><p>Unsupervised anomaly detector. Ablation-tested: including these two made the combined result worse, not better — excluded on evidence, not assumption.</p></div>
+    </div>
+  `
+},
+{
+  n:"5", title:"Meta-Learner (Stacking)",
+  line:"A logistic-regression meta-learner learns how much to trust each base model, from out-of-fold track record.",
+  body:`
+    <p>Trained on each base model's out-of-fold predictions only — never in-sample. Weights are learned from data, not hand-picked:</p>
+    <div class="grid2">
+      <div class="mini"><h4>CatBoost</h4><p class="auc">+6.82</p></div>
+      <div class="mini"><h4>Focal Loss</h4><p class="auc">+5.60</p></div>
+      <div class="mini"><h4>LightGBM</h4><p class="auc">+4.01</p></div>
+      <div class="mini"><h4>NNPU</h4><p class="auc">-2.31</p><p>Corrects for overlap with the other models — not a failure.</p></div>
+      <div class="mini"><h4>Prototype</h4><p class="auc">-0.07</p><p>Near zero pull on the final score.</p></div>
+    </div>
+    <p>Combined ensemble result: <span class="metric">AUC-PR 0.8229</span>, <span class="metric">Precision@100 = 66%</span>, <span class="metric">Recall@100 = 66 of 81 mules (81.5%)</span>.</p>
+  `
+},
+{
+  n:"6", title:"Cascade Precision-Refiner",
+  line:"A second classifier re-ranks the top-100 pool, sharpening precision without touching recall.",
+  body:`
+    <p>Trained only on the hardest distinction: the 81 confirmed mules versus the main ensemble's own worst false positives — its highest-ranked legitimate look-alikes.</p>
+    <p>Real result: re-ranking the ensemble's own top-100 pool and keeping the cascade's top-80 catches <span class="metric">66 of 81 mules at 82.5% precision</span> — up from 66% precision before this refinement stage, same recall, fewer false alarms in the highest-priority queue.</p>
+  `
+},
+{
+  n:"7", title:"Unsupervised Triage Clustering",
+  line:"K-Means (k=5) on all 9,082 accounts, zero labels used to form the clusters — a usable standalone prioritization queue.",
+  body:`
+    <p>K-Means clustering (<code>k=5</code>) is run on all <span class="metric">9,082</span> accounts with zero label information; labels are applied only afterward, to measure — not create — cluster density.</p>
+    <p>Real result: <span class="metric">69 of 81</span> confirmed mules (<span class="metric">85.2%</span>) concentrate into one cluster spanning under half the account population (<span class="metric">3,644 of 9,082</span> accounts) — a <span class="metric">2.1x</span> investigator lift, usable as a prioritization queue even without the supervised model at all.</p>
+  `
+},
+{
+  n:"8", title:"Outputs",
+  line:"Scored, tiered, and explained per-account results, feeding the investigator console.",
+  body:`
+    <ul>
+      <li><code>outputs/predictions.csv</code> — per-account mule scores (batch mode, single-model LightGBM path in the current prototype API).</li>
+      <li><code>outputs/alerts.json</code> — severity-tiered alerts (CRITICAL / HIGH / MEDIUM / LOW) with a recommended action per tier. CRITICAL gets a temporary, reversible step-up-verification hold — never a permanent freeze, because honest precision at this tier means roughly 1 in 3-4 flagged accounts is a real customer, so any automated action must stay low-friction and reversible.</li>
+      <li><code>outputs/explanations.json</code> — real per-account SHAP TreeExplainer contributions (exact, not sampled/approximate — Shapley values sum precisely to the model's prediction), the top contributing features and their direction, for the investigator to see why an account was flagged.</li>
+      <li><code>outputs/tiers.json</code>, <code>outputs/clusters.csv</code>, <code>outputs/assignments.csv</code> — the tiered-review and cluster-assignment data backing the investigator console.</li>
+    </ul>
+  `
+},
+{
+  n:"9", title:"Production Serving Layer",
+  line:"Feature store, event bus, transaction consumer, schema mapper, and an authenticated API — all in production/.",
+  body:`
+    <ul>
+      <li><strong>Feature Store</strong> — <code>feature_pipeline/feature_store.py</code>: single source of truth for rolling transaction features, ensuring the exact same computation is used whether training offline or scoring a live transaction (prevents train/serve skew). In-memory (dev/test) and Redis (production, sub-millisecond reads) backends.</li>
+      <li><strong>Event Bus</strong> — <code>serving/event_bus.py</code>: publishes every transaction as a stream event. In-memory backend for dev, real Kafka backend for production, with delivery-confirmation blocking since fraud events must not be fire-and-forget.</li>
+      <li><strong>Transaction Consumer</strong> — <code>serving/transaction_consumer.py</code>: wires event ingestion → feature update → scoring → governance action together end to end.</li>
+      <li><strong>Schema Mapper</strong> — <code>feature_pipeline/schema_mapper.py</code>: translates live rolling features into the trained model's exact expected schema; honestly reports real coverage (<span class="metric">~84.5%</span> of columns resolved), with an explicit status per column — never silently guesses.</li>
+      <li><strong>Authenticated API</strong> — <code>serving/api.py</code>, <code>serving/auth.py</code>: role-based access (INVESTIGATOR, ADMIN, AUDITOR each with different permissions), API-key authentication, no open/unauthenticated routes.</li>
+    </ul>
+  `
+},
+{
+  n:"10", title:"Governance — Reversible By Design",
+  line:"Kill switch, human override, customer disclosure, and encrypted explainability storage.",
+  body:`
+    <ul>
+      <li><strong>Kill Switch</strong> — <code>governance/kill_switch.py</code>: an emergency, auditable, instantly-reversible mechanism to halt every automated model-driven action platform-wide, satisfying RBI's draft Model Risk Management guidance.</li>
+      <li><strong>Human Override</strong> — <code>governance/human_override.py</code>: any automated action can be reversed by an investigator; the original record is never deleted, only appended to — a full reconstructable audit history.</li>
+      <li><strong>Customer Disclosure</strong> — <code>governance/customer_disclosure.py</code>: plain-language notice to an affected customer, category-level reasoning only — never exposing feature-level model internals, which could help a real fraudster evade detection.</li>
+      <li><strong>Explainability Store + Encryption</strong> — <code>governance/explainability_store.py</code> and <code>governance/encryption.py</code>: SHAP explanations persisted permanently (not just printed once and lost), with sensitive audit fields encrypted at rest (Fernet symmetric encryption).</li>
+    </ul>
+  `
+},
+{
+  n:"11", title:"Monitoring & Versioning",
+  line:"Champion/challenger model registry with a regression guard, plus PSI-based drift monitoring.",
+  body:`
+    <ul>
+      <li><strong>Model Registry</strong> — <code>training/model_registry.py</code>: every retrained model version gets its own immutable artifact copy; a champion-vs-challenger promotion step with an automatic regression guard blocks a new model from replacing the current one unless it's actually better.</li>
+      <li><strong>Drift Monitor</strong> — <code>monitoring/drift_monitor.py</code>: Population Stability Index (PSI) on features and prediction scores, catching real-world behavioral drift before accuracy visibly degrades — this matters because confirmed-mule labels only arrive after a slow investigation, long after drift could have started.</li>
+    </ul>
+  `
+},
+{
+  n:"R", title:"Cross-Bank Signal (DPIP / I4C)", roadmap:true,
+  line:"NOT YET LIVE — mocked adapter contract pending real institutional access.",
+  body:`
+    <p><span class="roadmap-tag">Roadmap — not yet live</span></p>
+    <p><code>production/feature_pipeline/cross_bank_adapter.py</code> defines an adapter contract for RBI's Digital Payments Intelligence Platform (DPIP) and I4C's Suspect Registry. It is currently <strong>mocked</strong>, pending real institutional access.</p>
+    <p>This is the honest answer to "why do 12 of 81 mules stay undetectable": they show no distinguishing single-bank signal. This is the architectural fix once real cross-bank access exists — it is not claimed to be live today.</p>
+  `
+},
+];
+
+// ---------------- simple, plain-language architecture diagram ----------------
+const archBoxes = [
+  { n:"1", title:"Raw Data", tap:"tap for plain-language",
+    text:"Every account's banking activity — balances, transactions, account age — goes in, exactly as it comes from the core banking system." },
+  { n:"2", title:"Leak Audit", tap:"tap for plain-language",
+    text:"Before training, we double-check that no column secretly gives away the answer (like a field that only exists after a case is already solved) — so the model can't cheat." },
+  { n:"3", title:"5 Models", tap:"tap for plain-language",
+    text:"Five different AI approaches each try to spot suspicious accounts their own way — like getting five experts' opinions instead of trusting just one." },
+  { n:"4", title:"Combine & Refine", tap:"tap for plain-language",
+    text:"A referee model learns how much to trust each of the five experts and blends their opinions into one score, then a second pass re-checks the riskiest accounts to cut down false alarms." },
+  { n:"5", title:"Triage Clustering", tap:"tap for plain-language",
+    text:"Accounts that behave similarly are grouped together automatically, with no labels needed — this helps investigators spot a dense pocket of suspicious accounts even before scoring." },
+  { n:"6", title:"Explainability", tap:"tap for plain-language",
+    text:"For every flagged account, the system shows exactly which behaviors pushed its risk score up or down — so a human investigator can see the 'why', not just a number." },
+  { n:"7", title:"Governance", tap:"tap for plain-language",
+    text:"Any automated action (like a temporary hold) is reversible, logged, and can be switched off instantly bank-wide — a human always stays in control." },
+  { n:"R", title:"Cross-Bank Roadmap", tap:"tap for plain-language", roadmap:true,
+    text:"Not live yet: the plan to also share suspicious-account signals across banks and with national fraud registries, once that access is granted — this is future work, honestly labeled." },
+];
+
+const archFlow = document.getElementById('arch-flow');
+archBoxes.forEach((b, i) => {
+  const box = document.createElement('div');
+  box.className = 'arch-box' + (b.roadmap ? ' roadmap' : '');
+  box.innerHTML = `
+    <div class="arch-n">STAGE ${b.n}</div>
+    <h4>${b.title}${b.roadmap ? '<span class="roadmap-tag">roadmap</span>' : ''}</h4>
+    <div class="arch-tap">${b.tap}</div>
+    <div class="arch-explain">${b.text}</div>
+  `;
+  box.addEventListener('click', () => box.classList.toggle('open'));
+  archFlow.appendChild(box);
+  if (i < archBoxes.length - 1) {
+    const arrow = document.createElement('div');
+    arrow.className = 'arch-arrow' + (b.roadmap || archBoxes[i+1].roadmap ? ' roadmap-arrow' : '');
+    arrow.innerHTML = '&#10230;';
+    archFlow.appendChild(arrow);
+  }
+});
+
+document.getElementById('btn-simple').addEventListener('click', () => {
+  document.getElementById('simple-view').style.display = '';
+  document.getElementById('detailed-view').style.display = 'none';
+  document.getElementById('btn-simple').classList.add('active');
+  document.getElementById('btn-detailed').classList.remove('active');
+});
+document.getElementById('btn-detailed').addEventListener('click', () => {
+  document.getElementById('simple-view').style.display = 'none';
+  document.getElementById('detailed-view').style.display = '';
+  document.getElementById('btn-detailed').classList.add('active');
+  document.getElementById('btn-simple').classList.remove('active');
+});
+
+const rail = document.getElementById('rail');
+stages.forEach(s=>{
+  const stage = document.createElement('div');
+  stage.className = 'stage' + (s.roadmap ? ' roadmap' : '');
+  stage.setAttribute('data-n', s.n);
+  stage.innerHTML = `
+    <div class="card">
+      <div class="card-head">
+        <div class="ttl">
+          <h3>${s.title}${s.roadmap ? '<span class="roadmap-tag">roadmap</span>' : ''}</h3>
+          <div class="one-line">${s.line}</div>
+        </div>
+        <div class="chev">&#9656;</div>
+      </div>
+      <div class="card-body"><div class="card-body-inner">${s.body}</div></div>
+    </div>
+  `;
+  const card = stage.querySelector('.card');
+  stage.querySelector('.card-head').addEventListener('click', ()=>{
+    card.classList.toggle('open');
+  });
+  rail.appendChild(stage);
+});
+</script>
+</body>
+</html>

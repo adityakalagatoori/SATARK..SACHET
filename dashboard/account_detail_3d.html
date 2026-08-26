@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACHET — Account Risk Fingerprint</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0021'/%3E%3Cpath d='M20 42c4 4 20 5 22-3 2-9-18-7-17-15 1-6 13-8 19-3' stroke='%23A855F7' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('sachet-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<style>
+  /* ============================================================
+     SACHET shared design tokens (same values as investigator.html,
+     pipeline.html, account_universe.html and landing.html's card
+     system). The 3D scene itself stays a dark "space" ground — same
+     deliberate exception as account_universe.html's WebGL scene —
+     but every UI panel overlaying it uses the light glass system.
+     ============================================================ */
+  :root{
+    --bg-0:#f3edff; --bg-1:#ffffff; --panel:rgba(255,255,255,.72);
+    --panel-solid:#ffffff;
+    --accent:#7c3aed; --accent-lo:#4C0099; --accent-hi:#A855F7;
+    --lilac:#8b2fe0; --paper:#2d1155; --ink:#241238; --muted:#6b5b8a;
+    --ok:#15803d; --danger:#DC2626; --warn:#b45309;
+    --crit:#dc2626; --high:#c2620a; --med:#946800; --low:#1d4ed8;
+    --line:rgba(124,58,237,.25);
+    --glass-blur:18px;
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 32px rgba(124,58,237,.18);
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg-0:#0d0021; --bg-1:#160230; --panel:rgba(255,255,255,.08); --panel-solid:#160230;
+    --lilac:#c9a6fb; --paper:#EDE9FE; --ink:#e0e0e0; --muted:#9b93ad;
+    --ok:#4ade80; --danger:#f87171; --warn:#fbbf24;
+    --crit:#f87171; --high:#fb923c; --med:#fbbf24; --low:#60a5fa;
+    --line:rgba(168,85,247,.35);
+    --glass-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 32px rgba(0,0,0,.45);
+  }
+  :root[data-theme="dark"] header{background:rgba(22,2,48,.78)}
+  :root[data-theme="dark"] #info .status-pill.mule{color:#fca5a5}
+  :root[data-theme="dark"] #info .status-pill.clean{color:#86efac}
+  :root[data-theme="dark"] .up{color:#f87171}
+  :root[data-theme="dark"] .down{color:#4ade80}
+  :root[data-theme="dark"] #status-banner{background:rgba(22,2,48,.9)}
+  :root[data-theme="dark"] #status-banner.error{background:rgba(60,10,20,.85);color:#f87171}
+  :root[data-theme="dark"] #status-banner.error b{color:#f87171}
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:7px;background:transparent;cursor:pointer;
+    font-size:15px;line-height:1;color:var(--muted);
+  }
+  .theme-toggle:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  a,button,.hdr-nav a,.back-link{transition:all .3s cubic-bezier(.4,0,.2,1)}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    /* Deliberate exception: backdrop behind the WebGL scene stays dark — its
+       fog/lighting were tuned against it, same rationale as account_universe.html. */
+    background:#0d0021;
+    color:var(--ink);font-size:14px;line-height:1.5;
+  }
+  a{color:var(--lilac)}
+
+  #scene-container{position:fixed;inset:0;z-index:1}
+  #scene-container canvas{display:block;width:100%;height:100%}
+
+  header{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:14px 20px;border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.7);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    box-shadow:0 4px 24px rgba(124,58,237,.1);
+    position:fixed;top:0;left:0;right:0;z-index:50;
+  }
+  .brand{font-size:19px;font-weight:800;color:var(--accent);letter-spacing:.04em;text-decoration:none}
+  .brand small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .hdr-nav{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .hdr-nav a{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
+    color:var(--muted);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:7px;
+  }
+  .hdr-nav a:hover{color:var(--lilac);border-color:var(--accent);background:rgba(124,58,237,.08)}
+  .hdr-nav a.active{color:var(--accent);border-color:var(--accent);background:rgba(124,58,237,.1)}
+  .back-link{color:var(--accent);border-color:var(--accent);background:rgba(124,58,237,.06);
+    font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
+    text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:7px;}
+  .back-link:hover{background:rgba(124,58,237,.12)}
+
+  .panel{
+    position:fixed;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--glass-shadow);z-index:40;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  }
+
+  #info{top:88px;left:20px;padding:16px 18px;min-width:260px;max-width:300px}
+  #info h4{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:10px;font-weight:800}
+  #info .acct-id{font-family:var(--mono);font-size:22px;color:var(--paper);font-weight:700;margin-bottom:10px}
+  #info .kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:12.5px;border-bottom:1px solid rgba(124,58,237,.1)}
+  #info .kv span{color:var(--muted)} #info .kv b{font-family:var(--mono);color:var(--paper);font-weight:700}
+  #info .status-pill{
+    display:inline-block;margin-top:10px;padding:4px 11px;border-radius:20px;font-size:10.5px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  #info .status-pill.mule{background:rgba(220,38,38,.12);color:#a71d1d;border:1px solid rgba(220,38,38,.4)}
+  #info .status-pill.clean{background:rgba(21,128,61,.13);color:#136330;border:1px solid rgba(21,128,61,.45)}
+
+  #shaplist{bottom:20px;left:20px;padding:14px 16px;max-width:330px;max-height:46vh;overflow-y:auto}
+  #shaplist h4{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:10px;font-weight:800}
+  #shaplist .shap{margin-bottom:9px}
+  #shaplist .shap-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;gap:8px}
+  #shaplist .shap-top code{color:var(--paper);font-family:var(--mono);font-size:10.5px;overflow-wrap:anywhere}
+  #shaplist .shap-bar{height:5px;border-radius:3px;background:rgba(124,58,237,.1);overflow:hidden}
+  #shaplist .shap-bar i{display:block;height:100%;border-radius:3px}
+  .up{color:#b91c1c} .down{color:#15803d}
+
+  #legend{bottom:20px;right:20px;padding:13px 16px;max-width:280px;font-size:11px;color:var(--muted);line-height:1.6}
+  #legend h4{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px;font-weight:800}
+  #legend .lg-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;color:var(--ink)}
+  #legend .swatch{width:11px;height:11px;border-radius:3px;flex:none}
+  #legend .sw-up{background:#ef4444}
+  #legend .sw-down{background:#22c55e}
+  #legend .sw-core{background:radial-gradient(circle at 35% 30%,#fbbf6a,#DC2626)}
+  #legend .note{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:10.5px}
+
+  #node-tip{
+    position:fixed;z-index:60;background:var(--panel-solid);border:1px solid var(--accent);border-radius:9px;
+    padding:9px 12px;font-size:11.5px;pointer-events:none;opacity:0;transform:translate(14px,14px);
+    transition:opacity .12s;box-shadow:var(--glass-shadow);white-space:nowrap;
+  }
+  #node-tip.show{opacity:1}
+  #node-tip b{display:block;font-family:var(--mono);color:var(--paper);font-size:13px}
+  #node-tip span{color:var(--muted);margin-right:8px}
+  #scene-container canvas.hoverable{cursor:pointer}
+
+  #hint{
+    position:fixed;top:100px;right:20px;z-index:35;padding:9px 13px;font-size:11px;color:var(--ink);
+    max-width:230px;text-align:right;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+  }
+
+  #status-banner{
+    position:fixed;top:88px;left:50%;transform:translateX(-50%);z-index:45;
+    max-width:560px;padding:13px 18px;border-radius:10px;font-size:13px;line-height:1.55;
+    background:rgba(255,255,255,.85);border:1px solid var(--line);color:var(--ink);
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));box-shadow:var(--glass-shadow);
+    display:none;
+  }
+  #status-banner.show{display:block}
+  #status-banner.error{border-color:rgba(220,38,38,.4);background:rgba(255,255,255,.92);color:#a71d1d}
+  #status-banner b{color:var(--paper)}
+  #status-banner.error b{color:#a71d1d}
+
+  #loading{
+    position:fixed;inset:0;z-index:100;background:#0d0021;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:12px;transition:opacity .5s;
+  }
+  #loading .spinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(168,85,247,.35);border-top-color:var(--accent-hi);animation:spin 1s linear infinite}
+  #loading span{font-size:12px;color:#c3b6e8;letter-spacing:.05em}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:900px){
+    #shaplist{max-width:80vw} #info{max-width:80vw}
+    #legend,#hint{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><span id="loading-text">Loading account fingerprint…</span></div>
+
+<header>
+  <a class="brand" href="landing.html">SACHET <small>Account Risk Fingerprint</small></a>
+  <a class="back-link" href="investigator.html">← Back to Investigator Console</a>
+  <div class="hdr-nav">
+    <a href="landing.html">Overview</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="account_universe.html">Account Universe</a>
+    <a href="investigator.html">Investigator Console</a>
+    <a href="live_scoring.html">Live Scoring</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle light/dark theme">🌙</button>
+  </div>
+</header>
+<script>
+(function(){
+  function icon(){return document.documentElement.getAttribute('data-theme')==='dark' ? '☀️' : '🌙';}
+  var btn = document.getElementById('theme-toggle');
+  btn.textContent = icon();
+  btn.addEventListener('click', function(){
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('sachet-theme', next); }catch(e){}
+    btn.textContent = icon();
+  });
+})();
+</script>
+
+<div id="scene-container"></div>
+
+<div id="status-banner"></div>
+
+<div class="panel" id="info" style="display:none">
+  <h4>This account</h4>
+  <div class="acct-id" id="i-id">—</div>
+  <div class="kv"><span>Risk score</span><b id="i-risk">—</b></div>
+  <div class="kv"><span>Triage cluster</span><b id="i-cluster">—</b></div>
+  <div id="i-status"></div>
+</div>
+
+<div class="panel" id="shaplist" style="display:none">
+  <h4>Real SHAP contributions (this account only)</h4>
+  <div id="shap-items"></div>
+</div>
+
+<div class="panel" id="legend" style="display:none">
+  <h4>Reading this shape</h4>
+  <div class="lg-row"><span class="swatch sw-core"></span> Center core — overall risk score</div>
+  <div class="lg-row"><span class="swatch sw-up"></span> Spike pushes risk up</div>
+  <div class="lg-row"><span class="swatch sw-down"></span> Spike pulls risk down</div>
+  <div class="note">
+    Every spike is a real SHAP contribution for <b>this account</b>, from
+    <code>outputs/explanations.json</code>; height/glow scale with magnitude. No cross-account
+    connections are implied — the dataset has none.
+  </div>
+</div>
+
+<div id="node-tip" role="status">
+  <b id="tip-feature">—</b>
+  <span id="tip-value">—</span>
+</div>
+
+<div id="hint" style="display:none">Drag to orbit · scroll to zoom · right-drag to pan · hover a spike for its exact value</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function showBanner(kind, html){
+  const b = document.getElementById('status-banner');
+  b.className = 'show' + (kind === 'error' ? ' error' : '');
+  b.innerHTML = html;
+}
+function hideLoading(){
+  const l = document.getElementById('loading');
+  l.style.opacity = '0';
+  setTimeout(() => { l.style.display = 'none'; }, 500);
+}
+
+// ---------------- resolve ?account=<id>[&dataset=<upload_id>] ----------------
+const params = new URLSearchParams(window.location.search);
+const raw = params.get('account');
+const datasetId = params.get('dataset');  // optional -- an uploaded/scored dataset's upload_id
+const accountId = raw === null ? NaN : parseInt(raw, 10);
+
+if (raw === null){
+  hideLoading();
+  showBanner('error',
+    '<b>No account specified.</b> Append <code>?account=&lt;id&gt;</code> to the URL, or open this ' +
+    'page from a row in the <a href="investigator.html">Investigator Console</a>.');
+} else if (!Number.isFinite(accountId)){
+  hideLoading();
+  showBanner('error', `<b>Invalid account id</b> — "${esc(raw)}" is not a number.`);
+} else if (datasetId){
+  loadUploadedAccount(accountId, datasetId);
+} else {
+  loadAccount(accountId);
+}
+
+// ---------------- fetch this account's real data ----------------
+// presentation/account_universe_coords.json: risk_score / cluster / is_mule for every account
+// (array index === account id, verified). outputs/explanations.json: real per-account SHAP
+// contributions, keyed by account id string — not every account has an entry.
+function loadAccount(accountId){
+Promise.all([
+  fetch('../presentation/account_universe_coords.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+  fetch('../outputs/explanations.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+]).then(([universe, explanations]) => {
+  const accounts = universe.accounts;
+  const acct = accounts[accountId];
+  if (!acct || acct.id !== accountId){
+    hideLoading();
+    showBanner('error', `<b>Account #${accountId} not found.</b> Valid ids run 0–${accounts.length - 1}.`);
+    return;
+  }
+  const shap = explanations[String(accountId)] || null;
+  init(acct, shap);
+}).catch(err => {
+  hideLoading();
+  showBanner('error',
+    `<b>Could not load account data</b> — ${esc(err.message)}. This page reads static files and ` +
+    `must be served over HTTP (e.g. <code>python -m http.server 8080</code> from the project root), ` +
+    `not opened directly via <code>file://</code>.`);
+});
+}
+
+// An uploaded/scored dataset's per-account record already carries x/y/z (projected into the
+// SAME PCA space as the original account universe — see production/serving/score_new_dataset.py
+// _universe_pca()) and its own SHAP, so this reads the one stored file instead of the two
+// original static files.
+function loadUploadedAccount(accountId, datasetId){
+  fetch('../outputs/uploads/' + datasetId + '.json')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(u => {
+      const acct = (u.accounts || []).find(a => a.id === accountId);
+      if (!acct){
+        hideLoading();
+        showBanner('error', `<b>Account #${accountId} not found in uploaded dataset "${esc(datasetId)}".</b> ` +
+          `Valid ids run 0–${(u.accounts || []).length - 1}.`);
+        return;
+      }
+      const mapped = {
+        id: acct.id, x: acct.x, y: acct.y, z: acct.z,
+        is_mule: acct.is_mule || 0, cluster: acct.cluster, risk_score: acct.risk_score
+      };
+      init(mapped, acct.shap || null);
+    })
+    .catch(err => {
+      hideLoading();
+      showBanner('error',
+        `<b>Could not load uploaded dataset "${esc(datasetId)}"</b> — ${esc(err.message)}. Score it first from ` +
+        `the <a href="live_scoring.html">Live Scoring</a> page.`);
+    });
+}
+
+function init(acct, shap){
+  // ---------------- info panel ----------------
+  document.getElementById('info').style.display = '';
+  document.getElementById('legend').style.display = '';
+  document.getElementById('hint').style.display = '';
+  document.getElementById('i-id').textContent = '#' + acct.id;
+  document.getElementById('i-risk').textContent = (acct.risk_score * 100).toFixed(2) + '%';
+  document.getElementById('i-cluster').textContent = 'Cluster ' + acct.cluster;
+  document.getElementById('i-status').innerHTML = acct.is_mule
+    ? '<span class="status-pill mule">Confirmed mule</span>'
+    : '<span class="status-pill clean">Not a confirmed mule</span>';
+
+  if (!shap || !shap.length){
+    showBanner('info',
+      `<b>No SHAP explanation exported for account #${acct.id}.</b> Showing its risk score and ` +
+      `cluster only — <code>outputs/explanations.json</code> only carries a subset of accounts.`);
+  }
+  document.getElementById('shaplist').style.display = shap && shap.length ? '' : 'none';
+  if (shap && shap.length){
+    const max = Math.max(...shap.map(s => s.abs_value)) || 1;
+    document.getElementById('shap-items').innerHTML = shap.map(s => {
+      const up = s.direction === 'increases';
+      const w = (s.abs_value / max * 100).toFixed(1);
+      return `<div class="shap">
+        <div class="shap-top"><code>${esc(s.feature)}</code>
+          <span class="${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${s.shap_value.toFixed(4)}</span></div>
+        <div class="shap-bar"><i style="width:${w}%;background:${up ? '#ef4444' : '#22c55e'}"></i></div>
+      </div>`;
+    }).join('');
+  }
+
+  buildScene(acct, shap || []);
+  hideLoading();
+}
+
+// ---------------- 3D scene ----------------
+function buildScene(acct, shap){
+  const container = document.getElementById('scene-container');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0d0021, 0.02);
+
+  const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 400);
+  const camPos = new THREE.Vector3(15, 11, 18);
+  camera.position.copy(camPos);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.07;
+  controls.minDistance = 4;
+  controls.maxDistance = 90;
+  controls.target.set(0, 2, 0);
+  controls.update();
+
+  scene.add(new THREE.AmbientLight(0x4a2a7a, 0.9));
+  const key = new THREE.DirectionalLight(0xEDE9FE, 0.85);
+  key.position.set(20, 30, 15);
+  scene.add(key);
+  const rim = new THREE.PointLight(0x7c3aed, 2.0, 200, 2);
+  rim.position.set(-20, 8, -15);
+  scene.add(rim);
+
+  // ---- glow sprite texture (generated at runtime, no external asset) ----
+  function makeGlowTexture(){
+    const size = 128;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    grad.addColorStop(0.0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.3, 'rgba(255,255,255,0.8)');
+    grad.addColorStop(1.0, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+  const glowTex = makeGlowTexture();
+
+  function makeLabelTexture(text){
+    const padding = 14, fontSize = 30;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.font = `700 ${fontSize}px 'JetBrains Mono', monospace`;
+    const w = Math.ceil(ctx.measureText(text).width) + padding * 2;
+    canvas.width = w; canvas.height = fontSize + padding * 2;
+    ctx.font = `700 ${fontSize}px 'JetBrains Mono', monospace`;
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(13,0,33,0.72)';
+    ctx.roundRect ? (ctx.beginPath(), ctx.roundRect(0, 0, canvas.width, canvas.height, 10), ctx.fill()) :
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#EDE9FE';
+    ctx.fillText(text, padding, canvas.height / 2 + 1);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return { tex, aspect: canvas.width / canvas.height };
+  }
+
+  // ---- base ring (spatial reference only, not data) ----
+  const RADIUS = 6.5;
+  const ringGeo = new THREE.RingGeometry(RADIUS - 0.02, RADIUS + 0.02, 96);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0.28, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI / 2;
+  scene.add(ring);
+
+  // ---- center core: overall risk score ----
+  const risk = acct.risk_score;
+  const coreColor = new THREE.Color(0xDC2626).lerp(new THREE.Color(0xF59E0B), risk);
+  const coreGeo = new THREE.IcosahedronGeometry(0.9 + risk * 1.1, 3);
+  const coreMat = new THREE.MeshPhysicalMaterial({
+    color: coreColor, emissive: coreColor, emissiveIntensity: 0.6 + risk * 1.6,
+    roughness: 0.25, metalness: 0.15, clearcoat: 0.6, clearcoatRoughness: 0.25
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  core.position.set(0, 2, 0);
+  scene.add(core);
+
+  // ---- fingerprint group: one spike per real SHAP feature ----
+  const fpGroup = new THREE.Group();
+  scene.add(fpGroup);
+  const spikeMeshes = [];
+  const maxAbs = shap.length ? Math.max(...shap.map(s => s.abs_value)) : 1;
+
+  shap.forEach((s, i) => {
+    const angle = (i / shap.length) * Math.PI * 2;
+    const x = Math.cos(angle) * RADIUS;
+    const z = Math.sin(angle) * RADIUS;
+    const norm = s.abs_value / (maxAbs || 1);
+    const height = 0.7 + norm * 6.2;
+    const up = s.direction === 'increases';
+    const col = up ? 0xef4444 : 0x22c55e;
+
+    // spoke line from core to spike base (intra-account only — never a connection to another account)
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(x, 0.05, z)]);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x7c3aed, transparent: true, opacity: 0.35 });
+    fpGroup.add(new THREE.Line(lineGeo, lineMat));
+
+    // the spike itself
+    const barGeo = new THREE.BoxGeometry(0.55, 1, 0.55);
+    const barMat = new THREE.MeshStandardMaterial({
+      color: col, emissive: col, emissiveIntensity: 0.5 + norm * 1.6,
+      roughness: 0.35, metalness: 0.1
+    });
+    const bar = new THREE.Mesh(barGeo, barMat);
+    bar.scale.y = height;
+    bar.position.set(x, height / 2, z);
+    bar.userData = { feature: s.feature, shap_value: s.shap_value, direction: s.direction };
+    fpGroup.add(bar);
+    spikeMeshes.push(bar);
+
+    // small glow point at the tip
+    const tipMat = new THREE.SpriteMaterial({ map: glowTex, color: col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+    const tip = new THREE.Sprite(tipMat);
+    tip.scale.set(1.1, 1.1, 1);
+    tip.position.set(x, height + 0.15, z);
+    fpGroup.add(tip);
+
+    // always-on billboarded label
+    const { tex, aspect } = makeLabelTexture(s.feature);
+    const labelMat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+    const label = new THREE.Sprite(labelMat);
+    const labelH = 0.62;
+    label.scale.set(labelH * aspect, labelH, 1);
+    label.position.set(x * 1.14, height + 0.65, z * 1.14);
+    fpGroup.add(label);
+  });
+
+  // ---------------- bloom ----------------
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.55, 0.4, 0.5);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+
+  function resize(){
+    const w = window.innerWidth, h = window.innerHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    composer.setSize(w, h);
+  }
+  window.addEventListener('resize', resize);
+
+  // ---------------- idle auto-rotation ----------------
+  const IDLE_DELAY = 3200, ROTATE_PERIOD = 70;
+  let lastInteraction = performance.now();
+  let userActive = false;
+  controls.addEventListener('start', () => { userActive = true; });
+  controls.addEventListener('end', () => { lastInteraction = performance.now(); });
+
+  // ---------------- hover tooltip ----------------
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  const tipEl = document.getElementById('node-tip');
+
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(spikeMeshes, false);
+    if (hits.length){
+      const u = hits[0].object.userData;
+      renderer.domElement.classList.add('hoverable');
+      document.getElementById('tip-feature').textContent = u.feature;
+      document.getElementById('tip-value').textContent =
+        (u.direction === 'increases' ? '▲ +' : '▼ ') + u.shap_value.toFixed(4);
+      tipEl.style.left = e.clientX + 'px';
+      tipEl.style.top = e.clientY + 'px';
+      tipEl.classList.add('show');
+    } else {
+      renderer.domElement.classList.remove('hoverable');
+      tipEl.classList.remove('show');
+    }
+  });
+  renderer.domElement.addEventListener('pointerleave', () => { tipEl.classList.remove('show'); renderer.domElement.classList.remove('hoverable'); });
+
+  // ---------------- render loop ----------------
+  const clock = new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    const dt = clock.getDelta();
+    const now = performance.now();
+    if (userActive && now - lastInteraction > IDLE_DELAY) userActive = false;
+    if (!userActive){
+      const angle = (2 * Math.PI / ROTATE_PERIOD) * dt;
+      const target = controls.target;
+      const rel = new THREE.Vector3().subVectors(camera.position, target);
+      rel.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+      camera.position.copy(target).add(rel);
+      camera.lookAt(target);
+    }
+    core.rotation.y += dt * 0.3;
+    controls.update();
+    composer.render();
+  }
+  animate();
+}
+</script>
+</body>
+</html>
