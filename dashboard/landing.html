@@ -205,6 +205,16 @@
     background: var(--accent-hi); box-shadow: 0 0 10px var(--accent-hi);
     animation: pulseDot 2.8s var(--ease-soft) infinite;
   }
+  .brand-logo{
+    width:46px;height:46px;border-radius:50%;object-fit:cover;background:#f6f4f1;
+    box-shadow:0 6px 18px rgba(124,58,237,.45),0 2px 8px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.7);
+    transform:perspective(400px) rotateY(0deg) translateZ(0);
+    transition:transform .35s var(--ease-out,ease),box-shadow .35s ease;
+  }
+  .nav-brand:hover .brand-logo{
+    transform:perspective(400px) rotateY(10deg) scale(1.08) translateZ(10px);
+    box-shadow:0 10px 26px rgba(124,58,237,.6),0 4px 12px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,255,255,.85);
+  }
   @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.55;transform:scale(0.82);} }
 
   /* Persistent institutional marks — real logos, gently shimmering */
@@ -1015,7 +1025,7 @@
 <!-- Persistent nav with real institutional marks (A3: BOI/RBI appear here, in
      the institutions section, and as a footer watermark — never just once) -->
 <header id="topnav">
-  <a class="nav-brand" href="landing.html"><span class="dot"></span>SACHET</a>
+  <a class="nav-brand" href="landing.html"><img class="brand-logo" src="assets/sachet-logo.png" alt="SACHET logo"><span class="dot"></span>SACHET</a>
   <div class="hdr-nav">
     <a href="landing.html" class="active">Overview</a>
     <a href="pipeline.html">Pipeline</a>

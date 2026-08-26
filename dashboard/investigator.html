@@ -79,8 +79,18 @@
     box-shadow:0 4px 24px rgba(124,58,237,.08);
     position:sticky;top:0;z-index:50;
   }
-  .brand{font-size:19px;font-weight:800;color:var(--accent-hi);letter-spacing:.04em;text-decoration:none}
+  .brand{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:800;color:var(--accent-hi);letter-spacing:.04em;text-decoration:none}
   .brand small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .brand-logo{
+    width:46px;height:46px;border-radius:50%;object-fit:cover;background:#f6f4f1;
+    box-shadow:0 6px 18px rgba(124,58,237,.45),0 2px 8px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.7);
+    transform:perspective(400px) rotateY(0deg) translateZ(0);
+    transition:transform .35s ease,box-shadow .35s ease;
+  }
+  .brand:hover .brand-logo{
+    transform:perspective(400px) rotateY(10deg) scale(1.08) translateZ(10px);
+    box-shadow:0 10px 26px rgba(124,58,237,.6),0 4px 12px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,255,255,.85);
+  }
   .hdr-nav{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .hdr-nav a{
     font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;
@@ -204,7 +214,7 @@
 <body>
 
 <header>
-  <a class="brand" href="landing.html">SACHET <small>Investigator Console</small></a>
+  <a class="brand" href="landing.html"><img class="brand-logo" src="assets/sachet-logo.png" alt="SACHET logo">SACHET <small>Investigator Console</small></a>
   <div class="hdr-metrics">
     <div class="hm"><b id="m-aucpr">—</b><span>OOF AUC-PR</span></div>
     <div class="hm"><b id="m-accounts">—</b><span>Accounts</span></div>
